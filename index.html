@@ -861,20 +861,19 @@ function renderTop5() {
   const lang  = document.getElementById('top5-lang').value;
   const month = document.getElementById('selected-month').value;
   const isKo  = lang === 'korean';
+  const ranks = ['rank-1','rank-2','rank-3','rank-4','rank-5'];
 
-  const allTypes = [...OTHER_TYPES, { id:'jari', name:'자리연습' }];
-
-  document.getElementById('top5-grid').innerHTML = allTypes.map(type => {
+  // ── 낱말/단문/장문: 이달 최고 타수 기준 ──
+  const otherCards = OTHER_TYPES.map(type => {
     const studentBests = students.map(stu => {
       const recs = records.filter(r =>
         r.student_id===stu.id && r.lang===lang && r.type===type.id &&
         r.speed && r.date?.startsWith(month));
       if (!recs.length) return null;
       const best = recs.reduce((a,b) => b.speed>a.speed?b:a);
-      return { name:stu.name, speed:best.speed };
-    }).filter(Boolean).sort((a,b)=>b.speed-a.speed).slice(0,5);
+      return { name:stu.name, score:best.speed, unit:'타' };
+    }).filter(Boolean).sort((a,b)=>b.score-a.score).slice(0,5);
 
-    const ranks = ['rank-1','rank-2','rank-3','rank-4','rank-5'];
     return `<div class="top5-card">
       <div class="top5-card-header ${isKo?'korean':'english'}">
         <span>${isKo?'🇰🇷':'🇺🇸'} ${type.name}</span>
@@ -885,12 +884,42 @@ function renderTop5() {
           <div class="top5-item">
             <div class="rank-badge ${ranks[i]}">${i+1}</div>
             <div class="top5-name">${s.name}</div>
-            <div class="top5-score">${s.speed}<span style="font-size:0.68rem;color:var(--text-muted);font-family:'Noto Sans KR'"> 타</span></div>
+            <div class="top5-score">${s.score}<span style="font-size:0.68rem;color:var(--text-muted);font-family:'Noto Sans KR'"> ${s.unit}</span></div>
           </div>`).join('')
           : '<div style="padding:10px 14px;font-size:0.8rem;color:var(--text-muted)">이달 기록 없음</div>'}
       </div>
     </div>`;
-  }).join('');
+  });
+
+  // ── 자리연습: 이달 전체 자리 통과 횟수 합산 기준 (lang 무관, date null 방어) ──
+  const jariRanking = students.map(stu => {
+    const passRecs = records.filter(r =>
+      r.student_id===stu.id &&
+      r.type==='jari' &&
+      !!r.passed &&
+      r.date && r.date.startsWith(month)
+    );
+    console.log('[자리TOP5]', stu.name, passRecs.length, '회 통과, 월:', month);
+    return { name:stu.name, score:passRecs.length };
+  }).filter(s => s.score > 0).sort((a,b)=>b.score-a.score).slice(0,5);
+
+  const jariCard = `<div class="top5-card">
+    <div class="top5-card-header ${isKo?'korean':'english'}">
+      <span>${isKo?'🇰🇷':'🇺🇸'} 자리연습</span>
+      <span class="badge">${month}</span>
+    </div>
+    <div class="top5-list">
+      ${jariRanking.length ? jariRanking.map((s,i)=>`
+        <div class="top5-item">
+          <div class="rank-badge ${ranks[i]}">${i+1}</div>
+          <div class="top5-name">${s.name}</div>
+          <div class="top5-score">${s.score}<span style="font-size:0.68rem;color:var(--text-muted);font-family:'Noto Sans KR'"> 회 통과</span></div>
+        </div>`).join('')
+        : '<div style="padding:10px 14px;font-size:0.8rem;color:var(--text-muted)">이달 통과 기록 없음</div>'}
+    </div>
+  </div>`;
+
+  document.getElementById('top5-grid').innerHTML = [...otherCards, jariCard].join('');
 }
 
 // ══════════════════════════════════════════════
