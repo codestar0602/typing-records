@@ -269,6 +269,29 @@
   .empty-state .icon { font-size:3rem; margin-bottom:12px; }
   .empty-state p { font-size:0.88rem; }
 
+  /* TREND COLLAPSIBLE */
+  .trend-toggle-btn {
+    display:flex; align-items:center; gap:8px; cursor:pointer;
+    padding:10px 24px; width:100%; background:none; border:none;
+    color:var(--text-muted); font-family:'Noto Sans KR',sans-serif;
+    font-size:0.78rem; font-weight:700; letter-spacing:1px; text-transform:uppercase;
+    transition:color 0.2s;
+  }
+  .trend-toggle-btn:hover { color:var(--text); }
+  .trend-toggle-btn .t-arrow-icon { font-size:0.68rem; transition:transform 0.25s; }
+  .trend-toggle-btn.open .t-arrow-icon { transform:rotate(90deg); }
+  .trend-body { display:none; padding:0 24px 12px; }
+  .trend-body.open { display:block; }
+
+  /* EDIT DAY BUTTON */
+  .edit-day-btn {
+    font-size:0.7rem; padding:2px 8px; border-radius:6px;
+    border:1px solid var(--border); background:var(--surface2);
+    color:var(--text-muted); cursor:pointer; margin-left:6px;
+    transition:all 0.15s; white-space:nowrap;
+  }
+  .edit-day-btn:hover { border-color:var(--accent); color:var(--accent); }
+
   ::-webkit-scrollbar { width:5px; }
   ::-webkit-scrollbar-track { background:var(--bg); }
   ::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
@@ -319,11 +342,13 @@
 </div>
 
 <div id="trend-section">
-  <div class="trend-header">
-    <div class="section-title" style="margin-bottom:0">📈 이달의 속도 증감률</div>
-    <span style="font-size:0.73rem;color:var(--text-muted)">(이름 클릭 시 해당 학생으로 이동)</span>
-  </div>
-  <div class="trend-grid" id="trend-grid"></div>
+  <button class="trend-toggle-btn" id="trend-toggle-btn" onclick="toggleTrend()">
+    <span class="t-arrow-icon">▶</span>
+    📈 이달의 속도 증감률
+    <span style="font-size:0.7rem;font-weight:400;color:var(--text-muted)">(클릭하여 펼치기 · 이름 클릭 시 학생 이동)</span>
+    <span id="trend-count-badge" style="font-family:'Space Mono';font-size:0.7rem;background:var(--surface2);border:1px solid var(--border);border-radius:999px;padding:1px 8px;margin-left:auto"></span>
+  </button>
+  <div class="trend-body" id="trend-grid"></div>
 </div>
 
 <main>
@@ -360,6 +385,32 @@
     <div class="modal-actions">
       <button class="btn btn-primary" onclick="addStudent()">추가</button>
       <button class="btn btn-secondary" onclick="closeModal('add-student-modal')">취소</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: 학생 수정 -->
+<div class="modal-overlay" id="edit-student-modal">
+  <div class="modal">
+    <h3>✏️ 학생 정보 수정</h3>
+    <div class="form-group">
+      <label>이름</label>
+      <input type="text" id="edit-student-name" placeholder="이름 입력">
+    </div>
+    <div class="form-group">
+      <label>수업 요일 (복수 선택 가능)</label>
+      <div class="day-checkbox-group">
+        <label class="day-cb-label"><input type="checkbox" name="edit-days" value="월">월</label>
+        <label class="day-cb-label"><input type="checkbox" name="edit-days" value="화">화</label>
+        <label class="day-cb-label"><input type="checkbox" name="edit-days" value="수">수</label>
+        <label class="day-cb-label"><input type="checkbox" name="edit-days" value="목">목</label>
+        <label class="day-cb-label"><input type="checkbox" name="edit-days" value="금">금</label>
+        <label class="day-cb-label"><input type="checkbox" name="edit-days" value="토">토</label>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-primary" onclick="saveEditStudent()">저장</button>
+      <button class="btn btn-secondary" onclick="closeModal('edit-student-modal')">취소</button>
     </div>
   </div>
 </div>
@@ -625,9 +676,12 @@ function renderStudentContent(){
     trendBadge=`<span class="student-trend-badge ${cls}">${trend.label}</span>`;
   }
 
+  const stuDaysLabel=(stu.days||'').split(',').filter(Boolean).join('·')||'요일없음';
   document.getElementById('main-content').innerHTML=`
     <div class="content-header">
-      <h2>📋 ${stu.name}${trendBadge}</h2>
+      <h2>📋 ${stu.name}${trendBadge}
+        <button class="edit-day-btn" onclick="openEditStudentModal('${stu.id}')">✏️ ${stuDaysLabel} 수정</button>
+      </h2>
     </div>
     <div class="lang-tabs">
       <div class="lang-tab ${selectedLang==='korean'?'active':''}" onclick="switchLang('korean')">🇰🇷 한글</div>
@@ -845,6 +899,52 @@ function renderTop5(){
   document.getElementById('top5-grid').innerHTML=[...otherCards,jariCard].join('');
 }
 
+// ── TREND TOGGLE ──
+let trendOpen = false;
+function toggleTrend(){
+  trendOpen = !trendOpen;
+  const btn = document.getElementById('trend-toggle-btn');
+  const body = document.getElementById('trend-grid');
+  btn.classList.toggle('open', trendOpen);
+  body.classList.toggle('open', trendOpen);
+}
+
+// ── EDIT STUDENT ──
+let editingStudentId = null;
+function openEditStudentModal(id){
+  editingStudentId = id;
+  const stu = students.find(s=>s.id===id);
+  if(!stu) return;
+  document.getElementById('edit-student-name').value = stu.name;
+  const days = (stu.days||'').split(',').map(d=>d.trim()).filter(Boolean);
+  document.querySelectorAll('input[name="edit-days"]').forEach(cb=>{
+    cb.checked = days.includes(cb.value);
+  });
+  openModal('edit-student-modal');
+  setTimeout(()=>document.getElementById('edit-student-name').focus(), 100);
+}
+
+async function saveEditStudent(){
+  const name = document.getElementById('edit-student-name').value.trim();
+  if(!name) return alert('이름을 입력하세요');
+  const checked = [...document.querySelectorAll('input[name="edit-days"]:checked')].map(cb=>cb.value);
+  const days = checked.join(',');
+  showLoading();
+  const{error} = await sb.from('students').update({name, days}).eq('id', editingStudentId);
+  hideLoading();
+  if(error) return toast('수정 실패: '+error.message, 'err');
+  const stu = students.find(s=>s.id===editingStudentId);
+  if(stu){ stu.name=name; stu.days=days; }
+  closeModal('edit-student-modal');
+  // 변경된 요일로 openDays 갱신
+  openDays.clear();
+  if(checked.length) checked.forEach(d=>openDays.add(d));
+  else openDays.add('기타');
+  renderSidebar(); renderTop5(); renderTrend();
+  renderStudentContent();
+  toast(`${name} 수정됨 ✓`);
+}
+
 // ── TREND ──
 function renderTrend(){
   const month=document.getElementById('selected-month').value;
@@ -874,9 +974,12 @@ function renderTrend(){
     </div>`;
   }).filter(Boolean);
 
-  document.getElementById('trend-grid').innerHTML=chips.length
-    ?chips.join('')
-    :'<span style="font-size:0.79rem;color:var(--text-muted)">이달 기록이 있는 학생 없음</span>';
+  const grid = document.getElementById('trend-grid');
+  grid.innerHTML = chips.length
+    ? `<div style="display:flex;gap:7px;flex-wrap:wrap">${chips.join('')}</div>`
+    : '<span style="font-size:0.79rem;color:var(--text-muted)">이달 기록이 있는 학생 없음</span>';
+  const badge = document.getElementById('trend-count-badge');
+  if(badge) badge.textContent = chips.length ? `${chips.length}명` : '';
 }
 </script>
 </body>
