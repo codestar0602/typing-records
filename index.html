@@ -8,20 +8,10 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
   :root {
-    --bg: #0f0f14;
-    --surface: #1a1a24;
-    --surface2: #22223a;
-    --border: #2e2e48;
-    --accent: #6c63ff;
-    --accent2: #ff6584;
-    --accent3: #43e97b;
-    --accent4: #f7971e;
-    --text: #e8e8f0;
-    --text-muted: #888899;
-    --gold: #ffd700;
-    --silver: #c0c0c0;
-    --bronze: #cd7f32;
-    --pass: #43e97b;
+    --bg:#0f0f14; --surface:#1a1a24; --surface2:#22223a; --border:#2e2e48;
+    --accent:#6c63ff; --accent2:#ff6584; --accent3:#43e97b; --accent4:#f7971e;
+    --text:#e8e8f0; --text-muted:#888899;
+    --gold:#ffd700; --silver:#c0c0c0; --bronze:#cd7f32; --pass:#43e97b;
   }
   * { margin:0; padding:0; box-sizing:border-box; }
   body { background:var(--bg); color:var(--text); font-family:'Noto Sans KR',sans-serif; min-height:100vh; overflow-x:hidden; }
@@ -34,51 +24,44 @@
     z-index:9999; transition:transform 0.3s; pointer-events:none; white-space:nowrap;
   }
   #toast.show { transform:translateX(-50%) translateY(0); }
-  #toast.ok   { border-color:var(--pass); color:var(--pass); }
-  #toast.err  { border-color:var(--accent2); color:var(--accent2); }
+  #toast.ok { border-color:var(--pass); color:var(--pass); }
+  #toast.err { border-color:var(--accent2); color:var(--accent2); }
 
-  /* LOADING OVERLAY */
+  /* LOADING */
   #loading-overlay {
     position:fixed; inset:0; background:rgba(0,0,0,0.6);
     display:flex; align-items:center; justify-content:center;
     z-index:8888; backdrop-filter:blur(3px);
   }
   #loading-overlay.hidden { display:none; }
-  .spinner {
-    width:40px; height:40px; border:3px solid var(--border);
-    border-top-color:var(--accent); border-radius:50%;
-    animation:spin 0.7s linear infinite;
-  }
+  .spinner { width:40px; height:40px; border:3px solid var(--border); border-top-color:var(--accent); border-radius:50%; animation:spin 0.7s linear infinite; }
   @keyframes spin { to { transform:rotate(360deg); } }
 
   /* HEADER */
   header {
     background:linear-gradient(135deg,#1a1a2e,#16213e,#0f3460);
     border-bottom:1px solid var(--border);
-    padding:16px 24px; position:sticky; top:0; z-index:100;
+    padding:14px 24px; position:sticky; top:0; z-index:100;
     display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;
   }
   .header-title { display:flex; align-items:center; gap:12px; }
   .header-title h1 {
-    font-family:'Space Mono',monospace; font-size:1.3rem; font-weight:700;
+    font-family:'Space Mono',monospace; font-size:1.25rem; font-weight:700;
     background:linear-gradient(90deg,var(--accent),var(--accent2));
     -webkit-background-clip:text; -webkit-text-fill-color:transparent;
   }
-  .header-title span { font-size:1.5rem; }
   .sync-status {
-    font-size:0.75rem; padding:4px 10px; border-radius:999px;
+    font-size:0.73rem; padding:3px 10px; border-radius:999px;
     border:1px solid var(--border); color:var(--text-muted);
-    display:flex; align-items:center; gap:6px;
+    display:flex; align-items:center; gap:5px;
   }
   .sync-dot { width:7px; height:7px; border-radius:50%; background:var(--border); }
   .sync-dot.connected { background:var(--pass); box-shadow:0 0 6px var(--pass); }
-  .header-actions { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
 
   /* BUTTONS */
   .btn {
-    padding:8px 16px; border-radius:8px; border:none; cursor:pointer;
-    font-family:'Noto Sans KR',sans-serif; font-size:0.83rem;
-    font-weight:500; transition:all 0.2s;
+    padding:7px 15px; border-radius:8px; border:none; cursor:pointer;
+    font-family:'Noto Sans KR',sans-serif; font-size:0.82rem; font-weight:500; transition:all 0.2s;
   }
   .btn-primary { background:var(--accent); color:white; }
   .btn-primary:hover { background:#5a52e0; transform:translateY(-1px); }
@@ -86,227 +69,218 @@
   .btn-secondary:hover { background:var(--border); }
   .btn-danger { background:#cc3355; color:white; }
   .btn-danger:hover { background:#aa2244; }
-  .btn-sm { padding:4px 10px; font-size:0.74rem; }
+  .btn-sm { padding:4px 10px; font-size:0.73rem; }
 
   /* MONTH BAR */
   .month-bar {
     background:var(--surface); border-bottom:1px solid var(--border);
-    padding:10px 24px; display:flex; align-items:center; gap:12px; flex-wrap:wrap;
+    padding:9px 24px; display:flex; align-items:center; gap:12px; flex-wrap:wrap;
   }
-  .month-bar label { font-size:0.83rem; color:var(--text-muted); }
+  .month-bar label { font-size:0.82rem; color:var(--text-muted); }
   .month-bar input[type=month], .month-bar select {
     background:var(--surface2); border:1px solid var(--border); color:var(--text);
-    padding:5px 12px; border-radius:8px; font-family:'Space Mono',monospace; font-size:0.88rem;
+    padding:5px 10px; border-radius:8px; font-family:'Space Mono',monospace; font-size:0.85rem;
   }
 
-  /* TOP 5 */
-  #top5-section { background:linear-gradient(135deg,#1a1a2e,#12122a); border-bottom:2px solid var(--border); padding:18px 24px; }
-  .section-title {
-    font-size:0.75rem; font-weight:700; letter-spacing:2px; color:var(--text-muted);
-    text-transform:uppercase; margin-bottom:12px; display:flex; align-items:center; gap:8px;
-  }
-  .top5-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:12px; }
+  /* TOP5 */
+  #top5-section { background:linear-gradient(135deg,#1a1a2e,#12122a); border-bottom:2px solid var(--border); padding:16px 24px; }
+  .section-title { font-size:0.73rem; font-weight:700; letter-spacing:2px; color:var(--text-muted); text-transform:uppercase; margin-bottom:11px; }
+  .top5-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:11px; }
   .top5-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; overflow:hidden; }
-  .top5-card-header {
-    padding:9px 14px; font-size:0.78rem; font-weight:700;
-    letter-spacing:1px; display:flex; align-items:center; gap:8px;
-  }
+  .top5-card-header { padding:8px 13px; font-size:0.77rem; font-weight:700; letter-spacing:1px; display:flex; align-items:center; gap:8px; }
   .top5-card-header.korean { background:linear-gradient(90deg,#1e1b4b,#312e81); }
   .top5-card-header.english { background:linear-gradient(90deg,#1c3a5e,#1e3a8a); }
-  .top5-card-header .badge { font-size:0.68rem; padding:2px 8px; border-radius:999px; background:rgba(255,255,255,0.15); margin-left:auto; }
-  .top5-list { padding:6px 0; }
-  .top5-item { display:flex; align-items:center; padding:6px 14px; gap:10px; transition:background 0.15s; }
+  .top5-card-header .badge { font-size:0.67rem; padding:2px 7px; border-radius:999px; background:rgba(255,255,255,0.15); margin-left:auto; }
+  .top5-list { padding:5px 0; }
+  .top5-item { display:flex; align-items:center; padding:5px 13px; gap:9px; transition:background 0.15s; cursor:pointer; }
   .top5-item:hover { background:var(--surface2); }
-  .rank-badge {
-    width:22px; height:22px; border-radius:50%;
-    display:flex; align-items:center; justify-content:center;
-    font-family:'Space Mono',monospace; font-size:0.68rem; font-weight:700; flex-shrink:0;
-  }
+  .rank-badge { width:21px; height:21px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:'Space Mono',monospace; font-size:0.67rem; font-weight:700; flex-shrink:0; }
   .rank-1 { background:var(--gold); color:#000; }
   .rank-2 { background:var(--silver); color:#000; }
   .rank-3 { background:var(--bronze); color:#fff; }
   .rank-4,.rank-5 { background:var(--surface2); color:var(--text-muted); border:1px solid var(--border); }
-  .top5-name { flex:1; font-size:0.85rem; font-weight:500; }
-  .top5-score { font-family:'Space Mono',monospace; font-size:0.85rem; color:var(--accent); font-weight:700; }
+  .top5-name { flex:1; font-size:0.83rem; font-weight:500; }
+  .top5-score { font-family:'Space Mono',monospace; font-size:0.83rem; color:var(--accent); font-weight:700; }
 
   /* TREND */
-  #trend-section { padding:16px 24px; background:var(--surface); border-bottom:1px solid var(--border); }
-  .trend-grid { display:flex; gap:8px; flex-wrap:wrap; }
+  #trend-section { padding:0; background:var(--surface); border-bottom:1px solid var(--border); }
+  .trend-header { display:flex; align-items:center; gap:10px; padding:10px 24px 0; }
+  .trend-grid { display:flex; gap:7px; flex-wrap:wrap; padding:8px 24px 12px; }
   .trend-chip {
     background:var(--surface2); border:1px solid var(--border); border-radius:999px;
-    padding:5px 13px; display:flex; align-items:center; gap:7px; font-size:0.8rem;
+    padding:5px 12px; display:flex; align-items:center; gap:6px; font-size:0.79rem;
+    cursor:pointer; transition:all 0.15s;
   }
+  .trend-chip:hover { border-color:var(--accent); background:rgba(108,99,255,0.1); }
+  .trend-chip.selected { border-color:var(--accent); background:rgba(108,99,255,0.15); }
   .trend-chip .t-name { font-weight:600; }
-  .trend-chip .t-arrow { font-family:'Space Mono',monospace; font-size:0.78rem; font-weight:700; }
+  .trend-chip .t-arrow { font-family:'Space Mono',monospace; font-size:0.77rem; font-weight:700; }
   .trend-up { color:var(--accent3); } .trend-down { color:var(--accent2); } .trend-same { color:var(--text-muted); }
 
-  /* MAIN LAYOUT */
-  main { display:flex; min-height:calc(100vh - 220px); }
-  aside {
-    width:210px; flex-shrink:0; background:var(--surface); border-right:1px solid var(--border);
-    padding:14px 0; overflow-y:auto; max-height:calc(100vh - 220px); position:sticky; top:220px;
+  /* SELECTED STUDENT TREND BADGE — 학생 이름 옆 */
+  .student-trend-badge {
+    display:inline-flex; align-items:center; gap:4px;
+    font-size:0.75rem; font-family:'Space Mono',monospace; font-weight:700;
+    padding:2px 8px; border-radius:999px; margin-left:8px;
+    vertical-align:middle;
   }
-  .aside-title { font-size:0.68rem; letter-spacing:2px; color:var(--text-muted); padding:6px 16px 4px; text-transform:uppercase; font-weight:700; }
+  .student-trend-badge.up { background:rgba(67,233,123,0.12); color:var(--accent3); border:1px solid rgba(67,233,123,0.3); }
+  .student-trend-badge.down { background:rgba(255,101,132,0.1); color:var(--accent2); border:1px solid rgba(255,101,132,0.3); }
+  .student-trend-badge.same { background:var(--surface2); color:var(--text-muted); border:1px solid var(--border); }
+  .student-trend-badge.new { background:var(--surface2); color:var(--text-muted); border:1px solid var(--border); }
+
+  /* MAIN LAYOUT */
+  main { display:flex; min-height:calc(100vh - 200px); }
+
+  /* ASIDE */
+  aside {
+    width:230px; flex-shrink:0; background:var(--surface); border-right:1px solid var(--border);
+    overflow-y:auto; max-height:calc(100vh - 200px); position:sticky; top:200px;
+  }
+
+  /* DAY TABS */
+  .day-tabs { display:flex; flex-direction:column; }
+  .day-group { border-bottom:1px solid var(--border); }
+  .day-tab-header {
+    display:flex; align-items:center; justify-content:space-between;
+    padding:9px 14px; cursor:pointer; font-size:0.8rem; font-weight:700;
+    color:var(--text-muted); transition:all 0.15s; user-select:none;
+    letter-spacing:1px;
+  }
+  .day-tab-header:hover { background:var(--surface2); color:var(--text); }
+  .day-tab-header.open { color:var(--accent); background:rgba(108,99,255,0.08); }
+  .day-tab-header .day-count { font-size:0.68rem; background:var(--surface2); border:1px solid var(--border); border-radius:999px; padding:1px 7px; font-family:'Space Mono',monospace; }
+  .day-tab-header .day-arrow { font-size:0.7rem; transition:transform 0.2s; }
+  .day-tab-header.open .day-arrow { transform:rotate(90deg); }
+  .day-students { display:none; }
+  .day-students.open { display:block; }
   .student-item {
     display:flex; align-items:center; justify-content:space-between;
-    padding:8px 16px; cursor:pointer; border-left:3px solid transparent;
-    transition:all 0.15s; font-size:0.86rem;
+    padding:7px 14px 7px 22px; cursor:pointer;
+    border-left:3px solid transparent; transition:all 0.15s; font-size:0.84rem;
   }
   .student-item:hover { background:var(--surface2); }
   .student-item.active { background:rgba(108,99,255,0.15); border-left-color:var(--accent); color:var(--accent); font-weight:600; }
-  .student-del { opacity:0; font-size:0.68rem; color:var(--accent2); cursor:pointer; }
+  .student-del { opacity:0; font-size:0.67rem; color:var(--accent2); cursor:pointer; padding:2px 4px; }
   .student-item:hover .student-del { opacity:1; }
 
   /* CONTENT */
-  .content { flex:1; padding:22px; overflow-y:auto; }
-  .content-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; flex-wrap:wrap; gap:12px; }
-  .content-header h2 { font-size:1.3rem; font-weight:700; }
+  .content { flex:1; padding:20px 24px; overflow-y:auto; }
+  .content-header { display:flex; align-items:center; margin-bottom:18px; flex-wrap:wrap; gap:8px; }
+  .content-header h2 { font-size:1.25rem; font-weight:700; }
 
-  .lang-tabs {
-    display:flex; background:var(--surface); border:1px solid var(--border);
-    border-radius:10px; overflow:hidden; margin-bottom:18px;
-  }
-  .lang-tab { flex:1; padding:9px; text-align:center; cursor:pointer; font-size:0.86rem; font-weight:600; transition:all 0.2s; color:var(--text-muted); }
+  .lang-tabs { display:flex; background:var(--surface); border:1px solid var(--border); border-radius:10px; overflow:hidden; margin-bottom:16px; }
+  .lang-tab { flex:1; padding:9px; text-align:center; cursor:pointer; font-size:0.85rem; font-weight:600; transition:all 0.2s; color:var(--text-muted); }
   .lang-tab.active { background:var(--accent); color:white; }
 
-  .category-section { margin-bottom:26px; }
-  .category-title {
-    font-size:0.73rem; letter-spacing:2px; text-transform:uppercase;
-    color:var(--text-muted); font-weight:700; margin-bottom:12px;
-    display:flex; align-items:center; gap:8px;
-  }
+  .category-section { margin-bottom:24px; }
+  .category-title { font-size:0.72rem; letter-spacing:2px; text-transform:uppercase; color:var(--text-muted); font-weight:700; margin-bottom:11px; display:flex; align-items:center; gap:8px; }
   .category-title::after { content:''; flex:1; height:1px; background:var(--border); }
 
-  /* JARI GRID */
-  .jari-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:10px; }
-  .jari-card {
-    background:var(--surface); border:1px solid var(--border); border-radius:12px;
-    padding:13px; cursor:pointer; transition:all 0.2s; overflow:hidden;
+  /* JARI GRID - 한 줄로 */
+  .jari-grid {
+    display:grid;
+    grid-template-columns:repeat(8, 1fr);
+    gap:8px;
   }
-  .jari-card:hover { border-color:var(--accent); transform:translateY(-2px); box-shadow:0 4px 20px rgba(108,99,255,0.15); }
+  .jari-card {
+    background:var(--surface); border:1px solid var(--border); border-radius:11px;
+    padding:11px 8px; cursor:pointer; transition:all 0.2s; overflow:hidden; text-align:center;
+  }
+  .jari-card:hover { border-color:var(--accent); transform:translateY(-2px); box-shadow:0 4px 16px rgba(108,99,255,0.15); }
   .jari-card.has-record { border-color:rgba(108,99,255,0.35); }
   .jari-card.has-pass { border-color:rgba(67,233,123,0.5); background:rgba(67,233,123,0.04); }
-  .jari-card-label { font-size:0.62rem; color:var(--text-muted); margin-bottom:2px; text-transform:uppercase; letter-spacing:1px; }
-  .jari-card-name { font-size:0.88rem; font-weight:700; margin-bottom:9px; }
-  .jari-pass-row { display:flex; align-items:baseline; gap:4px; margin-bottom:5px; }
-  .pass-count { font-family:'Space Mono',monospace; font-size:1.3rem; font-weight:700; color:var(--pass); line-height:1; }
-  .pass-denom { font-family:'Space Mono',monospace; font-size:0.78rem; color:var(--text-muted); }
-  .pass-label { font-size:0.7rem; color:var(--text-muted); margin-left:2px; }
-  .pass-bar-wrap { background:var(--surface2); border-radius:999px; height:3px; overflow:hidden; margin-bottom:8px; }
+  .jari-card-label { font-size:0.58rem; color:var(--text-muted); margin-bottom:2px; text-transform:uppercase; letter-spacing:1px; }
+  .jari-card-name { font-size:0.78rem; font-weight:700; margin-bottom:8px; line-height:1.3; }
+  .jari-pass-row { display:flex; align-items:baseline; justify-content:center; gap:2px; margin-bottom:4px; }
+  .pass-count { font-family:'Space Mono',monospace; font-size:1.2rem; font-weight:700; color:var(--pass); line-height:1; }
+  .pass-denom { font-family:'Space Mono',monospace; font-size:0.72rem; color:var(--text-muted); }
+  .pass-label { font-size:0.62rem; color:var(--text-muted); margin-left:1px; }
+  .pass-bar-wrap { background:var(--surface2); border-radius:999px; height:3px; overflow:hidden; margin-bottom:6px; }
   .pass-bar-fill { height:100%; border-radius:999px; background:linear-gradient(90deg,var(--accent),var(--pass)); transition:width 0.4s; }
-  .jari-card-best { font-family:'Space Mono',monospace; font-size:0.82rem; color:var(--accent); font-weight:700; }
-  .jari-card-sub { font-size:0.66rem; color:var(--text-muted); margin-top:2px; }
-  .jari-card-empty { font-size:0.73rem; color:var(--border); margin-top:4px; }
+  .jari-card-best { font-family:'Space Mono',monospace; font-size:0.76rem; color:var(--accent); font-weight:700; }
+  .jari-card-sub { font-size:0.6rem; color:var(--text-muted); margin-top:2px; }
+  .jari-card-empty { font-size:0.66rem; color:var(--border); margin-top:4px; }
 
-  /* STATS SUMMARY */
-  .stats-summary {
-    display:grid; grid-template-columns:repeat(3,1fr);
-    background:var(--surface2); border:1px solid var(--border);
-    border-radius:10px; margin-bottom:10px; overflow:hidden;
-  }
-  .stat-cell { padding:11px 14px; text-align:center; border-right:1px solid var(--border); }
+  /* STATS */
+  .stats-summary { display:grid; grid-template-columns:repeat(3,1fr); background:var(--surface2); border:1px solid var(--border); border-radius:10px; margin-bottom:9px; overflow:hidden; }
+  .stat-cell { padding:10px 13px; text-align:center; border-right:1px solid var(--border); }
   .stat-cell:last-child { border-right:none; }
-  .stat-label { font-size:0.63rem; color:var(--text-muted); letter-spacing:1px; text-transform:uppercase; margin-bottom:3px; }
-  .stat-value { font-family:'Space Mono',monospace; font-size:1.15rem; font-weight:700; line-height:1.2; }
-  .stat-unit { font-size:0.63rem; color:var(--text-muted); font-family:'Noto Sans KR',sans-serif; }
+  .stat-label { font-size:0.62rem; color:var(--text-muted); letter-spacing:1px; text-transform:uppercase; margin-bottom:3px; }
+  .stat-value { font-family:'Space Mono',monospace; font-size:1.1rem; font-weight:700; line-height:1.2; }
+  .stat-unit { font-size:0.62rem; color:var(--text-muted); font-family:'Noto Sans KR',sans-serif; }
   .best-val { color:var(--accent3); } .avg-val { color:var(--accent); } .acc-val { color:var(--accent4); }
 
   /* PRACTICE TABLE */
   .practice-table { background:var(--surface); border:1px solid var(--border); border-radius:12px; overflow:hidden; }
-  .pt-header {
-    display:grid; grid-template-columns:115px 95px 95px 1fr 64px;
-    padding:9px 16px; background:var(--surface2);
-    font-size:0.68rem; color:var(--text-muted); font-weight:700; letter-spacing:1px; text-transform:uppercase;
-  }
-  .pt-row {
-    display:grid; grid-template-columns:115px 95px 95px 1fr 64px;
-    padding:7px 14px; border-top:1px solid var(--border); align-items:center; transition:background 0.15s;
-  }
+  .pt-header { display:grid; grid-template-columns:115px 95px 95px 1fr 64px; padding:8px 15px; background:var(--surface2); font-size:0.67rem; color:var(--text-muted); font-weight:700; letter-spacing:1px; text-transform:uppercase; }
+  .pt-row { display:grid; grid-template-columns:115px 95px 95px 1fr 64px; padding:7px 13px; border-top:1px solid var(--border); align-items:center; transition:background 0.15s; }
   .pt-row:hover { background:var(--surface2); }
-  .pt-row input {
-    background:transparent; border:1px solid transparent; color:var(--text);
-    font-family:'Space Mono',monospace; font-size:0.83rem; padding:4px 6px;
-    border-radius:6px; transition:all 0.15s; width:85px;
-  }
+  .pt-row input { background:transparent; border:1px solid transparent; color:var(--text); font-family:'Space Mono',monospace; font-size:0.82rem; padding:3px 6px; border-radius:6px; transition:all 0.15s; width:85px; }
   .pt-row input:focus { outline:none; background:var(--surface2); border-color:var(--accent); }
-  .pt-row input[type=date] { width:110px; font-family:'Noto Sans KR',sans-serif; font-size:0.76rem; }
-  .pt-row input[type=text] { width:100%; font-family:'Noto Sans KR',sans-serif; font-size:0.76rem; }
+  .pt-row input[type=date] { width:110px; font-family:'Noto Sans KR',sans-serif; font-size:0.75rem; }
+  .pt-row input[type=text] { width:100%; font-family:'Noto Sans KR',sans-serif; font-size:0.75rem; }
   .pt-row input.is-best { color:var(--accent3); font-weight:700; }
-  .table-footer {
-    padding:9px 16px; border-top:1px solid var(--border);
-    display:flex; gap:10px; align-items:center; flex-wrap:wrap;
-  }
+  .table-footer { padding:8px 15px; border-top:1px solid var(--border); display:flex; gap:10px; align-items:center; }
 
   /* MODAL */
-  .modal-overlay {
-    position:fixed; inset:0; background:rgba(0,0,0,0.75);
-    z-index:999; display:flex; align-items:center; justify-content:center;
-    backdrop-filter:blur(4px); opacity:0; pointer-events:none; transition:opacity 0.2s;
-  }
+  .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.75); z-index:999; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(4px); opacity:0; pointer-events:none; transition:opacity 0.2s; }
   .modal-overlay.open { opacity:1; pointer-events:all; }
-  .modal {
-    background:var(--surface); border:1px solid var(--border); border-radius:16px;
-    padding:26px; width:430px; max-width:calc(100vw - 32px);
-    max-height:88vh; overflow-y:auto;
-    transform:translateY(20px); transition:transform 0.2s;
-  }
+  .modal { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:24px; width:440px; max-width:calc(100vw - 32px); max-height:88vh; overflow-y:auto; transform:translateY(20px); transition:transform 0.2s; }
   .modal-overlay.open .modal { transform:translateY(0); }
-  .modal h3 { font-size:1.05rem; font-weight:700; margin-bottom:16px; }
-  .form-group { margin-bottom:13px; }
+  .modal h3 { font-size:1.02rem; font-weight:700; margin-bottom:15px; }
+  .form-group { margin-bottom:12px; }
   .form-group label { display:block; font-size:0.78rem; color:var(--text-muted); margin-bottom:4px; }
-  .form-group input, .form-group select {
-    width:100%; background:var(--surface2); border:1px solid var(--border);
-    color:var(--text); padding:8px 12px; border-radius:8px;
-    font-family:'Noto Sans KR',sans-serif; font-size:0.88rem;
-  }
+  .form-group input, .form-group select { width:100%; background:var(--surface2); border:1px solid var(--border); color:var(--text); padding:8px 11px; border-radius:8px; font-family:'Noto Sans KR',sans-serif; font-size:0.87rem; }
   .form-group input:focus, .form-group select:focus { outline:none; border-color:var(--accent); }
-  .modal-actions { display:flex; gap:10px; margin-top:18px; }
+  .modal-actions { display:flex; gap:9px; margin-top:16px; }
   .modal-actions .btn { flex:1; }
 
-  /* PASS RADIO */
-  .pass-radio-group { display:flex; gap:10px; margin-top:5px; }
-  .pass-radio-label {
-    display:flex; align-items:center; justify-content:center; gap:6px;
-    cursor:pointer; font-size:0.88rem; padding:8px 14px;
-    border-radius:8px; border:1.5px solid var(--border); transition:all 0.15s; flex:1;
+  /* DAY CHECKBOX GROUP */
+  .day-checkbox-group { display:flex; gap:8px; flex-wrap:wrap; margin-top:5px; }
+  .day-cb-label {
+    display:flex; align-items:center; justify-content:center;
+    width:40px; height:36px; border-radius:8px; border:1.5px solid var(--border);
+    cursor:pointer; font-size:0.82rem; font-weight:700; transition:all 0.15s; color:var(--text-muted);
   }
+  .day-cb-label:has(input:checked) { border-color:var(--accent); background:rgba(108,99,255,0.18); color:var(--accent); }
+  .day-cb-label input[type=checkbox] { display:none; }
+
+  /* PASS RADIO */
+  .pass-radio-group { display:flex; gap:9px; margin-top:5px; }
+  .pass-radio-label { display:flex; align-items:center; justify-content:center; gap:6px; cursor:pointer; font-size:0.87rem; padding:7px 13px; border-radius:8px; border:1.5px solid var(--border); transition:all 0.15s; flex:1; }
   .pass-radio-label:has(input:checked).pass-opt { border-color:var(--pass); background:rgba(67,233,123,0.1); color:var(--pass); font-weight:700; }
   .pass-radio-label:has(input:checked).fail-opt { border-color:var(--accent2); background:rgba(255,101,132,0.08); color:var(--accent2); font-weight:700; }
-  .pass-radio-label input[type=radio] { width:auto; accent-color:var(--pass); }
+  .pass-radio-label input[type=radio] { width:auto; }
 
   /* JARI HISTORY */
-  .jari-history-wrap { margin-top:18px; border-top:1px solid var(--border); padding-top:14px; }
-  .jari-history-title {
-    font-size:0.7rem; color:var(--text-muted); letter-spacing:1px;
-    text-transform:uppercase; margin-bottom:9px;
-    display:flex; align-items:center; gap:8px;
-  }
-  .jari-history-item {
-    display:grid; grid-template-columns:88px 76px 56px 70px 34px;
-    align-items:center; padding:6px 10px; border-radius:8px;
-    background:var(--surface2); margin-bottom:5px; font-size:0.78rem; gap:6px;
-  }
-  .h-date { color:var(--text-muted); font-size:0.72rem; }
+  .jari-history-wrap { margin-top:16px; border-top:1px solid var(--border); padding-top:13px; }
+  .jari-history-title { font-size:0.69rem; color:var(--text-muted); letter-spacing:1px; text-transform:uppercase; margin-bottom:8px; display:flex; align-items:center; gap:7px; }
+  .jari-history-item { display:grid; grid-template-columns:86px 74px 54px 68px 32px; align-items:center; padding:6px 9px; border-radius:8px; background:var(--surface2); margin-bottom:4px; font-size:0.77rem; gap:5px; }
+  .h-date { color:var(--text-muted); font-size:0.71rem; }
   .h-speed { font-family:'Space Mono',monospace; color:var(--accent); font-weight:700; }
   .h-acc { color:var(--accent4); }
   .h-pass.pass { color:var(--pass); font-weight:700; }
   .h-pass.fail { color:var(--accent2); }
-  .h-del { color:var(--accent2); cursor:pointer; font-size:0.66rem; opacity:0.4; text-align:center; }
+  .h-del { color:var(--accent2); cursor:pointer; font-size:0.65rem; opacity:0.4; text-align:center; }
   .h-del:hover { opacity:1; }
 
   .empty-state { text-align:center; padding:60px 20px; color:var(--text-muted); }
   .empty-state .icon { font-size:3rem; margin-bottom:12px; }
-  .empty-state p { font-size:0.9rem; }
+  .empty-state p { font-size:0.88rem; }
 
   ::-webkit-scrollbar { width:5px; }
   ::-webkit-scrollbar-track { background:var(--bg); }
   ::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
 
-  @media(max-width:768px) {
-    aside { width:100%; max-height:180px; position:relative; top:0; }
+  @media(max-width:900px) {
+    .jari-grid { grid-template-columns:repeat(4,1fr); }
+    aside { width:100%; max-height:220px; position:relative; top:0; }
     main { flex-direction:column; }
+  }
+  @media(max-width:600px) {
     .jari-grid { grid-template-columns:repeat(2,1fr); }
-    .pt-header,.pt-row { grid-template-columns:100px 78px 78px 1fr 55px; }
+    .pt-header,.pt-row { grid-template-columns:95px 75px 75px 1fr 52px; }
   }
 </style>
 </head>
@@ -324,7 +298,7 @@
       <span id="sync-text">연결 중...</span>
     </div>
   </div>
-  <div class="header-actions">
+  <div>
     <button class="btn btn-primary" onclick="openAddStudentModal()">+ 학생 추가</button>
   </div>
 </header>
@@ -332,7 +306,7 @@
 <div class="month-bar">
   <label>📅 기준 월</label>
   <input type="month" id="selected-month" onchange="renderAll()">
-  <label style="margin-left:12px">🔍 TOP5 기준</label>
+  <label style="margin-left:10px">🔍 TOP5 기준</label>
   <select id="top5-lang" onchange="renderTop5()">
     <option value="korean">한글</option>
     <option value="english">영어</option>
@@ -345,14 +319,16 @@
 </div>
 
 <div id="trend-section">
-  <div class="section-title">📈 이달의 속도 증감률</div>
+  <div class="trend-header">
+    <div class="section-title" style="margin-bottom:0">📈 이달의 속도 증감률</div>
+    <span style="font-size:0.73rem;color:var(--text-muted)">(이름 클릭 시 해당 학생으로 이동)</span>
+  </div>
   <div class="trend-grid" id="trend-grid"></div>
 </div>
 
 <main>
   <aside>
-    <div class="aside-title">학생 목록</div>
-    <div id="student-list"></div>
+    <div class="day-tabs" id="day-tabs"></div>
   </aside>
   <div class="content" id="main-content">
     <div class="empty-state">
@@ -368,8 +344,18 @@
     <h3>👤 학생 추가</h3>
     <div class="form-group">
       <label>이름</label>
-      <input type="text" id="new-student-name" placeholder="이름 입력"
-             onkeydown="if(event.key==='Enter') addStudent()">
+      <input type="text" id="new-student-name" placeholder="이름 입력" onkeydown="if(event.key==='Enter') addStudent()">
+    </div>
+    <div class="form-group">
+      <label>수업 요일 (복수 선택 가능)</label>
+      <div class="day-checkbox-group">
+        <label class="day-cb-label"><input type="checkbox" name="new-days" value="월">월</label>
+        <label class="day-cb-label"><input type="checkbox" name="new-days" value="화">화</label>
+        <label class="day-cb-label"><input type="checkbox" name="new-days" value="수">수</label>
+        <label class="day-cb-label"><input type="checkbox" name="new-days" value="목">목</label>
+        <label class="day-cb-label"><input type="checkbox" name="new-days" value="금">금</label>
+        <label class="day-cb-label"><input type="checkbox" name="new-days" value="토">토</label>
+      </div>
     </div>
     <div class="modal-actions">
       <button class="btn btn-primary" onclick="addStudent()">추가</button>
@@ -400,12 +386,10 @@
       <label>통과 여부</label>
       <div class="pass-radio-group">
         <label class="pass-radio-label pass-opt">
-          <input type="radio" name="jari-pass" id="jari-pass-yes" value="true">
-          ✓ 통과
+          <input type="radio" name="jari-pass" id="jari-pass-yes" value="true"> ✓ 통과
         </label>
         <label class="pass-radio-label fail-opt">
-          <input type="radio" name="jari-pass" id="jari-pass-no" value="false" checked>
-          ✗ 미통과
+          <input type="radio" name="jari-pass" id="jari-pass-no" value="false" checked> ✗ 미통과
         </label>
       </div>
     </div>
@@ -418,201 +402,233 @@
 </div>
 
 <script>
-// ══════════════════════════════════════════════
-// SUPABASE INIT
-// ══════════════════════════════════════════════
 const SUPABASE_URL = 'https://awsvbgezyhwuwavhsrho.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_HVqQwIJ2hyYxQc-P63lIig_VZiPkq5P';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// ══════════════════════════════════════════════
-// CONSTANTS
-// ══════════════════════════════════════════════
 const JARI_STAGES = [
-  { id:'basic',     name:'기본자리' },
-  { id:'left_top',  name:'왼손 윗자리' },
-  { id:'left_bot',  name:'왼손 아랫자리' },
-  { id:'center',    name:'가운데자리' },
-  { id:'right_top', name:'오른손 윗자리' },
-  { id:'right_bot', name:'오른손 아랫자리' },
-  { id:'all',       name:'전체자리' },
-  { id:'number',    name:'숫자자리' },
+  {id:'basic',name:'기본자리'},{id:'left_top',name:'왼손 윗자리'},
+  {id:'left_bot',name:'왼손 아랫자리'},{id:'center',name:'가운데자리'},
+  {id:'right_top',name:'오른손 윗자리'},{id:'right_bot',name:'오른손 아랫자리'},
+  {id:'all',name:'전체자리'},{id:'number',name:'숫자자리'},
 ];
 const OTHER_TYPES = [
-  { id:'word',  name:'낱말 연습' },
-  { id:'short', name:'단문 연습' },
-  { id:'long',  name:'장문 연습' },
+  {id:'word',name:'낱말 연습'},{id:'short',name:'단문 연습'},{id:'long',name:'장문 연습'},
 ];
+const DAYS = ['월','화','수','목','금','토'];
 
-// ══════════════════════════════════════════════
-// STATE (in-memory cache)
-// ══════════════════════════════════════════════
-let students = [];
-let records  = [];
-let selectedStudentId = null;
-let selectedLang = 'korean';
-let jariContext  = null;
+let students=[], records=[];
+let selectedStudentId=null, selectedLang='korean', jariContext=null;
+let openDays=new Set(); // 열린 요일 그룹
 
-// ══════════════════════════════════════════════
-// UI HELPERS
-// ══════════════════════════════════════════════
-function showLoading()  { document.getElementById('loading-overlay').classList.remove('hidden'); }
-function hideLoading()  { document.getElementById('loading-overlay').classList.add('hidden'); }
-
+// ── UI HELPERS ──
+function showLoading(){document.getElementById('loading-overlay').classList.remove('hidden');}
+function hideLoading(){document.getElementById('loading-overlay').classList.add('hidden');}
 let toastTimer;
-function toast(msg, type='ok') {
-  const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.className = `show ${type}`;
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => el.className = '', 2500);
+function toast(msg,type='ok'){
+  const el=document.getElementById('toast');
+  el.textContent=msg; el.className=`show ${type}`;
+  clearTimeout(toastTimer); toastTimer=setTimeout(()=>el.className='',2500);
 }
-
-function setConnected(ok) {
-  document.getElementById('sync-dot').className = 'sync-dot' + (ok ? ' connected' : '');
-  document.getElementById('sync-text').textContent = ok ? '실시간 연결됨' : '연결 끊김';
+function setConnected(ok){
+  document.getElementById('sync-dot').className='sync-dot'+(ok?' connected':'');
+  document.getElementById('sync-text').textContent=ok?'실시간 연결됨':'연결 끊김';
 }
-
-function openModal(id)  { document.getElementById(id).classList.add('open'); }
-function closeModal(id) { document.getElementById(id).classList.remove('open'); }
-document.querySelectorAll('.modal-overlay').forEach(el => {
-  el.addEventListener('click', e => { if (e.target === el) closeModal(el.id); });
+function openModal(id){document.getElementById(id).classList.add('open');}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+document.querySelectorAll('.modal-overlay').forEach(el=>{
+  el.addEventListener('click',e=>{if(e.target===el)closeModal(el.id);});
 });
 
-// ══════════════════════════════════════════════
-// INIT
-// ══════════════════════════════════════════════
-window.onload = async () => {
-  const now = new Date();
-  document.getElementById('selected-month').value =
+// ── INIT ──
+window.onload=async()=>{
+  const now=new Date();
+  document.getElementById('selected-month').value=
     `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
   await loadAll();
   setupRealtime();
 };
 
-async function loadAll() {
+async function loadAll(){
   showLoading();
-  try {
-    const [{ data: stuData, error: stuErr }, { data: recData, error: recErr }] = await Promise.all([
+  try{
+    const[{data:sd,error:se},{data:rd,error:re}]=await Promise.all([
       sb.from('students').select('*').order('created_at'),
-      sb.from('records').select('*').order('date', { ascending: false })
+      sb.from('records').select('*').order('date',{ascending:false})
     ]);
-    if (stuErr) throw stuErr;
-    if (recErr) throw recErr;
-    students = stuData || [];
-    records  = recData || [];
-    setConnected(true);
-    renderAll();
-  } catch(e) {
-    toast('데이터 로드 실패: ' + e.message, 'err');
-    setConnected(false);
-  } finally {
-    hideLoading();
-  }
+    if(se)throw se; if(re)throw re;
+    students=sd||[]; records=rd||[];
+    setConnected(true); renderAll();
+  }catch(e){toast('로드 실패: '+e.message,'err');setConnected(false);}
+  finally{hideLoading();}
 }
 
-// ══════════════════════════════════════════════
-// REALTIME
-// ══════════════════════════════════════════════
-function setupRealtime() {
+function setupRealtime(){
   sb.channel('db-changes')
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'students' }, async () => {
-      const { data } = await sb.from('students').select('*').order('created_at');
-      if (data) { students = data; renderStudentList(); renderTop5(); renderTrend(); }
+    .on('postgres_changes',{event:'*',schema:'public',table:'students'},async()=>{
+      const{data}=await sb.from('students').select('*').order('created_at');
+      if(data){students=data;renderSidebar();renderTop5();renderTrend();}
     })
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'records' }, async () => {
-      const { data } = await sb.from('records').select('*').order('date', { ascending: false });
-      if (data) {
-        records = data;
-        renderTop5(); renderTrend();
-        if (selectedStudentId) renderStudentDetails();
-        if (jariContext) renderJariHistory();
+    .on('postgres_changes',{event:'*',schema:'public',table:'records'},async()=>{
+      const{data}=await sb.from('records').select('*').order('date',{ascending:false});
+      if(data){
+        records=data;renderTop5();renderTrend();
+        if(selectedStudentId)renderStudentDetails();
+        if(jariContext)renderJariHistory();
       }
     })
-    .subscribe(status => {
-      setConnected(status === 'SUBSCRIBED');
+    .subscribe(s=>setConnected(s==='SUBSCRIBED'));
+}
+
+function renderAll(){renderSidebar();renderTop5();renderTrend();if(selectedStudentId)renderStudentContent();}
+
+// ── 증감률 계산 helper ──
+function getTrend(stuId){
+  const month=document.getElementById('selected-month').value;
+  const[y,m]=month.split('-').map(Number);
+  const pd=new Date(y,m-2,1);
+  const prev=`${pd.getFullYear()}-${String(pd.getMonth()+1).padStart(2,'0')}`;
+  const tr=records.filter(r=>r.student_id===stuId&&r.speed&&r.date?.startsWith(month));
+  const pr=records.filter(r=>r.student_id===stuId&&r.speed&&r.date?.startsWith(prev));
+  if(!tr.length)return null;
+  const avg=a=>a.reduce((s,r)=>s+r.speed,0)/a.length;
+  const ta=avg(tr),pa=pr.length?avg(pr):null;
+  if(pa===null)return{type:'new',label:'신규',avg:Math.round(ta)};
+  const pct=((ta-pa)/pa*100).toFixed(1);
+  const type=pct>0?'up':pct<0?'down':'same';
+  const arrow=pct>0?'▲':pct<0?'▼':'━';
+  return{type,label:`${arrow} ${Math.abs(pct)}%`,avg:Math.round(ta)};
+}
+
+// ── SIDEBAR (요일별 그룹) ──
+function renderSidebar(){
+  const container=document.getElementById('day-tabs');
+
+  // 요일 없는 학생 포함 '기타' 그룹
+  const dayGroups={};
+  DAYS.forEach(d=>dayGroups[d]=[]);
+  dayGroups['기타']=[];
+
+  students.forEach(stu=>{
+    const days=(stu.days||'').split(',').map(d=>d.trim()).filter(Boolean);
+    if(!days.length){dayGroups['기타'].push(stu);return;}
+    days.forEach(d=>{
+      if(dayGroups[d])dayGroups[d].push(stu);
+      else dayGroups['기타'].push(stu);
     });
+  });
+
+  // 중복 제거 (여러 요일 학생)
+  const allDayKeys=[...DAYS,'기타'];
+
+  container.innerHTML=allDayKeys.map(day=>{
+    // 같은 학생이 여러 요일에 있을 수 있으므로 unique
+    const stuList=[...new Map(dayGroups[day].map(s=>[s.id,s])).values()]
+      .sort((a,b)=>a.name.localeCompare(b.name,'ko'));
+    if(!stuList.length)return '';
+    const isOpen=openDays.has(day);
+    return `
+    <div class="day-group">
+      <div class="day-tab-header ${isOpen?'open':''}" onclick="toggleDay('${day}')">
+        <span>${day}요일${day==='기타'?'':''}</span>
+        <span style="display:flex;align-items:center;gap:6px">
+          <span class="day-count">${stuList.length}</span>
+          <span class="day-arrow">▶</span>
+        </span>
+      </div>
+      <div class="day-students ${isOpen?'open':''}">
+        ${stuList.map(s=>`
+        <div class="student-item ${s.id===selectedStudentId?'active':''}" onclick="selectStudent('${s.id}')">
+          <span>${s.name}</span>
+          <span class="student-del" onclick="deleteStudent(event,'${s.id}')">✕</span>
+        </div>`).join('')}
+      </div>
+    </div>`;
+  }).join('');
 }
 
-// ══════════════════════════════════════════════
-// RENDER ALL
-// ══════════════════════════════════════════════
-function renderAll() {
-  renderStudentList();
-  renderTop5();
-  renderTrend();
-  if (selectedStudentId) renderStudentContent();
+function toggleDay(day){
+  if(openDays.has(day))openDays.delete(day);
+  else openDays.add(day);
+  renderSidebar();
 }
 
-// ══════════════════════════════════════════════
-// STUDENT LIST
-// ══════════════════════════════════════════════
-function renderStudentList() {
-  const c = document.getElementById('student-list');
-  if (!students.length) {
-    c.innerHTML = '<div style="padding:8px 16px;font-size:0.8rem;color:var(--text-muted)">학생 없음</div>';
-    return;
+// ── STUDENT ACTIONS ──
+function selectStudent(id){
+  selectedStudentId=id;
+  // 해당 학생이 속한 요일 자동 열기
+  const stu=students.find(s=>s.id===id);
+  if(stu){
+    const days=(stu.days||'').split(',').map(d=>d.trim()).filter(Boolean);
+    if(days.length)days.forEach(d=>openDays.add(d));
+    else openDays.add('기타');
   }
-  c.innerHTML = students.map(s => `
-    <div class="student-item ${s.id===selectedStudentId?'active':''}" onclick="selectStudent('${s.id}')">
-      <span>${s.name}</span>
-      <span class="student-del" onclick="deleteStudent(event,'${s.id}')">✕</span>
-    </div>`).join('');
-}
-
-function selectStudent(id) {
-  selectedStudentId = id;
-  renderStudentList();
+  renderSidebar();
   renderStudentContent();
 }
 
-async function deleteStudent(e, id) {
+async function deleteStudent(e,id){
   e.stopPropagation();
-  if (!confirm('정말 삭제하시겠습니까? (기록도 모두 삭제됩니다)')) return;
+  if(!confirm('정말 삭제하시겠습니까?'))return;
   showLoading();
-  const { error } = await sb.from('students').delete().eq('id', id);
+  const{error}=await sb.from('students').delete().eq('id',id);
   hideLoading();
-  if (error) return toast('삭제 실패: ' + error.message, 'err');
-  students = students.filter(s => s.id !== id);
-  records  = records.filter(r => r.student_id !== id);
-  if (selectedStudentId === id) {
-    selectedStudentId = null;
-    document.getElementById('main-content').innerHTML =
+  if(error)return toast('삭제 실패: '+error.message,'err');
+  students=students.filter(s=>s.id!==id);
+  records=records.filter(r=>r.student_id!==id);
+  if(selectedStudentId===id){
+    selectedStudentId=null;
+    document.getElementById('main-content').innerHTML=
       `<div class="empty-state"><div class="icon">👈</div><p>왼쪽에서 학생을 선택하거나 추가하세요</p></div>`;
   }
-  renderStudentList(); renderTop5(); renderTrend();
+  renderSidebar();renderTop5();renderTrend();
   toast('학생 삭제됨');
 }
 
-function openAddStudentModal() {
-  document.getElementById('new-student-name').value = '';
+function openAddStudentModal(){
+  document.getElementById('new-student-name').value='';
+  document.querySelectorAll('input[name="new-days"]').forEach(cb=>cb.checked=false);
   openModal('add-student-modal');
-  setTimeout(() => document.getElementById('new-student-name').focus(), 100);
+  setTimeout(()=>document.getElementById('new-student-name').focus(),100);
 }
 
-async function addStudent() {
-  const name = document.getElementById('new-student-name').value.trim();
-  if (!name) return alert('이름을 입력하세요');
-  const id = 'stu_' + Date.now();
+async function addStudent(){
+  const name=document.getElementById('new-student-name').value.trim();
+  if(!name)return alert('이름을 입력하세요');
+  const checked=[...document.querySelectorAll('input[name="new-days"]:checked')].map(cb=>cb.value);
+  const days=checked.join(',');
+  const id='stu_'+Date.now();
   showLoading();
-  const { error } = await sb.from('students').insert({ id, name });
+  const{error}=await sb.from('students').insert({id,name,days});
   hideLoading();
-  if (error) return toast('추가 실패: ' + error.message, 'err');
-  students.push({ id, name });
+  if(error)return toast('추가 실패: '+error.message,'err');
+  students.push({id,name,days});
   closeModal('add-student-modal');
-  renderStudentList();
+  // 해당 요일 자동 열기
+  if(checked.length)checked.forEach(d=>openDays.add(d));
+  else openDays.add('기타');
+  renderSidebar();
   selectStudent(id);
   toast(`${name} 추가됨 ✓`);
 }
 
-// ══════════════════════════════════════════════
-// STUDENT CONTENT
-// ══════════════════════════════════════════════
-function renderStudentContent() {
-  const stu = students.find(s => s.id === selectedStudentId);
-  if (!stu) return;
-  document.getElementById('main-content').innerHTML = `
-    <div class="content-header"><h2>📋 ${stu.name}</h2></div>
+// ── STUDENT CONTENT ──
+function renderStudentContent(){
+  const stu=students.find(s=>s.id===selectedStudentId);
+  if(!stu)return;
+
+  // 증감률 뱃지
+  const trend=getTrend(selectedStudentId);
+  let trendBadge='';
+  if(trend){
+    const cls=trend.type==='up'?'up':trend.type==='down'?'down':trend.type==='new'?'new':'same';
+    trendBadge=`<span class="student-trend-badge ${cls}">${trend.label}</span>`;
+  }
+
+  document.getElementById('main-content').innerHTML=`
+    <div class="content-header">
+      <h2>📋 ${stu.name}${trendBadge}</h2>
+    </div>
     <div class="lang-tabs">
       <div class="lang-tab ${selectedLang==='korean'?'active':''}" onclick="switchLang('korean')">🇰🇷 한글</div>
       <div class="lang-tab ${selectedLang==='english'?'active':''}" onclick="switchLang('english')">🇺🇸 영어</div>
@@ -621,185 +637,139 @@ function renderStudentContent() {
   renderStudentDetails();
 }
 
-function switchLang(lang) { selectedLang = lang; renderStudentContent(); }
+function switchLang(lang){selectedLang=lang;renderStudentContent();}
 
-function renderStudentDetails() {
-  const container = document.getElementById('student-details');
-  if (!container) return;
+function renderStudentDetails(){
+  const container=document.getElementById('student-details');
+  if(!container)return;
 
-  // ── 자리 연습 ──
-  let html = `<div class="category-section">
+  // 자리 연습
+  let html=`<div class="category-section">
     <div class="category-title">🖐 자리 연습</div>
     <div class="jari-grid">`;
 
-  JARI_STAGES.forEach(stage => {
-    const recs = records.filter(r =>
-      r.student_id === selectedStudentId && r.lang === selectedLang &&
-      r.type === 'jari' && r.stage_id === stage.id);
-    const passCount  = recs.filter(r => r.passed).length;
-    const totalCount = recs.length;
-    const hasPass    = passCount > 0;
-    const speedRecs  = recs.filter(r => r.speed);
-    const best       = speedRecs.length ? speedRecs.reduce((a,b) => b.speed>a.speed?b:a) : null;
-    const barPct     = totalCount ? Math.round(passCount/totalCount*100) : 0;
-
-    html += `
-    <div class="jari-card ${totalCount?'has-record':''} ${hasPass?'has-pass':''}"
-         onclick="openJariModal('${stage.id}','${stage.name}')">
-      <div class="jari-card-label">자리연습</div>
+  JARI_STAGES.forEach(stage=>{
+    const recs=records.filter(r=>r.student_id===selectedStudentId&&r.lang===selectedLang&&r.type==='jari'&&r.stage_id===stage.id);
+    const passCount=recs.filter(r=>!!r.passed).length;
+    const totalCount=recs.length;
+    const hasPass=passCount>0;
+    const speedRecs=recs.filter(r=>r.speed);
+    const best=speedRecs.length?speedRecs.reduce((a,b)=>b.speed>a.speed?b:a):null;
+    const barPct=totalCount?Math.round(passCount/totalCount*100):0;
+    html+=`
+    <div class="jari-card ${totalCount?'has-record':''} ${hasPass?'has-pass':''}" onclick="openJariModal('${stage.id}','${stage.name}')">
+      <div class="jari-card-label">자리</div>
       <div class="jari-card-name">${stage.name}</div>
-      ${totalCount > 0 ? `
-        <div class="jari-pass-row">
-          <span class="pass-count">${passCount}</span>
-          <span class="pass-denom"> /${totalCount}</span>
-          <span class="pass-label">회 통과</span>
-        </div>
+      ${totalCount>0?`
+        <div class="jari-pass-row"><span class="pass-count">${passCount}</span><span class="pass-denom">/${totalCount}</span></div>
         <div class="pass-bar-wrap"><div class="pass-bar-fill" style="width:${barPct}%"></div></div>
-        ${best ? `
-          <div class="jari-card-best">${best.speed}<span class="stat-unit"> 최고타/분</span></div>
-          <div class="jari-card-sub">정확도 ${best.accuracy||'-'}% · ${best.date||''}</div>` : ''}
-      ` : `<div class="jari-card-empty">기록 없음 · 클릭해서 추가</div>`}
+        ${best?`<div class="jari-card-best">${best.speed}<span class="stat-unit">타</span></div>
+        <div class="jari-card-sub">${best.accuracy||'-'}% · ${best.date||''}</div>`:''}
+      `:`<div class="jari-card-empty">클릭해서 추가</div>`}
     </div>`;
   });
-  html += `</div></div>`;
+  html+=`</div></div>`;
 
-  // ── 낱말/단문/장문 ──
-  OTHER_TYPES.forEach(type => {
-    const recs = records.filter(r =>
-      r.student_id === selectedStudentId && r.lang === selectedLang && r.type === type.id
-    ).sort((a,b) => new Date(b.date) - new Date(a.date));
+  // 낱말/단문/장문
+  OTHER_TYPES.forEach(type=>{
+    const recs=records.filter(r=>r.student_id===selectedStudentId&&r.lang===selectedLang&&r.type===type.id)
+      .sort((a,b)=>new Date(b.date)-new Date(a.date));
+    const speedRecs=recs.filter(r=>r.speed>0);
+    const best=speedRecs.length?Math.max(...speedRecs.map(r=>r.speed)):null;
+    const avg=speedRecs.length?Math.round(speedRecs.reduce((s,r)=>s+r.speed,0)/speedRecs.length):null;
+    const accRecs=recs.filter(r=>r.accuracy>0);
+    const avgAcc=accRecs.length?(accRecs.reduce((s,r)=>s+r.accuracy,0)/accRecs.length).toFixed(1):null;
 
-    const speedRecs = recs.filter(r => r.speed > 0);
-    const best    = speedRecs.length ? Math.max(...speedRecs.map(r=>r.speed)) : null;
-    const avg     = speedRecs.length ? Math.round(speedRecs.reduce((s,r)=>s+r.speed,0)/speedRecs.length) : null;
-    const accRecs = recs.filter(r => r.accuracy > 0);
-    const avgAcc  = accRecs.length ? (accRecs.reduce((s,r)=>s+r.accuracy,0)/accRecs.length).toFixed(1) : null;
-
-    html += `<div class="category-section">
+    html+=`<div class="category-section">
       <div class="category-title">✏️ ${type.name}</div>
       <div class="stats-summary">
-        <div class="stat-cell">
-          <div class="stat-label">최고타수</div>
-          <div class="stat-value best-val">${best??'--'}<span class="stat-unit"> 타</span></div>
-        </div>
-        <div class="stat-cell">
-          <div class="stat-label">평균속도</div>
-          <div class="stat-value avg-val">${avg??'--'}<span class="stat-unit"> 타</span></div>
-        </div>
-        <div class="stat-cell">
-          <div class="stat-label">평균정확도</div>
-          <div class="stat-value acc-val">${avgAcc??'--'}<span class="stat-unit"> %</span></div>
-        </div>
+        <div class="stat-cell"><div class="stat-label">최고타수</div><div class="stat-value best-val">${best??'--'}<span class="stat-unit"> 타</span></div></div>
+        <div class="stat-cell"><div class="stat-label">평균속도</div><div class="stat-value avg-val">${avg??'--'}<span class="stat-unit"> 타</span></div></div>
+        <div class="stat-cell"><div class="stat-label">평균정확도</div><div class="stat-value acc-val">${avgAcc??'--'}<span class="stat-unit"> %</span></div></div>
       </div>
       <div class="practice-table">
-        <div class="pt-header">
-          <div>날짜</div><div>속도(타/분)</div><div>정확도(%)</div><div>메모</div><div>삭제</div>
-        </div>`;
-
-    if (recs.length) {
-      recs.forEach(r => {
-        html += `<div class="pt-row">
+        <div class="pt-header"><div>날짜</div><div>속도(타/분)</div><div>정확도(%)</div><div>메모</div><div>삭제</div></div>`;
+    if(recs.length){
+      recs.forEach(r=>{
+        html+=`<div class="pt-row">
           <input type="date" value="${r.date||''}" onchange="updateRecord('${r.id}','date',this.value)">
-          <input type="number" value="${r.speed||''}" placeholder="타/분"
-                 class="${r.speed&&r.speed===best?'is-best':''}"
-                 onchange="updateRecord('${r.id}','speed',this.value)">
-          <input type="number" value="${r.accuracy||''}" placeholder="%"
-                 onchange="updateRecord('${r.id}','accuracy',this.value)">
-          <input type="text" value="${r.memo||''}" placeholder="메모"
-                 onchange="updateRecord('${r.id}','memo',this.value)">
+          <input type="number" value="${r.speed||''}" placeholder="타/분" class="${r.speed&&r.speed===best?'is-best':''}" onchange="updateRecord('${r.id}','speed',this.value)">
+          <input type="number" value="${r.accuracy||''}" placeholder="%" onchange="updateRecord('${r.id}','accuracy',this.value)">
+          <input type="text" value="${r.memo||''}" placeholder="메모" onchange="updateRecord('${r.id}','memo',this.value)">
           <button class="btn btn-danger btn-sm" onclick="deleteRecord('${r.id}')">삭제</button>
         </div>`;
       });
-    } else {
-      html += `<div style="padding:14px;text-align:center;color:var(--text-muted);font-size:0.83rem">기록 없음</div>`;
+    }else{
+      html+=`<div style="padding:13px;text-align:center;color:var(--text-muted);font-size:0.82rem">기록 없음</div>`;
     }
-
-    html += `<div class="table-footer">
-        <button class="btn btn-secondary btn-sm" onclick="addOtherRecord('${type.id}')">+ 행 추가</button>
-        <span style="font-size:0.73rem;color:var(--text-muted)">${recs.length}개 기록</span>
-      </div></div></div>`;
+    html+=`<div class="table-footer">
+      <button class="btn btn-secondary btn-sm" onclick="addOtherRecord('${type.id}')">+ 행 추가</button>
+      <span style="font-size:0.72rem;color:var(--text-muted)">${recs.length}개 기록</span>
+    </div></div></div>`;
   });
-
-  container.innerHTML = html;
+  container.innerHTML=html;
 }
 
-// ══════════════════════════════════════════════
-// OTHER TYPE RECORDS
-// ══════════════════════════════════════════════
-async function addOtherRecord(typeId) {
-  const id = 'rec_' + Date.now();
-  const today = new Date().toISOString().split('T')[0];
-  const rec = {
-    id, student_id: selectedStudentId, lang: selectedLang,
-    type: typeId, stage_id: null,
-    speed: null, accuracy: null, memo: '', date: today, passed: false
-  };
-  const { error } = await sb.from('records').insert(rec);
-  if (error) return toast('추가 실패: ' + error.message, 'err');
-  records.unshift(rec);
-  renderStudentDetails();
+// ── RECORDS ──
+async function addOtherRecord(typeId){
+  const id='rec_'+Date.now();
+  const today=new Date().toISOString().split('T')[0];
+  const rec={id,student_id:selectedStudentId,lang:selectedLang,type:typeId,stage_id:null,speed:null,accuracy:null,memo:'',date:today,passed:false};
+  const{error}=await sb.from('records').insert(rec);
+  if(error)return toast('추가 실패: '+error.message,'err');
+  records.unshift(rec); renderStudentDetails();
 }
 
-// Debounce map for update inputs
-const debounceMap = {};
-async function updateRecord(id, field, value) {
-  const rec = records.find(r => r.id === id);
-  if (!rec) return;
-  if (field === 'speed' || field === 'accuracy') rec[field] = value ? Number(value) : null;
-  else rec[field] = value;
-
-  // Debounce DB writes
-  clearTimeout(debounceMap[id + field]);
-  debounceMap[id + field] = setTimeout(async () => {
-    const { error } = await sb.from('records').update({ [field]: rec[field] }).eq('id', id);
-    if (error) toast('저장 실패', 'err');
-    else { renderStudentDetails(); renderTop5(); renderTrend(); }
-  }, 600);
+const debounceMap={};
+async function updateRecord(id,field,value){
+  const rec=records.find(r=>r.id===id);
+  if(!rec)return;
+  if(field==='speed'||field==='accuracy')rec[field]=value?Number(value):null;
+  else rec[field]=value;
+  clearTimeout(debounceMap[id+field]);
+  debounceMap[id+field]=setTimeout(async()=>{
+    const{error}=await sb.from('records').update({[field]:rec[field]}).eq('id',id);
+    if(error)toast('저장 실패','err');
+    else{renderStudentDetails();renderTop5();renderTrend();}
+  },600);
 }
 
-async function deleteRecord(id) {
-  const { error } = await sb.from('records').delete().eq('id', id);
-  if (error) return toast('삭제 실패: ' + error.message, 'err');
-  records = records.filter(r => r.id !== id);
-  renderStudentDetails(); renderTop5(); renderTrend();
-  toast('기록 삭제됨');
+async function deleteRecord(id){
+  const{error}=await sb.from('records').delete().eq('id',id);
+  if(error)return toast('삭제 실패','err');
+  records=records.filter(r=>r.id!==id);
+  renderStudentDetails();renderTop5();renderTrend();toast('기록 삭제됨');
 }
 
-// ══════════════════════════════════════════════
-// JARI MODAL
-// ══════════════════════════════════════════════
-function openJariModal(stageId, stageName) {
-  jariContext = { studentId: selectedStudentId, lang: selectedLang, stageId };
-  document.getElementById('jari-modal-title').textContent = `✋ ${stageName}`;
-  document.getElementById('jari-speed').value    = '';
-  document.getElementById('jari-accuracy').value = '';
-  document.getElementById('jari-date').value     = new Date().toISOString().split('T')[0];
-  document.getElementById('jari-pass-no').checked = true;
+// ── JARI MODAL ──
+function openJariModal(stageId,stageName){
+  jariContext={studentId:selectedStudentId,lang:selectedLang,stageId};
+  document.getElementById('jari-modal-title').textContent=`✋ ${stageName}`;
+  document.getElementById('jari-speed').value='';
+  document.getElementById('jari-accuracy').value='';
+  document.getElementById('jari-date').value=new Date().toISOString().split('T')[0];
+  document.getElementById('jari-pass-no').checked=true;
   renderJariHistory();
   openModal('jari-modal');
-  setTimeout(() => document.getElementById('jari-speed').focus(), 120);
+  setTimeout(()=>document.getElementById('jari-speed').focus(),120);
 }
 
-function renderJariHistory() {
-  if (!jariContext) return;
-  const { studentId, lang, stageId } = jariContext;
-  const recs = records.filter(r =>
-    r.student_id === studentId && r.lang === lang &&
-    r.type === 'jari' && r.stage_id === stageId
-  ).sort((a,b) => new Date(b.date) - new Date(a.date));
-
-  const passCount = recs.filter(r => r.passed).length;
-  const container = document.getElementById('jari-history');
-  if (!recs.length) { container.innerHTML = ''; return; }
-
-  container.innerHTML = `
+function renderJariHistory(){
+  if(!jariContext)return;
+  const{studentId,lang,stageId}=jariContext;
+  const recs=records.filter(r=>r.student_id===studentId&&r.lang===lang&&r.type==='jari'&&r.stage_id===stageId)
+    .sort((a,b)=>new Date(b.date)-new Date(a.date));
+  const passCount=recs.filter(r=>!!r.passed).length;
+  const container=document.getElementById('jari-history');
+  if(!recs.length){container.innerHTML='';return;}
+  container.innerHTML=`
     <div class="jari-history-wrap">
       <div class="jari-history-title">
         기록 히스토리
         <span style="color:var(--pass);font-weight:700">${passCount}회 통과</span>
         <span>/ 총 ${recs.length}회</span>
       </div>
-      ${recs.map(r => `
+      ${recs.map(r=>`
       <div class="jari-history-item">
         <span class="h-date">${r.date||'날짜없음'}</span>
         <span class="h-speed">${r.speed||'-'}타/분</span>
@@ -810,150 +780,103 @@ function renderJariHistory() {
     </div>`;
 }
 
-async function deleteJariRecord(id) {
-  const { error } = await sb.from('records').delete().eq('id', id);
-  if (error) return toast('삭제 실패', 'err');
-  records = records.filter(r => r.id !== id);
-  renderJariHistory();
-  renderStudentDetails();
-  toast('기록 삭제됨');
+async function deleteJariRecord(id){
+  const{error}=await sb.from('records').delete().eq('id',id);
+  if(error)return toast('삭제 실패','err');
+  records=records.filter(r=>r.id!==id);
+  renderJariHistory();renderStudentDetails();toast('기록 삭제됨');
 }
 
-async function saveJariRecord() {
-  const speed    = document.getElementById('jari-speed').value;
-  const accuracy = document.getElementById('jari-accuracy').value;
-  const date     = document.getElementById('jari-date').value;
-  const passed   = document.getElementById('jari-pass-yes').checked;
-
-  const rec = {
-    id: 'rec_' + Date.now(),
-    student_id: jariContext.studentId,
-    lang: jariContext.lang,
-    type: 'jari',
-    stage_id: jariContext.stageId,
-    speed:    speed    ? Number(speed)    : null,
-    accuracy: accuracy ? Number(accuracy) : null,
-    memo: '',
-    date,
-    passed
-  };
-
-  const { error } = await sb.from('records').insert(rec);
-  if (error) return toast('저장 실패: ' + error.message, 'err');
-
+async function saveJariRecord(){
+  const speed=document.getElementById('jari-speed').value;
+  const accuracy=document.getElementById('jari-accuracy').value;
+  const date=document.getElementById('jari-date').value;
+  const passed=document.getElementById('jari-pass-yes').checked;
+  const rec={id:'rec_'+Date.now(),student_id:jariContext.studentId,lang:jariContext.lang,type:'jari',stage_id:jariContext.stageId,speed:speed?Number(speed):null,accuracy:accuracy?Number(accuracy):null,memo:'',date,passed};
+  const{error}=await sb.from('records').insert(rec);
+  if(error)return toast('저장 실패: '+error.message,'err');
   records.unshift(rec);
-  toast(passed ? '✓ 통과 기록 저장!' : '기록 저장됨');
-
-  // Reset for next entry
-  document.getElementById('jari-speed').value    = '';
-  document.getElementById('jari-accuracy').value = '';
-  document.getElementById('jari-pass-no').checked = true;
-
-  renderJariHistory();
-  renderStudentDetails();
-  renderTop5(); renderTrend();
+  toast(passed?'✓ 통과 기록 저장!':'기록 저장됨');
+  document.getElementById('jari-speed').value='';
+  document.getElementById('jari-accuracy').value='';
+  document.getElementById('jari-pass-no').checked=true;
+  renderJariHistory();renderStudentDetails();renderTop5();renderTrend();
 }
 
-// ══════════════════════════════════════════════
-// TOP 5
-// ══════════════════════════════════════════════
-function renderTop5() {
-  const lang  = document.getElementById('top5-lang').value;
-  const month = document.getElementById('selected-month').value;
-  const isKo  = lang === 'korean';
-  const ranks = ['rank-1','rank-2','rank-3','rank-4','rank-5'];
+// ── TOP 5 ──
+function renderTop5(){
+  const lang=document.getElementById('top5-lang').value;
+  const month=document.getElementById('selected-month').value;
+  const isKo=lang==='korean';
+  const ranks=['rank-1','rank-2','rank-3','rank-4','rank-5'];
 
-  // ── 낱말/단문/장문: 이달 최고 타수 기준 ──
-  const otherCards = OTHER_TYPES.map(type => {
-    const studentBests = students.map(stu => {
-      const recs = records.filter(r =>
-        r.student_id===stu.id && r.lang===lang && r.type===type.id &&
-        r.speed && r.date?.startsWith(month));
-      if (!recs.length) return null;
-      const best = recs.reduce((a,b) => b.speed>a.speed?b:a);
-      return { name:stu.name, score:best.speed, unit:'타' };
+  const otherCards=OTHER_TYPES.map(type=>{
+    const bests=students.map(stu=>{
+      const recs=records.filter(r=>r.student_id===stu.id&&r.lang===lang&&r.type===type.id&&r.speed&&r.date?.startsWith(month));
+      if(!recs.length)return null;
+      return{name:stu.name,id:stu.id,score:recs.reduce((a,b)=>b.speed>a.speed?b:a).speed};
     }).filter(Boolean).sort((a,b)=>b.score-a.score).slice(0,5);
-
-    return `<div class="top5-card">
-      <div class="top5-card-header ${isKo?'korean':'english'}">
-        <span>${isKo?'🇰🇷':'🇺🇸'} ${type.name}</span>
-        <span class="badge">${month}</span>
-      </div>
-      <div class="top5-list">
-        ${studentBests.length ? studentBests.map((s,i)=>`
-          <div class="top5-item">
-            <div class="rank-badge ${ranks[i]}">${i+1}</div>
-            <div class="top5-name">${s.name}</div>
-            <div class="top5-score">${s.score}<span style="font-size:0.68rem;color:var(--text-muted);font-family:'Noto Sans KR'"> ${s.unit}</span></div>
-          </div>`).join('')
-          : '<div style="padding:10px 14px;font-size:0.8rem;color:var(--text-muted)">이달 기록 없음</div>'}
-      </div>
-    </div>`;
-  });
-
-  // ── 자리연습: 이달 전체 자리 통과 횟수 합산 기준 (lang 무관, date null 방어) ──
-  const jariRanking = students.map(stu => {
-    const passRecs = records.filter(r =>
-      r.student_id===stu.id &&
-      r.type==='jari' &&
-      !!r.passed &&
-      r.date && r.date.startsWith(month)
-    );
-    console.log('[자리TOP5]', stu.name, passRecs.length, '회 통과, 월:', month);
-    return { name:stu.name, score:passRecs.length };
-  }).filter(s => s.score > 0).sort((a,b)=>b.score-a.score).slice(0,5);
-
-  const jariCard = `<div class="top5-card">
-    <div class="top5-card-header ${isKo?'korean':'english'}">
-      <span>${isKo?'🇰🇷':'🇺🇸'} 자리연습</span>
-      <span class="badge">${month}</span>
-    </div>
-    <div class="top5-list">
-      ${jariRanking.length ? jariRanking.map((s,i)=>`
-        <div class="top5-item">
+    return`<div class="top5-card">
+      <div class="top5-card-header ${isKo?'korean':'english'}"><span>${isKo?'🇰🇷':'🇺🇸'} ${type.name}</span><span class="badge">${month}</span></div>
+      <div class="top5-list">${bests.length?bests.map((s,i)=>`
+        <div class="top5-item" onclick="selectStudent('${s.id}')">
           <div class="rank-badge ${ranks[i]}">${i+1}</div>
           <div class="top5-name">${s.name}</div>
-          <div class="top5-score">${s.score}<span style="font-size:0.68rem;color:var(--text-muted);font-family:'Noto Sans KR'"> 회 통과</span></div>
-        </div>`).join('')
-        : '<div style="padding:10px 14px;font-size:0.8rem;color:var(--text-muted)">이달 통과 기록 없음</div>'}
-    </div>
-  </div>`;
+          <div class="top5-score">${s.score}<span style="font-size:0.67rem;color:var(--text-muted);font-family:'Noto Sans KR'"> 타</span></div>
+        </div>`).join(''):'<div style="padding:9px 13px;font-size:0.79rem;color:var(--text-muted)">이달 기록 없음</div>'}
+      </div></div>`;
+  });
 
-  document.getElementById('top5-grid').innerHTML = [...otherCards, jariCard].join('');
+  const jariRanking=students.map(stu=>{
+    const passRecs=records.filter(r=>r.student_id===stu.id&&r.type==='jari'&&!!r.passed&&r.date&&r.date.startsWith(month));
+    return{name:stu.name,id:stu.id,score:passRecs.length};
+  }).filter(s=>s.score>0).sort((a,b)=>b.score-a.score).slice(0,5);
+
+  const jariCard=`<div class="top5-card">
+    <div class="top5-card-header ${isKo?'korean':'english'}"><span>${isKo?'🇰🇷':'🇺🇸'} 자리연습</span><span class="badge">${month}</span></div>
+    <div class="top5-list">${jariRanking.length?jariRanking.map((s,i)=>`
+      <div class="top5-item" onclick="selectStudent('${s.id}')">
+        <div class="rank-badge ${ranks[i]}">${i+1}</div>
+        <div class="top5-name">${s.name}</div>
+        <div class="top5-score">${s.score}<span style="font-size:0.67rem;color:var(--text-muted);font-family:'Noto Sans KR'"> 회 통과</span></div>
+      </div>`).join(''):'<div style="padding:9px 13px;font-size:0.79rem;color:var(--text-muted)">이달 통과 기록 없음</div>'}
+    </div></div>`;
+
+  document.getElementById('top5-grid').innerHTML=[...otherCards,jariCard].join('');
 }
 
-// ══════════════════════════════════════════════
-// TREND
-// ══════════════════════════════════════════════
-function renderTrend() {
-  const month = document.getElementById('selected-month').value;
-  const [y,m] = month.split('-').map(Number);
-  const pd    = new Date(y, m-2, 1);
-  const prev  = `${pd.getFullYear()}-${String(pd.getMonth()+1).padStart(2,'0')}`;
+// ── TREND ──
+function renderTrend(){
+  const month=document.getElementById('selected-month').value;
+  const[y,m]=month.split('-').map(Number);
+  const pd=new Date(y,m-2,1);
+  const prev=`${pd.getFullYear()}-${String(pd.getMonth()+1).padStart(2,'0')}`;
 
-  const chips = students.map(stu => {
-    const tr = records.filter(r=>r.student_id===stu.id&&r.speed&&r.date?.startsWith(month));
-    const pr = records.filter(r=>r.student_id===stu.id&&r.speed&&r.date?.startsWith(prev));
-    if (!tr.length) return null;
-    const avg = a => a.reduce((s,r)=>s+r.speed,0)/a.length;
-    const ta=avg(tr), pa=pr.length?avg(pr):null;
-    let tHtml='';
-    if(pa!==null){
+  const chips=students.map(stu=>{
+    const tr=records.filter(r=>r.student_id===stu.id&&r.speed&&r.date?.startsWith(month));
+    const pr=records.filter(r=>r.student_id===stu.id&&r.speed&&r.date?.startsWith(prev));
+    if(!tr.length)return null;
+    const avg=a=>a.reduce((s,r)=>s+r.speed,0)/a.length;
+    const ta=avg(tr),pa=pr.length?avg(pr):null;
+    let cls,label;
+    if(pa===null){cls='same';label='신규';}
+    else{
       const pct=((ta-pa)/pa*100).toFixed(1);
-      const cls=pct>0?'trend-up':pct<0?'trend-down':'trend-same';
+      cls=pct>0?'up':pct<0?'down':'same';
       const arr=pct>0?'▲':pct<0?'▼':'━';
-      tHtml=`<span class="t-arrow ${cls}">${arr} ${Math.abs(pct)}%</span>`;
-    } else { tHtml=`<span class="trend-same" style="font-size:0.73rem">신규</span>`; }
-    return `<div class="trend-chip">
+      label=`${arr} ${Math.abs(pct)}%`;
+    }
+    const isSelected=stu.id===selectedStudentId;
+    return`<div class="trend-chip ${isSelected?'selected':''}" onclick="selectStudent('${stu.id}')">
       <span class="t-name">${stu.name}</span>
-      <span style="font-family:'Space Mono';font-size:0.76rem;color:var(--text-muted)">${Math.round(ta)}타</span>
-      ${tHtml}
+      <span style="font-family:'Space Mono';font-size:0.75rem;color:var(--text-muted)">${Math.round(ta)}타</span>
+      <span class="t-arrow trend-${cls==='up'?'up':cls==='down'?'down':'same'}">${label}</span>
     </div>`;
   }).filter(Boolean);
 
-  document.getElementById('trend-grid').innerHTML = chips.length
-    ? chips.join('')
-    : '<span style="font-size:0.8rem;color:var(--text-muted)">이달 기록이 있는 학생 없음</span>';
+  document.getElementById('trend-grid').innerHTML=chips.length
+    ?chips.join('')
+    :'<span style="font-size:0.79rem;color:var(--text-muted)">이달 기록이 있는 학생 없음</span>';
 }
 </script>
 </body>
