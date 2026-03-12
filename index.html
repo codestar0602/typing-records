@@ -186,7 +186,7 @@
   }
   .day-tab-header:hover { background:var(--surface2); color:var(--text); }
   .day-tab-header.open { color:var(--accent); background:rgba(108,99,255,0.08); }
-  .day-tab-header .day-count { font-size:0.68rem; background:var(--surface2); border:1px solid var(--border); border-radius:999px; padding:1px 7px; font-family:'Space Mono',monospace; }
+  .day-tab-header
   .day-tab-header .day-arrow { font-size:0.7rem; transition:transform 0.2s; }
   .day-tab-header.open .day-arrow { transform:rotate(90deg); }
   .day-students { display:none; }
@@ -658,23 +658,39 @@ async function doLogout(){
 }
 
 // ── INIT ──
+let appInitialized = false; // 최초 1회만 초기화
+
 window.onload=async()=>{
   const now=new Date();
   document.getElementById('selected-month').value=
     `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
-  // Auth 상태 감지
+
+  // Auth 상태 감지 — SIGNED_IN 이벤트만 처리, TOKEN_REFRESHED 등 무시
   sb.auth.onAuthStateChange(async(event,session)=>{
-    if(session?.user){
+    if(event==='SIGNED_IN' && session?.user && !appInitialized){
+      appInitialized=true;
       currentUser=session.user;
       document.getElementById('user-email-display').textContent=session.user.email;
       document.getElementById('auth-screen').classList.add('hidden');
       await loadAll();
       setupRealtime();
     }
+    if(event==='SIGNED_OUT'){
+      appInitialized=false;
+    }
+    // TOKEN_REFRESHED, USER_UPDATED 등은 완전히 무시 → 스피너 없음
   });
+
   // 이미 로그인 세션 있으면 바로 진입
   const{data:{session}}=await sb.auth.getSession();
-  if(!session){
+  if(session?.user && !appInitialized){
+    appInitialized=true;
+    currentUser=session.user;
+    document.getElementById('user-email-display').textContent=session.user.email;
+    document.getElementById('auth-screen').classList.add('hidden');
+    await loadAll();
+    setupRealtime();
+  } else if(!session){
     document.getElementById('auth-screen').classList.remove('hidden');
     hideLoading();
   }
@@ -751,10 +767,7 @@ function renderSidebar(){
     <div class="day-group">
       <div class="day-tab-header ${isOpen?'open':''}" onclick="toggleDay('${day}')">
         <span>${day}요일${day==='기타'?'':''}</span>
-        <span style="display:flex;align-items:center;gap:6px">
-          <span class="day-count">${stuList.length}</span>
-          <span class="day-arrow">▶</span>
-        </span>
+        <span class="day-arrow">▶</span>
       </div>
       <div class="day-students ${isOpen?'open':''}">
         ${stuList.map(s=>`
@@ -1125,22 +1138,39 @@ function renderTop5(){
     }).filter(Boolean).sort((a,b)=>b.score-a.score).slice(0,5);
   }
 
-  const jariRanking=students.map(stu=>{
-    const cnt=records.filter(r=>
-      r.student_id===stu.id && r.type==='jari' && !!r.passed &&
-      r.date && r.date.startsWith(month)
-    ).length;
-    return{name:stu.name,id:stu.id,score:cnt};
-  }).filter(s=>s.score>0).sort((a,b)=>b.score-a.score).slice(0,5);
+  // 자리연습 lang별 통과 횟수 (각각 TOP5)
+  function getJariRanking(lang){
+    return students.map(stu=>{
+      const cnt=records.filter(r=>
+        r.student_id===stu.id && r.type==='jari' && !!r.passed &&
+        r.lang===lang && r.date && r.date.startsWith(month)
+      ).length;
+      return{name:stu.name,id:stu.id,score:cnt};
+    }).filter(s=>s.score>0).sort((a,b)=>b.score-a.score).slice(0,5);
+  }
 
+  // 항상 5줄 고정 — 데이터 없는 줄은 투명 placeholder
   function makeItems(list,unit){
-    if(!list.length) return '<div style="padding:9px 13px;font-size:0.79rem;color:var(--text-muted)">기록 없음</div>';
-    return list.map((s,i)=>`
-      <div class="top5-item" onclick="selectStudent('${s.id}')">
-        <div class="rank-badge ${ranks[i]}">${i+1}</div>
-        <div class="top5-name">${s.name}</div>
-        <div class="top5-score">${s.score}<span style="font-size:0.67rem;color:var(--text-muted);font-family:'Noto Sans KR'"> ${unit}</span></div>
-      </div>`).join('');
+    const rows=[];
+    for(let i=0;i<5;i++){
+      const s=list[i];
+      if(s){
+        rows.push(`
+          <div class="top5-item" onclick="selectStudent('${s.id}')">
+            <div class="rank-badge ${ranks[i]}">${i+1}</div>
+            <div class="top5-name">${s.name}</div>
+            <div class="top5-score">${s.score}<span style="font-size:0.67rem;color:var(--text-muted);font-family:'Noto Sans KR'"> ${unit}</span></div>
+          </div>`);
+      } else {
+        rows.push(`
+          <div class="top5-item" style="opacity:0;pointer-events:none">
+            <div class="rank-badge rank-${i+1}">${i+1}</div>
+            <div class="top5-name">-</div>
+            <div class="top5-score">--</div>
+          </div>`);
+      }
+    }
+    return rows.join('');
   }
 
   const TYPES=[
@@ -1167,15 +1197,20 @@ function renderTop5(){
       <div class="top5-list">${en}</div>
     </div>`;
   });
-  // 자리연습: lang 무관 통합
+  // 자리연습: KR / US 각각 TOP5
+  const jariKo=makeItems(getJariRanking('korean'),'회 통과');
+  const jariEn=makeItems(getJariRanking('english'),'회 통과');
   cards+=`
     <div class="top5-card">
       <div class="top5-card-header korean">
-        <span>자리연습</span>
+        <span>KR 자리연습</span>
         <span class="badge">${month}</span>
       </div>
-      <div style="padding:4px 13px 1px;font-size:0.65rem;color:var(--text-muted)">한글+영어 통합 통과 횟수</div>
-      <div class="top5-list">${makeItems(jariRanking,'회 통과')}</div>
+      <div class="top5-list">${jariKo}</div>
+      <div class="top5-card-header english" style="border-top:1px solid var(--border);border-bottom:none">
+        <span>US 자리연습</span>
+      </div>
+      <div class="top5-list">${jariEn}</div>
     </div>`;
 
   el.innerHTML=cards;
