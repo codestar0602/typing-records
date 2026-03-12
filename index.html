@@ -85,7 +85,7 @@
   /* TOP5 */
   #top5-section { background:linear-gradient(135deg,#1a1a2e,#12122a); border-bottom:2px solid var(--border); padding:16px 24px; }
   .section-title { font-size:0.73rem; font-weight:700; letter-spacing:2px; color:var(--text-muted); text-transform:uppercase; margin-bottom:11px; }
-  .top5-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:11px; }
+  .top5-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:11px; }
   .top5-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; overflow:hidden; }
   .top5-card-header { padding:8px 13px; font-size:0.77rem; font-weight:700; letter-spacing:1px; display:flex; align-items:center; gap:8px; }
   .top5-card-header.korean { background:linear-gradient(90deg,#1e1b4b,#312e81); }
@@ -102,32 +102,69 @@
   .top5-name { flex:1; font-size:0.83rem; font-weight:500; }
   .top5-score { font-family:'Space Mono',monospace; font-size:0.83rem; color:var(--accent); font-weight:700; }
 
-  /* TREND */
-  #trend-section { padding:0; background:var(--surface); border-bottom:1px solid var(--border); }
-  .trend-header { display:flex; align-items:center; gap:10px; padding:10px 24px 0; }
-  .trend-grid { display:flex; gap:7px; flex-wrap:wrap; padding:8px 24px 12px; }
-  .trend-chip {
-    background:var(--surface2); border:1px solid var(--border); border-radius:999px;
-    padding:5px 12px; display:flex; align-items:center; gap:6px; font-size:0.79rem;
-    cursor:pointer; transition:all 0.15s;
+  /* AUTH */
+  #auth-screen {
+    position:fixed; inset:0; background:var(--bg); z-index:9000;
+    display:flex; align-items:center; justify-content:center;
   }
-  .trend-chip:hover { border-color:var(--accent); background:rgba(108,99,255,0.1); }
-  .trend-chip.selected { border-color:var(--accent); background:rgba(108,99,255,0.15); }
-  .trend-chip .t-name { font-weight:600; }
-  .trend-chip .t-arrow { font-family:'Space Mono',monospace; font-size:0.77rem; font-weight:700; }
-  .trend-up { color:var(--accent3); } .trend-down { color:var(--accent2); } .trend-same { color:var(--text-muted); }
+  #auth-screen.hidden { display:none; }
+  .auth-box {
+    background:var(--surface); border:1px solid var(--border); border-radius:20px;
+    padding:40px 36px; width:100%; max-width:400px;
+    box-shadow:0 20px 60px rgba(0,0,0,0.5);
+  }
+  .auth-logo {
+    font-family:'Space Mono',monospace; font-size:1.4rem; font-weight:700;
+    background:linear-gradient(90deg,var(--accent),var(--accent2));
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+    text-align:center; margin-bottom:6px;
+  }
+  .auth-sub { text-align:center; font-size:0.82rem; color:var(--text-muted); margin-bottom:28px; }
+  .auth-tabs { display:flex; background:var(--surface2); border-radius:10px; padding:4px; gap:4px; margin-bottom:24px; }
+  .auth-tab {
+    flex:1; padding:8px; border:none; border-radius:7px; cursor:pointer;
+    font-family:'Noto Sans KR',sans-serif; font-size:0.83rem; font-weight:700;
+    background:transparent; color:var(--text-muted); transition:all 0.2s;
+  }
+  .auth-tab.active { background:var(--accent); color:white; }
+  .auth-field { margin-bottom:16px; }
+  .auth-field label { display:block; font-size:0.78rem; color:var(--text-muted); margin-bottom:6px; }
+  .auth-field input {
+    width:100%; background:var(--surface2); border:1px solid var(--border); color:var(--text);
+    padding:10px 14px; border-radius:10px; font-family:'Noto Sans KR',sans-serif; font-size:0.9rem;
+    outline:none; transition:border-color 0.2s;
+  }
+  .auth-field input:focus { border-color:var(--accent); }
+  .auth-submit {
+    width:100%; padding:12px; background:var(--accent); color:white; border:none;
+    border-radius:10px; font-family:'Noto Sans KR',sans-serif; font-size:0.9rem; font-weight:700;
+    cursor:pointer; transition:all 0.2s; margin-top:4px;
+  }
+  .auth-submit:hover { background:#5a52e0; transform:translateY(-1px); }
+  .auth-submit:disabled { opacity:0.5; cursor:not-allowed; transform:none; }
+  .auth-error { color:var(--accent2); font-size:0.8rem; margin-top:10px; text-align:center; min-height:18px; }
+  .auth-info { background:rgba(108,99,255,0.1); border:1px solid rgba(108,99,255,0.3); border-radius:8px; padding:10px 14px; font-size:0.78rem; color:var(--text-muted); margin-bottom:16px; line-height:1.5; }
+  .user-badge { display:flex; align-items:center; gap:8px; font-size:0.8rem; color:var(--text-muted); }
+  .user-badge .email { color:var(--text); font-weight:500; max-width:160px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .logout-btn { padding:4px 11px; border-radius:7px; border:1px solid var(--border); background:transparent; color:var(--text-muted); cursor:pointer; font-size:0.73rem; font-family:'Noto Sans KR',sans-serif; transition:all 0.15s; }
+  .logout-btn:hover { border-color:var(--accent2); color:var(--accent2); }
 
-  /* SELECTED STUDENT TREND BADGE — 학생 이름 옆 */
-  .student-trend-badge {
-    display:inline-flex; align-items:center; gap:4px;
-    font-size:0.75rem; font-family:'Space Mono',monospace; font-weight:700;
-    padding:2px 8px; border-radius:999px; margin-left:8px;
-    vertical-align:middle;
-  }
-  .student-trend-badge.up { background:rgba(67,233,123,0.12); color:var(--accent3); border:1px solid rgba(67,233,123,0.3); }
-  .student-trend-badge.down { background:rgba(255,101,132,0.1); color:var(--accent2); border:1px solid rgba(255,101,132,0.3); }
-  .student-trend-badge.same { background:var(--surface2); color:var(--text-muted); border:1px solid var(--border); }
-  .student-trend-badge.new { background:var(--surface2); color:var(--text-muted); border:1px solid var(--border); }
+  /* TREND */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   /* MAIN LAYOUT */
   main { display:flex; min-height:calc(100vh - 200px); }
@@ -269,19 +306,7 @@
   .empty-state .icon { font-size:3rem; margin-bottom:12px; }
   .empty-state p { font-size:0.88rem; }
 
-  /* TREND COLLAPSIBLE */
-  .trend-toggle-btn {
-    display:flex; align-items:center; gap:8px; cursor:pointer;
-    padding:10px 24px; width:100%; background:none; border:none;
-    color:var(--text-muted); font-family:'Noto Sans KR',sans-serif;
-    font-size:0.78rem; font-weight:700; letter-spacing:1px; text-transform:uppercase;
-    transition:color 0.2s;
-  }
-  .trend-toggle-btn:hover { color:var(--text); }
-  .trend-toggle-btn .t-arrow-icon { font-size:0.68rem; transition:transform 0.25s; }
-  .trend-toggle-btn.open .t-arrow-icon { transform:rotate(90deg); }
-  .trend-body { display:none; padding:0 24px 12px; }
-  .trend-body.open { display:block; }
+
 
   /* EDIT DAY BUTTON */
   .edit-day-btn {
@@ -291,6 +316,61 @@
     transition:all 0.15s; white-space:nowrap;
   }
   .edit-day-btn:hover { border-color:var(--accent); color:var(--accent); }
+
+  /* COMBINED PRACTICE TABLE */
+  .combined-practice { background:var(--surface); border:1px solid var(--border); border-radius:12px; overflow:hidden; margin-bottom:20px; }
+  .cp-title-row {
+    display:grid; grid-template-columns: 100px repeat(3,1fr);
+    background:var(--surface2); border-bottom:2px solid var(--border);
+    font-size:0.7rem; font-weight:700; color:var(--text-muted);
+    letter-spacing:1px; text-transform:uppercase;
+  }
+  .cp-title-row > div { padding:9px 12px; border-right:1px solid var(--border); }
+  .cp-title-row > div:last-child { border-right:none; }
+  .cp-title-row .type-label { color:var(--accent); font-size:0.78rem; }
+  .cp-section-label {
+    grid-column:1; padding:7px 12px;
+    font-size:0.68rem; color:var(--text-muted); font-weight:700;
+    letter-spacing:1px; text-transform:uppercase;
+    background:rgba(0,0,0,0.15); border-right:1px solid var(--border);
+    display:flex; align-items:center;
+  }
+  .cp-data-row {
+    display:grid; grid-template-columns: 100px repeat(3,1fr);
+    border-top:1px solid var(--border); align-items:stretch;
+  }
+  .cp-data-row:hover { background:rgba(108,99,255,0.03); }
+  .cp-cell {
+    padding:6px 10px; border-right:1px solid var(--border);
+    display:flex; flex-direction:column; gap:3px;
+  }
+  .cp-cell:last-child { border-right:none; }
+  .cp-cell.label-cell {
+    background:rgba(0,0,0,0.12); justify-content:center;
+    font-size:0.67rem; color:var(--text-muted); font-weight:700;
+    letter-spacing:1px; text-transform:uppercase;
+  }
+  .cp-cell input {
+    background:transparent; border:1px solid transparent; color:var(--text);
+    font-family:'Space Mono',monospace; font-size:0.82rem; padding:3px 6px;
+    border-radius:5px; transition:all 0.15s; width:100%;
+  }
+  .cp-cell input:focus { outline:none; background:var(--surface2); border-color:var(--accent); }
+  .cp-cell input[type=date] { font-family:'Noto Sans KR',sans-serif; font-size:0.74rem; }
+  .cp-cell input.is-best { color:var(--accent3); font-weight:700; }
+  .cp-best-display {
+    font-family:'Space Mono',monospace; font-size:0.9rem; font-weight:700;
+    color:var(--accent3); padding:4px 6px;
+  }
+  .cp-stat-mini {
+    font-size:0.65rem; color:var(--text-muted); padding:2px 6px;
+  }
+  .cp-add-row {
+    display:grid; grid-template-columns: 100px repeat(3,1fr);
+    border-top:1px solid var(--border); background:rgba(0,0,0,0.08);
+  }
+  .cp-add-row > div { padding:7px 10px; border-right:1px solid var(--border); }
+  .cp-add-row > div:last-child { border-right:none; }
 
   ::-webkit-scrollbar { width:5px; }
   ::-webkit-scrollbar-track { background:var(--bg); }
@@ -310,6 +390,33 @@
 <body>
 
 <div id="loading-overlay"><div class="spinner"></div></div>
+<!-- AUTH SCREEN -->
+<div id="auth-screen">
+  <div class="auth-box">
+    <div class="auth-logo">⌨️ TYPING RECORDS</div>
+    <div class="auth-sub">코딩학원 타자연습 기록 관리</div>
+    <div class="auth-tabs">
+      <button class="auth-tab active" onclick="switchAuthTab('login')">로그인</button>
+      <button class="auth-tab" onclick="switchAuthTab('signup')">회원가입</button>
+    </div>
+    <div class="auth-info" id="auth-info-box">학원 원장/강사만 계정을 만들 수 있습니다. 로그인 후 학생 기록을 관리하세요.</div>
+    <div class="auth-field">
+      <label>이메일</label>
+      <input type="email" id="auth-email" placeholder="이메일 입력" onkeydown="if(event.key==='Enter')document.getElementById('auth-pw').focus()">
+    </div>
+    <div class="auth-field">
+      <label>비밀번호</label>
+      <input type="password" id="auth-pw" placeholder="비밀번호 입력 (6자 이상)" onkeydown="if(event.key==='Enter')doAuth()">
+    </div>
+    <div class="auth-field" id="auth-pw2-field" style="display:none">
+      <label>비밀번호 확인</label>
+      <input type="password" id="auth-pw2" placeholder="비밀번호 재입력" onkeydown="if(event.key==='Enter')doAuth()">
+    </div>
+    <button class="auth-submit" id="auth-btn" onclick="doAuth()">로그인</button>
+    <div class="auth-error" id="auth-error"></div>
+  </div>
+</div>
+
 <div id="toast"></div>
 
 <header>
@@ -321,7 +428,12 @@
       <span id="sync-text">연결 중...</span>
     </div>
   </div>
-  <div>
+  <div style="display:flex;align-items:center;gap:12px">
+    <div class="user-badge">
+      <span>👤</span>
+      <span class="email" id="user-email-display"></span>
+      <button class="logout-btn" onclick="doLogout()">로그아웃</button>
+    </div>
     <button class="btn btn-primary" onclick="openAddStudentModal()">+ 학생 추가</button>
   </div>
 </header>
@@ -329,26 +441,11 @@
 <div class="month-bar">
   <label>📅 기준 월</label>
   <input type="month" id="selected-month" onchange="renderAll()">
-  <label style="margin-left:10px">🔍 TOP5 기준</label>
-  <select id="top5-lang" onchange="renderTop5()">
-    <option value="korean">한글</option>
-    <option value="english">영어</option>
-  </select>
 </div>
 
-<div id="top5-section">
+<div id="top5-section" style="background:linear-gradient(135deg,#1a1a2e,#12122a);border-bottom:2px solid var(--border);padding:16px 24px;">
   <div class="section-title">🏆 이달의 TOP 5</div>
   <div class="top5-grid" id="top5-grid"></div>
-</div>
-
-<div id="trend-section">
-  <button class="trend-toggle-btn" id="trend-toggle-btn" onclick="toggleTrend()">
-    <span class="t-arrow-icon">▶</span>
-    📈 이달의 속도 증감률
-    <span style="font-size:0.7rem;font-weight:400;color:var(--text-muted)">(클릭하여 펼치기 · 이름 클릭 시 학생 이동)</span>
-    <span id="trend-count-badge" style="font-family:'Space Mono';font-size:0.7rem;background:var(--surface2);border:1px solid var(--border);border-radius:999px;padding:1px 8px;margin-left:auto"></span>
-  </button>
-  <div class="trend-body" id="trend-grid"></div>
 </div>
 
 <main>
@@ -455,7 +552,12 @@
 <script>
 const SUPABASE_URL = 'https://awsvbgezyhwuwavhsrho.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_HVqQwIJ2hyYxQc-P63lIig_VZiPkq5P';
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+let sb;
+try {
+  sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+} catch(e) {
+  console.error('Supabase init error:', e);
+}
 
 const JARI_STAGES = [
   {id:'basic',name:'기본자리'},{id:'left_top',name:'왼손 윗자리'},
@@ -491,13 +593,91 @@ document.querySelectorAll('.modal-overlay').forEach(el=>{
   el.addEventListener('click',e=>{if(e.target===el)closeModal(el.id);});
 });
 
+// ── AUTH ──
+let currentUser=null;
+let authMode='login';
+
+function switchAuthTab(mode){
+  authMode=mode;
+  document.querySelectorAll('.auth-tab').forEach((t,i)=>{
+    t.classList.toggle('active',(i===0&&mode==='login')||(i===1&&mode==='signup'));
+  });
+  document.getElementById('auth-btn').textContent=mode==='login'?'로그인':'회원가입';
+  document.getElementById('auth-pw2-field').style.display=mode==='signup'?'block':'none';
+  document.getElementById('auth-info-box').textContent=mode==='login'
+    ?'학원 원장/강사만 계정을 만들 수 있습니다. 로그인 후 학생 기록을 관리하세요.'
+    :'회원가입 후 이메일 인증이 필요할 수 있습니다.';
+  document.getElementById('auth-error').textContent='';
+}
+
+async function doAuth(){
+  const email=document.getElementById('auth-email').value.trim();
+  const pw=document.getElementById('auth-pw').value;
+  const pw2=document.getElementById('auth-pw2').value;
+  const errEl=document.getElementById('auth-error');
+  const btn=document.getElementById('auth-btn');
+  if(!email||!pw){errEl.textContent='이메일과 비밀번호를 입력하세요.';return;}
+  if(authMode==='signup'&&pw!==pw2){errEl.textContent='비밀번호가 일치하지 않습니다.';return;}
+  if(authMode==='signup'&&pw.length<6){errEl.textContent='비밀번호는 6자 이상이어야 합니다.';return;}
+  btn.disabled=true; errEl.textContent='';
+  try{
+    let result;
+    if(authMode==='login'){
+      result=await sb.auth.signInWithPassword({email,password:pw});
+    } else {
+      result=await sb.auth.signUp({email,password:pw});
+    }
+    if(result.error) throw result.error;
+    if(authMode==='signup'&&!result.data?.session){
+      errEl.style.color='var(--pass)';
+      errEl.textContent='가입 완료! 이메일 인증 후 로그인해주세요.';
+      switchAuthTab('login');
+    }
+    // 세션이 생기면 onAuthStateChange가 처리
+  } catch(e){
+    const msg=e.message||'오류가 발생했습니다.';
+    errEl.style.color='var(--accent2)';
+    errEl.textContent=
+      msg.includes('Invalid login')?'이메일 또는 비밀번호가 틀렸습니다.':
+      msg.includes('already registered')?'이미 등록된 이메일입니다.':
+      msg.includes('Email not confirmed')?'이메일 인증이 필요합니다.':msg;
+  }
+  btn.disabled=false;
+}
+
+async function doLogout(){
+  await sb.auth.signOut();
+  currentUser=null;
+  document.getElementById('user-email-display').textContent='';
+  document.getElementById('auth-screen').classList.remove('hidden');
+  students=[]; records=[];
+  document.getElementById('main-content').innerHTML='<div class="empty-state"><div class="icon">👈</div><p>왼쪽에서 학생을 선택하거나 추가하세요</p></div>';
+  document.getElementById('day-tabs').innerHTML='';
+  document.getElementById('top5-grid').innerHTML='';
+  toast('로그아웃되었습니다.');
+}
+
 // ── INIT ──
 window.onload=async()=>{
   const now=new Date();
   document.getElementById('selected-month').value=
     `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
-  await loadAll();
-  setupRealtime();
+  // Auth 상태 감지
+  sb.auth.onAuthStateChange(async(event,session)=>{
+    if(session?.user){
+      currentUser=session.user;
+      document.getElementById('user-email-display').textContent=session.user.email;
+      document.getElementById('auth-screen').classList.add('hidden');
+      await loadAll();
+      setupRealtime();
+    }
+  });
+  // 이미 로그인 세션 있으면 바로 진입
+  const{data:{session}}=await sb.auth.getSession();
+  if(!session){
+    document.getElementById('auth-screen').classList.remove('hidden');
+    hideLoading();
+  }
 };
 
 async function loadAll(){
@@ -510,7 +690,12 @@ async function loadAll(){
     if(se)throw se; if(re)throw re;
     students=sd||[]; records=rd||[];
     setConnected(true); renderAll();
-  }catch(e){toast('로드 실패: '+e.message,'err');setConnected(false);}
+  }catch(e){
+    const msg = e?.message || e?.error_description || JSON.stringify(e) || '알 수 없는 오류';
+    toast('로드 실패: '+msg,'err');
+    console.error('loadAll error:', e);
+    setConnected(false);
+  }
   finally{hideLoading();}
 }
 
@@ -518,12 +703,12 @@ function setupRealtime(){
   sb.channel('db-changes')
     .on('postgres_changes',{event:'*',schema:'public',table:'students'},async()=>{
       const{data}=await sb.from('students').select('*').order('created_at');
-      if(data){students=data;renderSidebar();renderTop5();renderTrend();}
+      if(data){students=data;renderSidebar();renderTop5();}
     })
     .on('postgres_changes',{event:'*',schema:'public',table:'records'},async()=>{
       const{data}=await sb.from('records').select('*').order('date',{ascending:false});
       if(data){
-        records=data;renderTop5();renderTrend();
+        records=data;renderTop5();
         if(selectedStudentId)renderStudentDetails();
         if(jariContext)renderJariHistory();
       }
@@ -531,25 +716,9 @@ function setupRealtime(){
     .subscribe(s=>setConnected(s==='SUBSCRIBED'));
 }
 
-function renderAll(){renderSidebar();renderTop5();renderTrend();if(selectedStudentId)renderStudentContent();}
+function renderAll(){renderSidebar();renderTop5();if(selectedStudentId)renderStudentContent();}
 
-// ── 증감률 계산 helper ──
-function getTrend(stuId){
-  const month=document.getElementById('selected-month').value;
-  const[y,m]=month.split('-').map(Number);
-  const pd=new Date(y,m-2,1);
-  const prev=`${pd.getFullYear()}-${String(pd.getMonth()+1).padStart(2,'0')}`;
-  const tr=records.filter(r=>r.student_id===stuId&&r.speed&&r.date?.startsWith(month));
-  const pr=records.filter(r=>r.student_id===stuId&&r.speed&&r.date?.startsWith(prev));
-  if(!tr.length)return null;
-  const avg=a=>a.reduce((s,r)=>s+r.speed,0)/a.length;
-  const ta=avg(tr),pa=pr.length?avg(pr):null;
-  if(pa===null)return{type:'new',label:'신규',avg:Math.round(ta)};
-  const pct=((ta-pa)/pa*100).toFixed(1);
-  const type=pct>0?'up':pct<0?'down':'same';
-  const arrow=pct>0?'▲':pct<0?'▼':'━';
-  return{type,label:`${arrow} ${Math.abs(pct)}%`,avg:Math.round(ta)};
-}
+
 
 // ── SIDEBAR (요일별 그룹) ──
 function renderSidebar(){
@@ -632,7 +801,7 @@ async function deleteStudent(e,id){
     document.getElementById('main-content').innerHTML=
       `<div class="empty-state"><div class="icon">👈</div><p>왼쪽에서 학생을 선택하거나 추가하세요</p></div>`;
   }
-  renderSidebar();renderTop5();renderTrend();
+  renderSidebar();renderTop5();
   toast('학생 삭제됨');
 }
 
@@ -668,18 +837,10 @@ function renderStudentContent(){
   const stu=students.find(s=>s.id===selectedStudentId);
   if(!stu)return;
 
-  // 증감률 뱃지
-  const trend=getTrend(selectedStudentId);
-  let trendBadge='';
-  if(trend){
-    const cls=trend.type==='up'?'up':trend.type==='down'?'down':trend.type==='new'?'new':'same';
-    trendBadge=`<span class="student-trend-badge ${cls}">${trend.label}</span>`;
-  }
-
   const stuDaysLabel=(stu.days||'').split(',').filter(Boolean).join('·')||'요일없음';
   document.getElementById('main-content').innerHTML=`
     <div class="content-header">
-      <h2>📋 ${stu.name}${trendBadge}
+      <h2>📋 ${stu.name}
         <button class="edit-day-btn" onclick="openEditStudentModal('${stu.id}')">✏️ ${stuDaysLabel} 수정</button>
       </h2>
     </div>
@@ -697,7 +858,7 @@ function renderStudentDetails(){
   const container=document.getElementById('student-details');
   if(!container)return;
 
-  // 자리 연습
+  // ── 자리 연습 ──
   let html=`<div class="category-section">
     <div class="category-title">🖐 자리 연습</div>
     <div class="jari-grid">`;
@@ -724,43 +885,131 @@ function renderStudentDetails(){
   });
   html+=`</div></div>`;
 
-  // 낱말/단문/장문
-  OTHER_TYPES.forEach(type=>{
-    const recs=records.filter(r=>r.student_id===selectedStudentId&&r.lang===selectedLang&&r.type===type.id)
-      .sort((a,b)=>new Date(b.date)-new Date(a.date));
-    const speedRecs=recs.filter(r=>r.speed>0);
-    const best=speedRecs.length?Math.max(...speedRecs.map(r=>r.speed)):null;
-    const avg=speedRecs.length?Math.round(speedRecs.reduce((s,r)=>s+r.speed,0)/speedRecs.length):null;
-    const accRecs=recs.filter(r=>r.accuracy>0);
-    const avgAcc=accRecs.length?(accRecs.reduce((s,r)=>s+r.accuracy,0)/accRecs.length).toFixed(1):null;
-
-    html+=`<div class="category-section">
-      <div class="category-title">✏️ ${type.name}</div>
-      <div class="stats-summary">
-        <div class="stat-cell"><div class="stat-label">최고타수</div><div class="stat-value best-val">${best??'--'}<span class="stat-unit"> 타</span></div></div>
-        <div class="stat-cell"><div class="stat-label">평균속도</div><div class="stat-value avg-val">${avg??'--'}<span class="stat-unit"> 타</span></div></div>
-        <div class="stat-cell"><div class="stat-label">평균정확도</div><div class="stat-value acc-val">${avgAcc??'--'}<span class="stat-unit"> %</span></div></div>
-      </div>
-      <div class="practice-table">
-        <div class="pt-header"><div>날짜</div><div>속도(타/분)</div><div>정확도(%)</div><div>메모</div><div>삭제</div></div>`;
-    if(recs.length){
-      recs.forEach(r=>{
-        html+=`<div class="pt-row">
-          <input type="date" value="${r.date||''}" onchange="updateRecord('${r.id}','date',this.value)">
-          <input type="number" value="${r.speed||''}" placeholder="타/분" class="${r.speed&&r.speed===best?'is-best':''}" onchange="updateRecord('${r.id}','speed',this.value)">
-          <input type="number" value="${r.accuracy||''}" placeholder="%" onchange="updateRecord('${r.id}','accuracy',this.value)">
-          <input type="text" value="${r.memo||''}" placeholder="메모" onchange="updateRecord('${r.id}','memo',this.value)">
-          <button class="btn btn-danger btn-sm" onclick="deleteRecord('${r.id}')">삭제</button>
-        </div>`;
-      });
-    }else{
-      html+=`<div style="padding:13px;text-align:center;color:var(--text-muted);font-size:0.82rem">기록 없음</div>`;
-    }
-    html+=`<div class="table-footer">
-      <button class="btn btn-secondary btn-sm" onclick="addOtherRecord('${type.id}')">+ 행 추가</button>
-      <span style="font-size:0.72rem;color:var(--text-muted)">${recs.length}개 기록</span>
-    </div></div></div>`;
+  // ── 낱말/단문/장문 통합 테이블 ──
+  const typeData=OTHER_TYPES.map(type=>{
+    const recs=records.filter(r=>
+      r.student_id===selectedStudentId && r.lang===selectedLang && r.type===type.id
+    ).sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+    const speeds=recs.filter(r=>r.speed>0).map(r=>r.speed);
+    const globalBest=speeds.length?Math.max(...speeds):null;
+    return{type,recs,globalBest};
   });
+
+  // COL: 날짜(100) | 낱말평균속도(90) 낱말최고타수(90) | 단문(90)(90) | 장문(90)(90) | 삭제(32)
+  // 전체최고기록/헤더/데이터행 모두 동일한 COL 사용 → 정렬 일치
+  const COL = 'grid-template-columns:100px repeat(6,1fr) 32px';
+  const MINW = 'min-width:600px';
+
+  html+=`<div class="category-section">
+    <div class="category-title">✏️ 낱말 · 단문 · 장문 연습</div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;overflow-x:auto">
+
+      <!-- 전체 최고기록: grid로 정확히 COL에 맞춤 -->
+      <div style="display:grid;${COL};background:var(--surface2);border-bottom:2px solid var(--border);${MINW}">
+        <div style="padding:8px 10px;font-size:0.65rem;color:var(--text-muted);font-weight:700;border-right:1px solid var(--border);display:flex;align-items:center">전체<br>최고기록</div>
+        ${typeData.flatMap((d,i)=>[
+          `<div style="padding:8px 6px 8px 8px;border-right:1px solid rgba(108,99,255,0.2)">
+            <div style="font-size:0.62rem;color:var(--text-muted);margin-bottom:2px">${d.type.name}</div>
+            <div style="font-family:'Space Mono',monospace;font-size:0.95rem;font-weight:700;color:var(--accent3)">${d.globalBest??'--'}<span style="font-size:0.58rem;color:var(--text-muted)"> 타</span></div>
+          </div>`,
+          `<div style="padding:8px 6px;${i<2?'border-right:1px solid var(--border)':''}">
+            <div style="font-size:0.62rem;color:var(--text-muted);margin-bottom:2px">최고타수</div>
+            <div style="font-family:'Space Mono',monospace;font-size:0.95rem;color:var(--text-muted)">--</div>
+          </div>`
+        ]).join('')}
+        <div></div>
+      </div>
+
+      <!-- 1단 헤더: 날짜 | 낱말(90+90=span2) | 단문 | 장문 -->
+      <div style="display:grid;${COL};background:rgba(0,0,0,0.22);border-bottom:1px solid rgba(108,99,255,0.3);${MINW}">
+        <div style="padding:6px 8px;font-size:0.63rem;color:var(--text-muted);font-weight:700;border-right:1px solid var(--border)">날짜</div>
+        ${typeData.flatMap((d,i)=>[
+          `<div style="padding:6px 6px;font-size:0.72rem;font-weight:700;color:var(--accent);text-align:center;border-right:1px solid rgba(108,99,255,0.15);grid-column:span 1">${d.type.name}</div>`,
+          `<div style="padding:6px 6px;font-size:0.72rem;font-weight:700;color:var(--accent);text-align:center;${i<2?'border-right:1px solid var(--border)':''}">${d.type.name}</div>`
+        ]).join('')}
+        <div></div>
+      </div>
+
+      <!-- 2단 헤더: 평균속도 | 최고타수 반복 -->
+      <div style="display:grid;${COL};background:rgba(0,0,0,0.12);border-bottom:1px solid var(--border);${MINW}">
+        <div style="border-right:1px solid var(--border)"></div>
+        ${typeData.flatMap((d,i)=>[
+          '<div style="padding:4px 6px;font-size:0.6rem;color:var(--text-muted);border-right:1px solid rgba(108,99,255,0.2)">평균속도</div>',
+          `<div style="padding:4px 6px;font-size:0.6rem;color:var(--text-muted);${i<2?'border-right:1px solid var(--border)':''}">최고타수</div>`
+        ]).join('')}
+        <div></div>
+      </div>`;
+
+  // 모든 날짜 수집 (최신순)
+  const allDates=[...new Set(
+    typeData.flatMap(d=>d.recs.map(r=>r.date||'')).filter(Boolean)
+  )].sort((a,b)=>b.localeCompare(a));
+
+  const inpStyle=(id,field,isBest)=>
+    `type="number" style="width:100%;background:transparent;border:1px solid transparent;color:${isBest?'var(--accent3)':'var(--text)'};font-family:'Space Mono',monospace;font-size:0.8rem;padding:3px 5px;border-radius:5px;transition:all 0.15s;${isBest?'font-weight:700;':''}"
+     onfocus="this.style.background='var(--surface2)';this.style.borderColor='var(--accent)'"
+     onblur="this.style.background='transparent';this.style.borderColor='transparent'"
+     onchange="updateRecord('${id}','${field}',this.value)"
+     onkeydown="tabNext(event,this)"`;
+
+  allDates.forEach(date=>{
+    const rowsByType=typeData.map(d=>d.recs.filter(r=>r.date===date));
+    const maxR=Math.max(...rowsByType.map(r=>r.length),1);
+    for(let ri=0;ri<maxR;ri++){
+      const rowIds=rowsByType.map(recs=>recs[ri]?.id).filter(Boolean);
+      html+=`<div style="display:grid;${COL};border-top:1px solid var(--border);align-items:center;${MINW};transition:background 0.1s" onmouseenter="this.style.background='rgba(108,99,255,0.04)'" onmouseleave="this.style.background=''">`;
+      // 날짜 셀
+      html+=`<div style="padding:4px 8px;font-family:'Space Mono',monospace;font-size:0.72rem;border-right:1px solid var(--border);color:var(--text-muted);white-space:nowrap">
+        ${ri===0?date:''}
+      </div>`;
+      // 타입별 2열씩
+      typeData.forEach((d,ti)=>{
+        const r=rowsByType[ti][ri];
+        const lastType=ti===2;
+        if(r){
+          html+=`<input value="${r.speed??''}" placeholder="평균속도"
+            ${inpStyle(r.id,'speed',r.speed&&r.speed===d.globalBest)}
+            style="width:100%;background:transparent;border:1px solid transparent;color:${r.speed&&r.speed===d.globalBest?'var(--accent3)':'var(--text)'};font-family:'Space Mono',monospace;font-size:0.8rem;padding:3px 5px;border-radius:5px;transition:all 0.15s;${r.speed&&r.speed===d.globalBest?'font-weight:700;':''}border-right:1px solid rgba(108,99,255,0.2)"
+            onfocus="this.style.background='var(--surface2)';this.style.borderColor='var(--accent)'"
+            onblur="this.style.background='transparent';this.style.borderColor='transparent'"
+            onchange="updateRecord('${r.id}','speed',this.value)"
+            onkeydown="tabNext(event,this)">
+          <input value="${r.accuracy??''}" placeholder="최고타수"
+            type="number"
+            style="width:100%;background:transparent;border:1px solid transparent;color:var(--text);font-family:'Space Mono',monospace;font-size:0.8rem;padding:3px 5px;border-radius:5px;transition:all 0.15s;border-right:${lastType?'none':'1px solid var(--border)'};"
+            onfocus="this.style.background='var(--surface2)';this.style.borderColor='var(--accent)'"
+            onblur="this.style.background='transparent';this.style.borderColor='transparent'"
+            onchange="updateRecord('${r.id}','accuracy',this.value)"
+            onkeydown="tabNext(event,this)">`;
+        } else {
+          html+=`<div style="border-right:1px solid rgba(108,99,255,0.2)"></div>
+                 <div style="border-right:${ti<2?'1px solid var(--border)':'none'}"></div>`;
+        }
+      });
+      // 삭제
+      html+=`<div style="display:flex;align-items:center;justify-content:center">
+        ${rowIds.length?`<button onclick="${rowIds.map(id=>`deleteRecord('${id}')`).join(';')}"
+          style="padding:2px 5px;background:#cc3355;border:none;color:white;border-radius:4px;cursor:pointer;font-size:0.65rem;line-height:1.4">✕</button>`:''}
+      </div>`;
+      html+=`</div>`;
+    }
+  });
+
+  if(!allDates.length){
+    html+=`<div style="padding:20px;text-align:center;color:var(--text-muted);font-size:0.83rem;border-top:1px solid var(--border)">기록 없음 — 아래 버튼으로 추가하세요</div>`;
+  }
+
+  // 추가 버튼 행 — COL과 동일한 8열 grid
+  html+=`<div style="display:grid;${COL};border-top:1px solid var(--border);background:rgba(0,0,0,0.1);${MINW}">
+    <div style="padding:8px 10px;font-size:0.68rem;color:var(--text-muted);border-right:1px solid var(--border);display:flex;align-items:center">+ 행 추가</div>
+    ${typeData.flatMap((d,i)=>[
+      `<div style="padding:6px 6px 6px 6px;border-right:1px solid rgba(108,99,255,0.2);display:flex;align-items:center"><button class="btn btn-secondary btn-sm" onclick="addOtherRecord('${d.type.id}')">+ ${d.type.name}</button></div>`,
+      `<div style="${i<2?'border-right:1px solid var(--border)':''}"></div>`
+    ]).join('')}
+    <div></div>
+  </div>
+  </div></div>`;
+
   container.innerHTML=html;
 }
 
@@ -784,7 +1033,7 @@ async function updateRecord(id,field,value){
   debounceMap[id+field]=setTimeout(async()=>{
     const{error}=await sb.from('records').update({[field]:rec[field]}).eq('id',id);
     if(error)toast('저장 실패','err');
-    else{renderStudentDetails();renderTop5();renderTrend();}
+    else{renderStudentDetails();renderTop5();}
   },600);
 }
 
@@ -792,7 +1041,7 @@ async function deleteRecord(id){
   const{error}=await sb.from('records').delete().eq('id',id);
   if(error)return toast('삭제 실패','err');
   records=records.filter(r=>r.id!==id);
-  renderStudentDetails();renderTop5();renderTrend();toast('기록 삭제됨');
+  renderStudentDetails();renderTop5();toast('기록 삭제됨');
 }
 
 // ── JARI MODAL ──
@@ -854,59 +1103,96 @@ async function saveJariRecord(){
   document.getElementById('jari-speed').value='';
   document.getElementById('jari-accuracy').value='';
   document.getElementById('jari-pass-no').checked=true;
-  renderJariHistory();renderStudentDetails();renderTop5();renderTrend();
+  renderJariHistory();renderStudentDetails();renderTop5();
 }
 
 // ── TOP 5 ──
 function renderTop5(){
-  const lang=document.getElementById('top5-lang').value;
+  const el=document.getElementById('top5-grid');
+  if(!el) return;
   const month=document.getElementById('selected-month').value;
-  const isKo=lang==='korean';
+  if(!month) return;
   const ranks=['rank-1','rank-2','rank-3','rank-4','rank-5'];
 
-  const otherCards=OTHER_TYPES.map(type=>{
-    const bests=students.map(stu=>{
-      const recs=records.filter(r=>r.student_id===stu.id&&r.lang===lang&&r.type===type.id&&r.speed&&r.date?.startsWith(month));
-      if(!recs.length)return null;
-      return{name:stu.name,id:stu.id,score:recs.reduce((a,b)=>b.speed>a.speed?b:a).speed};
+  function getBests(lang,typeId){
+    return students.map(stu=>{
+      const recs=records.filter(r=>
+        r.student_id===stu.id && r.lang===lang &&
+        r.type===typeId && r.speed && r.date && r.date.startsWith(month)
+      );
+      if(!recs.length) return null;
+      return{name:stu.name,id:stu.id,score:Math.max(...recs.map(r=>r.speed))};
     }).filter(Boolean).sort((a,b)=>b.score-a.score).slice(0,5);
-    return`<div class="top5-card">
-      <div class="top5-card-header ${isKo?'korean':'english'}"><span>${isKo?'🇰🇷':'🇺🇸'} ${type.name}</span><span class="badge">${month}</span></div>
-      <div class="top5-list">${bests.length?bests.map((s,i)=>`
-        <div class="top5-item" onclick="selectStudent('${s.id}')">
-          <div class="rank-badge ${ranks[i]}">${i+1}</div>
-          <div class="top5-name">${s.name}</div>
-          <div class="top5-score">${s.score}<span style="font-size:0.67rem;color:var(--text-muted);font-family:'Noto Sans KR'"> 타</span></div>
-        </div>`).join(''):'<div style="padding:9px 13px;font-size:0.79rem;color:var(--text-muted)">이달 기록 없음</div>'}
-      </div></div>`;
-  });
+  }
 
   const jariRanking=students.map(stu=>{
-    const passRecs=records.filter(r=>r.student_id===stu.id&&r.type==='jari'&&!!r.passed&&r.date&&r.date.startsWith(month));
-    return{name:stu.name,id:stu.id,score:passRecs.length};
+    const cnt=records.filter(r=>
+      r.student_id===stu.id && r.type==='jari' && !!r.passed &&
+      r.date && r.date.startsWith(month)
+    ).length;
+    return{name:stu.name,id:stu.id,score:cnt};
   }).filter(s=>s.score>0).sort((a,b)=>b.score-a.score).slice(0,5);
 
-  const jariCard=`<div class="top5-card">
-    <div class="top5-card-header ${isKo?'korean':'english'}"><span>${isKo?'🇰🇷':'🇺🇸'} 자리연습</span><span class="badge">${month}</span></div>
-    <div class="top5-list">${jariRanking.length?jariRanking.map((s,i)=>`
+  function makeItems(list,unit){
+    if(!list.length) return '<div style="padding:9px 13px;font-size:0.79rem;color:var(--text-muted)">기록 없음</div>';
+    return list.map((s,i)=>`
       <div class="top5-item" onclick="selectStudent('${s.id}')">
         <div class="rank-badge ${ranks[i]}">${i+1}</div>
         <div class="top5-name">${s.name}</div>
-        <div class="top5-score">${s.score}<span style="font-size:0.67rem;color:var(--text-muted);font-family:'Noto Sans KR'"> 회 통과</span></div>
-      </div>`).join(''):'<div style="padding:9px 13px;font-size:0.79rem;color:var(--text-muted)">이달 통과 기록 없음</div>'}
-    </div></div>`;
+        <div class="top5-score">${s.score}<span style="font-size:0.67rem;color:var(--text-muted);font-family:'Noto Sans KR'"> ${unit}</span></div>
+      </div>`).join('');
+  }
 
-  document.getElementById('top5-grid').innerHTML=[...otherCards,jariCard].join('');
+  const TYPES=[
+    {id:'word',  name:'낱말 연습'},
+    {id:'short', name:'단문 연습'},
+    {id:'long',  name:'장문 연습'},
+  ];
+
+  // 카드 4개: 가로 배치, 각 카드 안에 KR → US 세로 분리
+  let cards='';
+  TYPES.forEach(type=>{
+    const ko=makeItems(getBests('korean',type.id),'타');
+    const en=makeItems(getBests('english',type.id),'타');
+    cards+=`
+    <div class="top5-card">
+      <div class="top5-card-header korean">
+        <span>KR ${type.name}</span>
+        <span class="badge">${month}</span>
+      </div>
+      <div class="top5-list">${ko}</div>
+      <div class="top5-card-header english" style="border-top:1px solid var(--border);border-bottom:none">
+        <span>US ${type.name}</span>
+      </div>
+      <div class="top5-list">${en}</div>
+    </div>`;
+  });
+  // 자리연습: lang 무관 통합
+  cards+=`
+    <div class="top5-card">
+      <div class="top5-card-header korean">
+        <span>자리연습</span>
+        <span class="badge">${month}</span>
+      </div>
+      <div style="padding:4px 13px 1px;font-size:0.65rem;color:var(--text-muted)">한글+영어 통합 통과 횟수</div>
+      <div class="top5-list">${makeItems(jariRanking,'회 통과')}</div>
+    </div>`;
+
+  el.innerHTML=cards;
 }
 
-// ── TREND TOGGLE ──
-let trendOpen = false;
-function toggleTrend(){
-  trendOpen = !trendOpen;
-  const btn = document.getElementById('trend-toggle-btn');
-  const body = document.getElementById('trend-grid');
-  btn.classList.toggle('open', trendOpen);
-  body.classList.toggle('open', trendOpen);
+// ── TAB NAVIGATION ──
+function tabNext(e,el){
+  if(e.key!=='Tab') return;
+  e.preventDefault();
+  // 전체 테이블에서 모든 input[number] 수집
+  const table=el.closest('[style*="overflow"]')||el.closest('.category-section');
+  if(!table) return;
+  const inputs=[...table.querySelectorAll('input[type=number]')];
+  const idx=inputs.indexOf(el);
+  if(idx===-1) return;
+  const next=e.shiftKey ? inputs[idx-1] : inputs[idx+1];
+  if(next){ next.focus(); next.select(); }
 }
 
 // ── EDIT STUDENT ──
@@ -940,47 +1226,12 @@ async function saveEditStudent(){
   openDays.clear();
   if(checked.length) checked.forEach(d=>openDays.add(d));
   else openDays.add('기타');
-  renderSidebar(); renderTop5(); renderTrend();
+  renderSidebar(); renderTop5();
   renderStudentContent();
   toast(`${name} 수정됨 ✓`);
 }
 
-// ── TREND ──
-function renderTrend(){
-  const month=document.getElementById('selected-month').value;
-  const[y,m]=month.split('-').map(Number);
-  const pd=new Date(y,m-2,1);
-  const prev=`${pd.getFullYear()}-${String(pd.getMonth()+1).padStart(2,'0')}`;
-
-  const chips=students.map(stu=>{
-    const tr=records.filter(r=>r.student_id===stu.id&&r.speed&&r.date?.startsWith(month));
-    const pr=records.filter(r=>r.student_id===stu.id&&r.speed&&r.date?.startsWith(prev));
-    if(!tr.length)return null;
-    const avg=a=>a.reduce((s,r)=>s+r.speed,0)/a.length;
-    const ta=avg(tr),pa=pr.length?avg(pr):null;
-    let cls,label;
-    if(pa===null){cls='same';label='신규';}
-    else{
-      const pct=((ta-pa)/pa*100).toFixed(1);
-      cls=pct>0?'up':pct<0?'down':'same';
-      const arr=pct>0?'▲':pct<0?'▼':'━';
-      label=`${arr} ${Math.abs(pct)}%`;
-    }
-    const isSelected=stu.id===selectedStudentId;
-    return`<div class="trend-chip ${isSelected?'selected':''}" onclick="selectStudent('${stu.id}')">
-      <span class="t-name">${stu.name}</span>
-      <span style="font-family:'Space Mono';font-size:0.75rem;color:var(--text-muted)">${Math.round(ta)}타</span>
-      <span class="t-arrow trend-${cls==='up'?'up':cls==='down'?'down':'same'}">${label}</span>
-    </div>`;
-  }).filter(Boolean);
-
-  const grid = document.getElementById('trend-grid');
-  grid.innerHTML = chips.length
-    ? `<div style="display:flex;gap:7px;flex-wrap:wrap">${chips.join('')}</div>`
-    : '<span style="font-size:0.79rem;color:var(--text-muted)">이달 기록이 있는 학생 없음</span>';
-  const badge = document.getElementById('trend-count-badge');
-  if(badge) badge.textContent = chips.length ? `${chips.length}명` : '';
-}
+// renderTrend 제거됨
 </script>
 </body>
 </html>
