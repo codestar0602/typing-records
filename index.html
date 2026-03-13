@@ -201,6 +201,38 @@
   .student-del { opacity:0; font-size:0.67rem; color:var(--accent2); cursor:pointer; padding:2px 4px; }
   .student-item:hover .student-del { opacity:1; }
 
+  /* CLASS GROUP (요일 안 클래스 구분) */
+  .class-group { border-top:1px solid rgba(46,46,72,0.7); }
+  .class-group-header {
+    display:flex; align-items:center; justify-content:space-between;
+    padding:5px 14px 5px 14px; font-size:0.73rem; font-weight:700;
+    color:var(--accent4); letter-spacing:0.5px; cursor:pointer;
+    background:rgba(247,151,30,0.06); transition:background 0.15s;
+  }
+  .class-group-header:hover { background:rgba(247,151,30,0.12); }
+  .class-group-header .cg-arrow { font-size:0.65rem; transition:transform 0.2s; }
+  .class-group-header.open .cg-arrow { transform:rotate(90deg); }
+  .class-group-students { display:none; }
+  .class-group-students.open { display:block; }
+  .student-item.indented { padding-left:30px; }
+
+  /* 요일 관리 버튼 (사이드바 하단) */
+  .add-day-btn {
+    display:flex; align-items:center; justify-content:center; gap:6px;
+    margin:10px 12px; padding:8px; border:1px dashed var(--border);
+    border-radius:9px; cursor:pointer; font-size:0.78rem; color:var(--text-muted);
+    background:transparent; font-family:'Noto Sans KR',sans-serif;
+    transition:all 0.15s;
+  }
+  .add-day-btn:hover { border-color:var(--accent); color:var(--accent); background:rgba(108,99,255,0.06); }
+  .day-manage-btn {
+    opacity:0; font-size:0.62rem; color:var(--text-muted); cursor:pointer;
+    padding:1px 5px; border-radius:4px; border:1px solid transparent;
+    transition:all 0.15s; white-space:nowrap;
+  }
+  .day-tab-header:hover .day-manage-btn { opacity:1; }
+  .day-manage-btn:hover { border-color:var(--border); background:var(--surface2); }
+
   /* CONTENT */
   .content { flex:1; padding:20px 24px; overflow-y:auto; }
   .content-header { display:flex; align-items:center; margin-bottom:18px; flex-wrap:wrap; gap:8px; }
@@ -470,18 +502,46 @@
     </div>
     <div class="form-group">
       <label>수업 요일 (복수 선택 가능)</label>
-      <div class="day-checkbox-group">
-        <label class="day-cb-label"><input type="checkbox" name="new-days" value="월">월</label>
-        <label class="day-cb-label"><input type="checkbox" name="new-days" value="화">화</label>
-        <label class="day-cb-label"><input type="checkbox" name="new-days" value="수">수</label>
-        <label class="day-cb-label"><input type="checkbox" name="new-days" value="목">목</label>
-        <label class="day-cb-label"><input type="checkbox" name="new-days" value="금">금</label>
-        <label class="day-cb-label"><input type="checkbox" name="new-days" value="토">토</label>
-      </div>
+      <div class="day-checkbox-group" data-day-group="new-days" id="new-days-wrap"></div>
     </div>
+    <div id="new-class-selects" style="margin-top:4px"></div>
     <div class="modal-actions">
       <button class="btn btn-primary" onclick="addStudent()">추가</button>
       <button class="btn btn-secondary" onclick="closeModal('add-student-modal')">취소</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: 요일 추가 -->
+<div class="modal-overlay" id="add-day-modal">
+  <div class="modal" style="max-width:320px">
+    <h3>📅 요일 추가</h3>
+    <div class="form-group">
+      <label>요일 이름 (예: 월, 화, 주말, 특강 등)</label>
+      <input type="text" id="new-day-name" placeholder="요일 이름 입력" onkeydown="if(event.key==='Enter')addDay()">
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-primary" onclick="addDay()">추가</button>
+      <button class="btn btn-secondary" onclick="closeModal('add-day-modal')">취소</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: 클래스 추가 -->
+<div class="modal-overlay" id="add-class-modal">
+  <div class="modal" style="max-width:360px">
+    <h3>📌 클래스 추가</h3>
+    <div class="form-group">
+      <label>클래스 이름 (예: A반, 오전반, 초급반)</label>
+      <input type="text" id="new-class-name" placeholder="클래스 이름 입력" onkeydown="if(event.key==='Enter')addClassConfirm()">
+    </div>
+    <div class="form-group">
+      <label>적용할 요일 선택 (복수 선택 가능)</label>
+      <div class="day-checkbox-group" id="add-class-day-wrap"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-primary" onclick="addClassConfirm()">추가</button>
+      <button class="btn btn-secondary" onclick="closeModal('add-class-modal')">취소</button>
     </div>
   </div>
 </div>
@@ -496,15 +556,9 @@
     </div>
     <div class="form-group">
       <label>수업 요일 (복수 선택 가능)</label>
-      <div class="day-checkbox-group">
-        <label class="day-cb-label"><input type="checkbox" name="edit-days" value="월">월</label>
-        <label class="day-cb-label"><input type="checkbox" name="edit-days" value="화">화</label>
-        <label class="day-cb-label"><input type="checkbox" name="edit-days" value="수">수</label>
-        <label class="day-cb-label"><input type="checkbox" name="edit-days" value="목">목</label>
-        <label class="day-cb-label"><input type="checkbox" name="edit-days" value="금">금</label>
-        <label class="day-cb-label"><input type="checkbox" name="edit-days" value="토">토</label>
-      </div>
+      <div class="day-checkbox-group" data-day-group="edit-days" id="edit-days-wrap"></div>
     </div>
+    <div id="edit-class-selects" style="margin-top:4px"></div>
     <div class="modal-actions">
       <button class="btn btn-primary" onclick="saveEditStudent()">저장</button>
       <button class="btn btn-secondary" onclick="closeModal('edit-student-modal')">취소</button>
@@ -568,7 +622,31 @@ const JARI_STAGES = [
 const OTHER_TYPES = [
   {id:'word',name:'낱말 연습'},{id:'short',name:'단문 연습'},{id:'long',name:'장문 연습'},
 ];
-const DAYS = ['월','화','수','목','금','토'];
+// DAYS: localStorage로 동적 관리 (기본값 월~토)
+// dayClasses: { '월': ['A반','B반'], '화': [] } — 클래스 이름 목록
+let DAYS = ['월','화','수','목','금','토'];
+let dayClasses = {}; // 요일별 클래스 목록
+let openClasses = new Set(); // 열린 클래스 그룹 키 (day+class)
+
+function loadDaysConfig(){
+  try{
+    const saved = localStorage.getItem('days_config');
+    if(saved){ const p=JSON.parse(saved); DAYS=p.days||DAYS; dayClasses=p.classes||{}; }
+    DAYS.forEach(d=>{ if(!dayClasses[d]) dayClasses[d]=[]; });
+  }catch(e){}
+}
+function saveDaysConfig(){
+  localStorage.setItem('days_config', JSON.stringify({days:DAYS, classes:dayClasses}));
+}
+// 학생별 클래스 배정 — localStorage
+function saveClassMap(stuId, map){
+  const all=JSON.parse(localStorage.getItem('class_maps')||'{}');
+  all[stuId]=map;
+  localStorage.setItem('class_maps',JSON.stringify(all));
+}
+function loadClassMap(stuId){
+  try{ return JSON.parse(localStorage.getItem('class_maps')||'{}')[stuId]||{}; }catch(e){return{};}
+}
 
 let students=[], records=[];
 let selectedStudentId=null, selectedLang='korean', jariContext=null;
@@ -661,6 +739,8 @@ async function doLogout(){
 let appInitialized = false; // 최초 1회만 초기화
 
 window.onload=async()=>{
+  // DAYS 설정 먼저 로드 (auth 전에도 필요)
+  loadDaysConfig();
   const now=new Date();
   document.getElementById('selected-month').value=
     `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
@@ -704,7 +784,11 @@ async function loadAll(){
       sb.from('records').select('*').order('date',{ascending:false})
     ]);
     if(se)throw se; if(re)throw re;
-    students=sd||[]; records=rd||[];
+    students=(sd||[]).map(s=>{
+      const cm=loadClassMap(s.id);
+      return{...s,class_map:cm};
+    });
+    records=rd||[];
     setConnected(true); renderAll();
   }catch(e){
     const msg = e?.message || e?.error_description || JSON.stringify(e) || '알 수 없는 오류';
@@ -736,11 +820,10 @@ function renderAll(){renderSidebar();renderTop5();if(selectedStudentId)renderStu
 
 
 
-// ── SIDEBAR (요일별 그룹) ──
+// ── SIDEBAR (요일별 그룹 + 클래스 그룹) ──
 function renderSidebar(){
   const container=document.getElementById('day-tabs');
 
-  // 요일 없는 학생 포함 '기타' 그룹
   const dayGroups={};
   DAYS.forEach(d=>dayGroups[d]=[]);
   dayGroups['기타']=[];
@@ -754,36 +837,216 @@ function renderSidebar(){
     });
   });
 
-  // 중복 제거 (여러 요일 학생)
   const allDayKeys=[...DAYS,'기타'];
 
-  container.innerHTML=allDayKeys.map(day=>{
-    // 같은 학생이 여러 요일에 있을 수 있으므로 unique
+  let html = allDayKeys.map(day=>{
     const stuList=[...new Map(dayGroups[day].map(s=>[s.id,s])).values()]
       .sort((a,b)=>a.name.localeCompare(b.name,'ko'));
-    if(!stuList.length)return '';
+
+    // 기타는 학생 없으면 숨김, 추가된 요일은 학생 없어도 항상 표시
+    if(day==='기타' && !stuList.length) return '';
+
     const isOpen=openDays.has(day);
+    const classes = (dayClasses[day]||[]);
+    const dayLabel = day==='기타' ? '기타' : day+'요일';
+
+    let studentsHtml = '';
+    if(!stuList.length){
+      studentsHtml = '<div style="padding:8px 14px;font-size:0.78rem;color:var(--border)">학생 없음</div>';
+    } else if(classes.length === 0){
+      studentsHtml = stuList.map(s=>studentItemHtml(s)).join('');
+    } else {
+      classes.forEach(cls=>{
+        const clsKey = day+'::'+cls;
+        const clsStudents = stuList.filter(s=>(s.class_map||{})[day]===cls);
+        const isClsOpen = openClasses.has(clsKey);
+        studentsHtml += `
+          <div class="class-group">
+            <div class="class-group-header ${isClsOpen?'open':''}" onclick="toggleClass('${clsKey}')">
+              <span>📌 ${cls}</span>
+              <div style="display:flex;align-items:center;gap:6px">
+                <span style="font-size:0.65rem;color:var(--text-muted)">${clsStudents.length}명</span>
+                <span class="cg-arrow">▶</span>
+                <span onclick="event.stopPropagation();renameClass('${day}','${cls}')" title="클래스 이름 변경" style="font-size:0.65rem;color:var(--text-muted);cursor:pointer;padding:2px 5px;border-radius:3px" onmouseenter="this.style.background='var(--surface2)'" onmouseleave="this.style.background=''">✏️</span>
+                <span onclick="event.stopPropagation();deleteClass('${day}','${cls}')" title="클래스 삭제" style="font-size:0.65rem;color:var(--accent2);cursor:pointer;padding:2px 5px;border-radius:3px" onmouseenter="this.style.background='var(--surface2)'" onmouseleave="this.style.background=''">✕</span>
+              </div>
+            </div>
+            <div class="class-group-students ${isClsOpen?'open':''}">
+              ${clsStudents.length ? clsStudents.map(s=>studentItemHtml(s,true)).join('') : '<div style="padding:6px 14px 6px 30px;font-size:0.75rem;color:var(--border)">학생 없음</div>'}
+            </div>
+          </div>`;
+      });
+      const unassigned = stuList.filter(s=>!classes.includes((s.class_map||{})[day]));
+      if(unassigned.length){
+        studentsHtml += `<div style="padding:4px 14px 2px;font-size:0.65rem;color:var(--text-muted);border-top:1px solid rgba(46,46,72,0.5)">미배정</div>`;
+        studentsHtml += unassigned.map(s=>studentItemHtml(s,true)).join('');
+      }
+    }
+
+    // 요일 바에는 화살표만 — ＋반/삭제 버튼 없음
     return `
     <div class="day-group">
       <div class="day-tab-header ${isOpen?'open':''}" onclick="toggleDay('${day}')">
-        <span>${day}요일${day==='기타'?'':''}</span>
+        <span>${dayLabel}</span>
         <span class="day-arrow">▶</span>
       </div>
       <div class="day-students ${isOpen?'open':''}">
-        ${stuList.map(s=>`
-        <div class="student-item ${s.id===selectedStudentId?'active':''}" onclick="selectStudent('${s.id}')">
-          <span>${s.name}</span>
-          <span class="student-del" onclick="deleteStudent(event,'${s.id}')">✕</span>
-        </div>`).join('')}
+        ${studentsHtml}
       </div>
     </div>`;
   }).join('');
+
+  // 하단 버튼: 요일 추가 + 클래스 추가
+  html += `
+    <button class="add-day-btn" onclick="openAddDayModal()">＋ 요일 추가</button>
+    <button class="add-day-btn" onclick="openAddClassModal()" style="border-color:rgba(247,151,30,0.4);color:var(--accent4)">＋ 클래스 추가</button>
+  `;
+  container.innerHTML = html;
+}
+
+function studentItemHtml(s, indented=false){
+  return `<div class="student-item ${indented?'indented':''} ${s.id===selectedStudentId?'active':''}" onclick="selectStudent('${s.id}')">
+    <span>${s.name}</span>
+    <span class="student-del" onclick="deleteStudent(event,'${s.id}')">✕</span>
+  </div>`;
+}
+
+function toggleClass(key){
+  if(openClasses.has(key))openClasses.delete(key);
+  else openClasses.add(key);
+  renderSidebar();
 }
 
 function toggleDay(day){
   if(openDays.has(day))openDays.delete(day);
   else openDays.add(day);
   renderSidebar();
+}
+
+// ── 요일 추가/삭제 ──
+function openAddDayModal(){
+  document.getElementById('new-day-name').value='';
+  openModal('add-day-modal');
+  setTimeout(()=>document.getElementById('new-day-name').focus(),100);
+}
+function addDay(){
+  const name=document.getElementById('new-day-name').value.trim();
+  if(!name)return;
+  if(DAYS.includes(name))return alert('이미 있는 요일입니다.');
+  DAYS.push(name);
+  if(!dayClasses[name]) dayClasses[name]=[];
+  saveDaysConfig();
+  closeModal('add-day-modal');
+  // 학생 추가/수정 모달 체크박스 갱신
+  refreshDayCheckboxes();
+  openDays.add(name);
+  renderSidebar();
+  toast(name+'요일 추가됨 ✓');
+}
+function deleteDay(day){
+  if(!confirm(`"${day}요일"을 삭제하시겠습니까?
+해당 요일에 배정된 학생들은 "기타"로 이동합니다.`))return;
+  DAYS=DAYS.filter(d=>d!==day);
+  delete dayClasses[day];
+  saveDaysConfig();
+  // 학생 days 필드에서 해당 요일 제거
+  students.forEach(s=>{
+    const days=(s.days||'').split(',').map(d=>d.trim()).filter(d=>d&&d!==day);
+    s.days=days.join(',');
+    sb.from('students').update({days:s.days}).eq('id',s.id);
+  });
+  refreshDayCheckboxes();
+  renderSidebar();
+  toast(day+'요일 삭제됨');
+}
+
+// ── 클래스 추가/삭제/수정 ──
+function openAddClassModal(){
+  // 클래스 추가 모달 — 요일 체크박스 + 클래스 이름
+  const wrap=document.getElementById('add-class-day-wrap');
+  if(wrap) wrap.innerHTML=DAYS.map(d=>`
+    <label class="day-cb-label">
+      <input type="checkbox" name="add-class-days" value="${d}"> ${d}
+    </label>`).join('');
+  document.getElementById('new-class-name').value='';
+  openModal('add-class-modal');
+  setTimeout(()=>document.getElementById('new-class-name').focus(),100);
+}
+function addClassConfirm(){
+  const name=document.getElementById('new-class-name').value.trim();
+  if(!name){alert('클래스 이름을 입력하세요.');return;}
+  const checked=[...document.querySelectorAll('input[name="add-class-days"]:checked')].map(cb=>cb.value);
+  if(!checked.length){alert('요일을 1개 이상 선택하세요.');return;}
+  let added=[];
+  checked.forEach(d=>{
+    if(!dayClasses[d]) dayClasses[d]=[];
+    if(!dayClasses[d].includes(name)){
+      dayClasses[d].push(name);
+      openDays.add(d);
+      openClasses.add(d+'::'+name);
+      added.push(d);
+    }
+  });
+  saveDaysConfig();
+  closeModal('add-class-modal');
+  renderSidebar();
+  if(added.length) toast(`${added.join('·')}요일에 "${name}" 추가됨 ✓`);
+  else toast('이미 있는 클래스입니다.','err');
+}
+function addClassToDay(day){
+  // 요일 헤더 버튼에서 호출 — 해당 요일 미리 체크
+  openAddClassModal();
+  setTimeout(()=>{
+    document.querySelectorAll('input[name="add-class-days"]').forEach(cb=>{
+      cb.checked=(cb.value===day);
+    });
+  },120);
+}
+function renameClass(day,oldName){
+  const newName=prompt(`클래스 이름 변경`, oldName);
+  if(!newName||!newName.trim()||newName.trim()===oldName)return;
+  const n=newName.trim();
+  dayClasses[day]=dayClasses[day].map(c=>c===oldName?n:c);
+  // 학생 class_map도 업데이트
+  students.forEach(s=>{
+    if((s.class_map||{})[day]===oldName){
+      s.class_map[day]=n;
+      const memo=JSON.stringify(s.class_map);
+      sb.from('students').update({memo}).eq('id',s.id);
+    }
+  });
+  saveDaysConfig();
+  renderSidebar();
+  toast('클래스 이름 변경됨');
+}
+function deleteClass(day,cls){
+  if(!confirm(`"${cls}"를 삭제하시겠습니까?
+해당 클래스 학생들은 "미배정"으로 이동합니다.`))return;
+  dayClasses[day]=dayClasses[day].filter(c=>c!==cls);
+  students.forEach(s=>{
+    if((s.class_map||{})[day]===cls){
+      delete s.class_map[day];
+      const memo=JSON.stringify(s.class_map);
+      sb.from('students').update({memo}).eq('id',s.id);
+    }
+  });
+  saveDaysConfig();
+  renderSidebar();
+  toast('클래스 삭제됨');
+}
+
+// 학생 모달 체크박스를 현재 DAYS에 맞게 갱신 (id 기반)
+function refreshDayCheckboxes(){
+  const newWrap=document.getElementById('new-days-wrap');
+  if(newWrap) newWrap.innerHTML=DAYS.map(d=>`
+    <label class="day-cb-label">
+      <input type="checkbox" name="new-days" value="${d}" onchange="updateClassSelects('new')"> ${d}
+    </label>`).join('');
+  const editWrap=document.getElementById('edit-days-wrap');
+  if(editWrap) editWrap.innerHTML=DAYS.map(d=>`
+    <label class="day-cb-label">
+      <input type="checkbox" name="edit-days" value="${d}" onchange="updateClassSelects('edit')"> ${d}
+    </label>`).join('');
 }
 
 // ── STUDENT ACTIONS ──
@@ -818,9 +1081,39 @@ async function deleteStudent(e,id){
   toast('학생 삭제됨');
 }
 
+function renderDayCheckboxes(prefix, checkedDays=[], classMaps={}){
+  const wrap=document.getElementById(prefix+'-days-wrap');
+  if(!wrap)return;
+  wrap.innerHTML=DAYS.map(d=>`
+    <label class="day-cb-label">
+      <input type="checkbox" name="${prefix}-days" value="${d}"
+        ${checkedDays.includes(d)?'checked':''}
+        onchange="updateClassSelects('${prefix}')">
+      ${d}
+    </label>`).join('');
+  updateClassSelects(prefix, classMaps);
+}
+function updateClassSelects(prefix, classMaps={}){
+  const selWrap=document.getElementById(prefix+'-class-selects');
+  if(!selWrap)return;
+  const checked=[...document.querySelectorAll(`input[name="${prefix}-days"]:checked`)].map(cb=>cb.value);
+  selWrap.innerHTML=checked.map(d=>{
+    const classes=dayClasses[d]||[];
+    if(!classes.length)return '';
+    const cur=classMaps[d]||'';
+    return `<div class="form-group" style="margin-bottom:8px">
+      <label style="font-size:0.78rem;color:var(--text-muted)">${d}요일 클래스 <span style="color:var(--text-muted);font-size:0.7rem">(선택)</span></label>
+      <select id="${prefix}-class-sel-${d}"
+        style="width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:7px 10px;border-radius:8px;font-family:'Noto Sans KR',sans-serif;font-size:0.85rem">
+        <option value="">— 클래스 미배정</option>
+        ${classes.map(c=>`<option value="${c}" ${cur===c?'selected':''}>${c}</option>`).join('')}
+      </select>
+    </div>`;
+  }).join('');
+}
 function openAddStudentModal(){
   document.getElementById('new-student-name').value='';
-  document.querySelectorAll('input[name="new-days"]').forEach(cb=>cb.checked=false);
+  renderDayCheckboxes('new');
   openModal('add-student-modal');
   setTimeout(()=>document.getElementById('new-student-name').focus(),100);
 }
@@ -830,15 +1123,24 @@ async function addStudent(){
   if(!name)return alert('이름을 입력하세요');
   const checked=[...document.querySelectorAll('input[name="new-days"]:checked')].map(cb=>cb.value);
   const days=checked.join(',');
+  // 클래스 선택 수집 (로컬 저장)
+  const class_map={};
+  checked.forEach(d=>{
+    const sel=document.getElementById('new-class-sel-'+d);
+    if(sel&&sel.value) class_map[d]=sel.value;
+  });
   const id='stu_'+Date.now();
   showLoading();
+  // Supabase에는 id,name,days만 저장 (memo 컬럼 없음)
   const{error}=await sb.from('students').insert({id,name,days});
   hideLoading();
   if(error)return toast('추가 실패: '+error.message,'err');
-  students.push({id,name,days});
+  // class_map은 localStorage에 저장
+  saveClassMap(id, class_map);
+  const stu={id,name,days,class_map};
+  students.push(stu);
   closeModal('add-student-modal');
-  // 해당 요일 자동 열기
-  if(checked.length)checked.forEach(d=>openDays.add(d));
+  if(checked.length)checked.forEach(d=>{openDays.add(d); if(class_map[d])openClasses.add(d+'::'+class_map[d]);});
   else openDays.add('기타');
   renderSidebar();
   selectStudent(id);
@@ -1238,9 +1540,7 @@ function openEditStudentModal(id){
   if(!stu) return;
   document.getElementById('edit-student-name').value = stu.name;
   const days = (stu.days||'').split(',').map(d=>d.trim()).filter(Boolean);
-  document.querySelectorAll('input[name="edit-days"]').forEach(cb=>{
-    cb.checked = days.includes(cb.value);
-  });
+  renderDayCheckboxes('edit', days, stu.class_map||{});
   openModal('edit-student-modal');
   setTimeout(()=>document.getElementById('edit-student-name').focus(), 100);
 }
@@ -1250,16 +1550,23 @@ async function saveEditStudent(){
   if(!name) return alert('이름을 입력하세요');
   const checked = [...document.querySelectorAll('input[name="edit-days"]:checked')].map(cb=>cb.value);
   const days = checked.join(',');
+  const class_map={};
+  checked.forEach(d=>{
+    const sel=document.getElementById('edit-class-sel-'+d);
+    if(sel&&sel.value) class_map[d]=sel.value;
+  });
   showLoading();
+  // Supabase에는 name, days만 업데이트
   const{error} = await sb.from('students').update({name, days}).eq('id', editingStudentId);
   hideLoading();
   if(error) return toast('수정 실패: '+error.message, 'err');
+  // class_map은 localStorage
+  saveClassMap(editingStudentId, class_map);
   const stu = students.find(s=>s.id===editingStudentId);
-  if(stu){ stu.name=name; stu.days=days; }
+  if(stu){ stu.name=name; stu.days=days; stu.class_map=class_map; }
   closeModal('edit-student-modal');
-  // 변경된 요일로 openDays 갱신
   openDays.clear();
-  if(checked.length) checked.forEach(d=>openDays.add(d));
+  if(checked.length) checked.forEach(d=>{openDays.add(d); if(class_map[d])openClasses.add(d+'::'+class_map[d]);});
   else openDays.add('기타');
   renderSidebar(); renderTop5();
   renderStudentContent();
