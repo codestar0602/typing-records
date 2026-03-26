@@ -180,7 +180,7 @@
   .day-group { border-bottom:1px solid var(--border); }
   .day-tab-header {
     display:flex; align-items:center; justify-content:space-between;
-    padding:9px 14px; cursor:pointer; font-size:0.8rem; font-weight:700;
+    padding:13px 14px; cursor:pointer; font-size:1.5rem; font-weight:700;
     color:var(--text-muted); transition:all 0.15s; user-select:none;
     letter-spacing:1px;
   }
@@ -193,8 +193,8 @@
   .day-students.open { display:block; }
   .student-item {
     display:flex; align-items:center; justify-content:space-between;
-    padding:7px 14px 7px 22px; cursor:pointer;
-    border-left:3px solid transparent; transition:all 0.15s; font-size:0.84rem;
+    padding:10px 14px 10px 22px; cursor:pointer;
+    border-left:3px solid transparent; transition:all 0.15s; font-size:1.5rem;
   }
   .student-item:hover { background:var(--surface2); }
   .student-item.active { background:rgba(108,99,255,0.15); border-left-color:var(--accent); color:var(--accent); font-weight:600; }
@@ -205,7 +205,7 @@
   .class-group { border-top:1px solid rgba(46,46,72,0.7); }
   .class-group-header {
     display:flex; align-items:center; justify-content:space-between;
-    padding:5px 14px 5px 14px; font-size:0.73rem; font-weight:700;
+    padding:8px 14px 8px 14px; font-size:1.3rem; font-weight:700;
     color:var(--accent4); letter-spacing:0.5px; cursor:pointer;
     background:rgba(247,151,30,0.06); transition:background 0.15s;
   }
@@ -219,8 +219,8 @@
   /* 요일 관리 버튼 (사이드바 하단) */
   .add-day-btn {
     display:flex; align-items:center; justify-content:center; gap:6px;
-    margin:10px 12px; padding:8px; border:1px dashed var(--border);
-    border-radius:9px; cursor:pointer; font-size:0.78rem; color:var(--text-muted);
+    margin:10px 12px; padding:12px; border:1px dashed var(--border);
+    border-radius:9px; cursor:pointer; font-size:1.4rem; color:var(--text-muted);
     background:transparent; font-family:'Noto Sans KR',sans-serif;
     transition:all 0.15s;
   }
@@ -236,14 +236,14 @@
   /* CONTENT */
   .content { flex:1; padding:20px 24px; overflow-y:auto; }
   .content-header { display:flex; align-items:center; margin-bottom:18px; flex-wrap:wrap; gap:8px; }
-  .content-header h2 { font-size:1.25rem; font-weight:700; }
+  .content-header h2 { font-size:2.0rem; font-weight:700; }
 
   .lang-tabs { display:flex; background:var(--surface); border:1px solid var(--border); border-radius:10px; overflow:hidden; margin-bottom:16px; }
   .lang-tab { flex:1; padding:9px; text-align:center; cursor:pointer; font-size:0.85rem; font-weight:600; transition:all 0.2s; color:var(--text-muted); }
   .lang-tab.active { background:var(--accent); color:white; }
 
   .category-section { margin-bottom:24px; }
-  .category-title { font-size:0.72rem; letter-spacing:2px; text-transform:uppercase; color:var(--text-muted); font-weight:700; margin-bottom:11px; display:flex; align-items:center; gap:8px; }
+  .category-title { font-size:1.1rem; letter-spacing:2px; text-transform:uppercase; color:var(--text-muted); font-weight:700; margin-bottom:11px; display:flex; align-items:center; gap:8px; }
   .category-title::after { content:''; flex:1; height:1px; background:var(--border); }
 
   /* JARI GRID - 한 줄로 */
@@ -259,17 +259,17 @@
   .jari-card:hover { border-color:var(--accent); transform:translateY(-2px); box-shadow:0 4px 16px rgba(108,99,255,0.15); }
   .jari-card.has-record { border-color:rgba(108,99,255,0.35); }
   .jari-card.has-pass { border-color:rgba(67,233,123,0.5); background:rgba(67,233,123,0.04); }
-  .jari-card-label { font-size:0.58rem; color:var(--text-muted); margin-bottom:2px; text-transform:uppercase; letter-spacing:1px; }
-  .jari-card-name { font-size:0.78rem; font-weight:700; margin-bottom:8px; line-height:1.3; }
+  .jari-card-label { font-size:1.0rem; color:var(--text-muted); margin-bottom:2px; text-transform:uppercase; letter-spacing:1px; }
+  .jari-card-name { font-size:1.3rem; font-weight:700; margin-bottom:8px; line-height:1.3; }
   .jari-pass-row { display:flex; align-items:baseline; justify-content:center; gap:2px; margin-bottom:4px; }
-  .pass-count { font-family:'Space Mono',monospace; font-size:1.2rem; font-weight:700; color:var(--pass); line-height:1; }
-  .pass-denom { font-family:'Space Mono',monospace; font-size:0.72rem; color:var(--text-muted); }
+  .pass-count { font-family:'Space Mono',monospace; font-size:2.0rem; font-weight:700; color:var(--pass); line-height:1; }
+  .pass-denom { font-family:'Space Mono',monospace; font-size:1.2rem; color:var(--text-muted); }
   .pass-label { font-size:0.62rem; color:var(--text-muted); margin-left:1px; }
   .pass-bar-wrap { background:var(--surface2); border-radius:999px; height:3px; overflow:hidden; margin-bottom:6px; }
   .pass-bar-fill { height:100%; border-radius:999px; background:linear-gradient(90deg,var(--accent),var(--pass)); transition:width 0.4s; }
   .jari-card-best { font-family:'Space Mono',monospace; font-size:0.76rem; color:var(--accent); font-weight:700; }
   .jari-card-sub { font-size:0.6rem; color:var(--text-muted); margin-top:2px; }
-  .jari-card-empty { font-size:0.66rem; color:var(--border); margin-top:4px; }
+  .jari-card-empty { font-size:1.1rem; color:var(--border); margin-top:4px; }
 
   /* STATS */
   .stats-summary { display:grid; grid-template-columns:repeat(3,1fr); background:var(--surface2); border:1px solid var(--border); border-radius:10px; margin-bottom:9px; overflow:hidden; }
@@ -1207,7 +1207,6 @@ function renderStudentDetails(){
   html+=`</div></div>`;
 
   // ── 낱말/단문/장문 통합 테이블 (KR+US 통합) ──
-  // 각 타입별로 한글/영어 기록 모두 로드
   const typeDataKR = OTHER_TYPES.map(type=>{
     const recs=records.filter(r=>r.student_id===selectedStudentId&&r.lang==='korean'&&r.type===type.id)
       .sort((a,b)=>(b.date||'').localeCompare(a.date||''));
@@ -1221,12 +1220,11 @@ function renderStudentDetails(){
     return{type,recs,globalBest:speeds.length?Math.max(...speeds):null};
   });
 
-  // COL: 날짜 | [낱말KR 낱말US del] | [단문KR 단문US del] | [장문KR 장문US del]
-  const COL  = 'grid-template-columns:110px 1fr 1fr 32px 1fr 1fr 32px 1fr 1fr 32px';
-  const MINW = 'min-width:700px';
-  const ROWH = 'min-height:52px'; // 행 높이 2배
+  // COL: 날짜 | KR낱말 | KR삭제 | US낱말 | US삭제 | KR단문 | KR삭제 | US단문 | US삭제 | KR장문 | KR삭제 | US장문 | US삭제
+  const COL  = 'grid-template-columns:110px 1fr 30px 1fr 30px 1fr 30px 1fr 30px 1fr 30px 1fr 30px';
+  const MINW = 'min-width:900px';
+  const ROWH = 'min-height:56px';
 
-  // 모든 날짜 통합 수집
   const allDates=[...new Set([
     ...typeDataKR.flatMap(d=>d.recs.map(r=>r.date||'')),
     ...typeDataUS.flatMap(d=>d.recs.map(r=>r.date||''))
@@ -1238,32 +1236,34 @@ function renderStudentDetails(){
 
       <!-- 전체 최고기록 행 -->
       <div style="display:grid;${COL};background:var(--surface2);border-bottom:2px solid var(--border);${MINW}">
-        <div style="padding:10px 12px;font-size:0.75rem;color:var(--text-muted);font-weight:700;border-right:1px solid var(--border);display:flex;align-items:center">전체<br>최고기록</div>
+        <div style="padding:10px 12px;font-size:1.0rem;color:var(--text-muted);font-weight:700;border-right:1px solid var(--border);display:flex;align-items:center">전체<br>최고기록</div>
         ${OTHER_TYPES.flatMap((type,i)=>{
           const kr=typeDataKR[i]; const us=typeDataUS[i];
-          const sep=i<2?'border-right:1px solid var(--border)':'';
+          const sep=i<2?'border-right:2px solid var(--border)':'';
           return[
             `<div style="padding:10px 10px;border-right:1px solid rgba(108,99,255,0.2)">
-              <div style="font-size:0.65rem;color:var(--accent);margin-bottom:3px">🇰🇷 ${type.name}</div>
-              <div style="font-family:'Space Mono',monospace;font-size:1rem;font-weight:700;color:var(--accent3)">${kr.globalBest??'--'}<span style="font-size:0.62rem;color:var(--text-muted)"> 타</span></div>
+              <div style="font-size:0.85rem;color:var(--accent);margin-bottom:3px">🇰🇷 ${type.name}</div>
+              <div style="font-family:'Space Mono',monospace;font-size:1.3rem;font-weight:700;color:var(--accent3)">${kr.globalBest??'--'}<span style="font-size:0.75rem;color:var(--text-muted)"> 타</span></div>
             </div>`,
-            `<div style="padding:10px 10px;border-right:1px solid rgba(247,151,30,0.25)">
-              <div style="font-size:0.65rem;color:var(--accent4);margin-bottom:3px">🇺🇸 ${type.name}</div>
-              <div style="font-family:'Space Mono',monospace;font-size:1rem;font-weight:700;color:var(--accent3)">${us.globalBest??'--'}<span style="font-size:0.62rem;color:var(--text-muted)"> 타</span></div>
+            `<div style="border-right:1px solid rgba(108,99,255,0.15)"></div>`,
+            `<div style="padding:10px 10px;border-right:1px solid rgba(247,151,30,0.3)">
+              <div style="font-size:0.85rem;color:var(--accent4);margin-bottom:3px">🇺🇸 ${type.name}</div>
+              <div style="font-family:'Space Mono',monospace;font-size:1.3rem;font-weight:700;color:var(--accent3)">${us.globalBest??'--'}<span style="font-size:0.75rem;color:var(--text-muted)"> 타</span></div>
             </div>`,
             `<div style="${sep}"></div>`
           ];
         }).join('')}
       </div>
 
-      <!-- 헤더 1단: 타입명 span -->
+      <!-- 헤더 -->
       <div style="display:grid;${COL};background:rgba(0,0,0,0.25);border-bottom:1px solid var(--border);${MINW}">
-        <div style="padding:8px 12px;font-size:0.72rem;color:var(--text-muted);font-weight:700;border-right:1px solid var(--border)">날짜</div>
+        <div style="padding:9px 12px;font-size:1.0rem;color:var(--text-muted);font-weight:700;border-right:1px solid var(--border)">날짜</div>
         ${OTHER_TYPES.flatMap((type,i)=>{
-          const sep=i<2?'border-right:1px solid var(--border)':'';
+          const sep=i<2?'border-right:2px solid var(--border)':'';
           return[
-            `<div style="padding:8px 10px;font-size:0.82rem;font-weight:700;color:var(--accent);border-right:1px solid rgba(108,99,255,0.2)">🇰🇷 ${type.name}</div>`,
-            `<div style="padding:8px 10px;font-size:0.82rem;font-weight:700;color:var(--accent4);border-right:1px solid rgba(247,151,30,0.25)">🇺🇸 ${type.name}</div>`,
+            `<div style="padding:9px 10px;font-size:1.0rem;font-weight:700;color:var(--accent);border-right:1px solid rgba(108,99,255,0.2)">🇰🇷 ${type.name}</div>`,
+            `<div style="border-right:1px solid rgba(108,99,255,0.15)"></div>`,
+            `<div style="padding:9px 10px;font-size:1.0rem;font-weight:700;color:var(--accent4);border-right:1px solid rgba(247,151,30,0.3)">🇺🇸 ${type.name}</div>`,
             `<div style="${sep}"></div>`
           ];
         }).join('')}
@@ -1272,48 +1272,50 @@ function renderStudentDetails(){
   allDates.forEach(date=>{
     const krByType=typeDataKR.map(d=>d.recs.filter(r=>r.date===date));
     const usByType=typeDataUS.map(d=>d.recs.filter(r=>r.date===date));
-    const maxR=Math.max(
-      ...krByType.map(r=>r.length),
-      ...usByType.map(r=>r.length),1
-    );
+    const maxR=Math.max(...krByType.map(r=>r.length),...usByType.map(r=>r.length),1);
     for(let ri=0;ri<maxR;ri++){
       html+=`<div style="display:grid;${COL};border-top:1px solid var(--border);align-items:center;${MINW};${ROWH};transition:background 0.1s" onmouseenter="this.style.background='rgba(108,99,255,0.03)'" onmouseleave="this.style.background=''">`;
-      // 날짜
-      html+=`<div style="padding:6px 10px;font-family:'Space Mono',monospace;font-size:0.82rem;border-right:1px solid var(--border);color:var(--text-muted);white-space:nowrap;height:100%;display:flex;align-items:center">${ri===0?date:''}</div>`;
-      // 타입별
+      html+=`<div style="padding:6px 10px;font-family:'Space Mono',monospace;font-size:1.0rem;border-right:1px solid var(--border);color:var(--text-muted);white-space:nowrap;height:100%;display:flex;align-items:center">${ri===0?date:''}</div>`;
       OTHER_TYPES.forEach((type,ti)=>{
         const kr=krByType[ti][ri];
         const us=usByType[ti][ri];
         const krBest=kr&&kr.speed&&kr.speed===typeDataKR[ti].globalBest;
         const usBest=us&&us.speed&&us.speed===typeDataUS[ti].globalBest;
-        const sepDel=ti<2?'border-right:1px solid var(--border)':'';
-        // KR 입력
+        const sepDel=ti<2?'border-right:2px solid var(--border)':'';
+
+        // KR 입력칸
         if(kr){
-          html+=`<input value="${kr.speed??''}" placeholder="타수 입력" type="number"
-            style="width:100%;height:100%;background:transparent;border:1px solid transparent;color:${krBest?'var(--accent3)':'var(--text)'};font-family:'Space Mono',monospace;font-size:0.95rem;padding:8px 10px;transition:all 0.15s;${krBest?'font-weight:700;':''}border-right:1px solid rgba(108,99,255,0.2)"
-            onfocus="this.style.background='var(--surface2)';this.style.borderColor='var(--accent)'"
-            onblur="this.style.background='transparent';this.style.borderColor='transparent'"
+          html+=`<input value="${kr.speed??''}" placeholder="타수" type="number"
+            style="width:100%;height:100%;background:transparent;border:none;border-right:1px solid rgba(108,99,255,0.2);color:${krBest?'var(--accent3)':'var(--text)'};font-family:'Space Mono',monospace;font-size:1.1rem;padding:8px 10px;${krBest?'font-weight:700;':''}"
+            onfocus="this.style.background='var(--surface2)'"
+            onblur="this.style.background='transparent'"
             onchange="updateRecord('${kr.id}','speed',this.value)"
             onkeydown="tabNext(event,this)">`;
         } else {
           html+=`<div style="border-right:1px solid rgba(108,99,255,0.2);height:100%"></div>`;
         }
-        // US 입력
+        // KR 삭제 버튼 (KR만)
+        html+=`<div style="display:flex;align-items:center;justify-content:center;border-right:1px solid rgba(108,99,255,0.15);height:100%">
+          ${kr?`<button onclick="deleteRecord('${kr.id}')"
+            style="padding:3px 5px;background:#cc3355;border:none;color:white;border-radius:4px;cursor:pointer;font-size:0.8rem;opacity:0.7"
+            onmouseenter="this.style.opacity='1'" onmouseleave="this.style.opacity='0.7'">✕</button>`:''}
+        </div>`;
+
+        // US 입력칸
         if(us){
-          html+=`<input value="${us.speed??''}" placeholder="타수 입력" type="number"
-            style="width:100%;height:100%;background:transparent;border:1px solid transparent;color:${usBest?'var(--accent3)':'var(--text)'};font-family:'Space Mono',monospace;font-size:0.95rem;padding:8px 10px;transition:all 0.15s;${usBest?'font-weight:700;':''}border-right:1px solid rgba(247,151,30,0.25)"
-            onfocus="this.style.background='rgba(247,151,30,0.06)';this.style.borderColor='var(--accent4)'"
-            onblur="this.style.background='transparent';this.style.borderColor='transparent'"
+          html+=`<input value="${us.speed??''}" placeholder="타수" type="number"
+            style="width:100%;height:100%;background:transparent;border:none;border-right:1px solid rgba(247,151,30,0.3);color:${usBest?'var(--accent3)':'var(--text)'};font-family:'Space Mono',monospace;font-size:1.1rem;padding:8px 10px;${usBest?'font-weight:700;':''}"
+            onfocus="this.style.background='rgba(247,151,30,0.06)'"
+            onblur="this.style.background='transparent'"
             onchange="updateRecord('${us.id}','speed',this.value)"
             onkeydown="tabNext(event,this)">`;
         } else {
-          html+=`<div style="border-right:1px solid rgba(247,151,30,0.25);height:100%"></div>`;
+          html+=`<div style="border-right:1px solid rgba(247,151,30,0.3);height:100%"></div>`;
         }
-        // 삭제 버튼 (해당 날짜 해당 타입 전체 삭제)
-        const delIds=[kr,us].filter(Boolean).map(r=>r.id);
+        // US 삭제 버튼 (US만)
         html+=`<div style="display:flex;align-items:center;justify-content:center;${sepDel};height:100%">
-          ${delIds.length?`<button onclick="${delIds.map(id=>`deleteRecord('${id}')`).join(';')}"
-            style="padding:3px 5px;background:#cc3355;border:none;color:white;border-radius:4px;cursor:pointer;font-size:0.7rem;opacity:0.7"
+          ${us?`<button onclick="deleteRecord('${us.id}')"
+            style="padding:3px 5px;background:#cc3355;border:none;color:white;border-radius:4px;cursor:pointer;font-size:0.8rem;opacity:0.7"
             onmouseenter="this.style.opacity='1'" onmouseleave="this.style.opacity='0.7'">✕</button>`:''}
         </div>`;
       });
@@ -1322,20 +1324,21 @@ function renderStudentDetails(){
   });
 
   if(!allDates.length){
-    html+=`<div style="padding:24px;text-align:center;color:var(--text-muted);font-size:0.9rem;border-top:1px solid var(--border)">기록 없음 — 아래 버튼으로 추가하세요</div>`;
+    html+=`<div style="padding:24px;text-align:center;color:var(--text-muted);font-size:1.0rem;border-top:1px solid var(--border)">기록 없음 — 아래 버튼으로 추가하세요</div>`;
   }
 
   // 추가 버튼 행
   html+=`<div style="display:grid;${COL};border-top:1px solid var(--border);background:rgba(0,0,0,0.1);${MINW}">
-    <div style="padding:10px 12px;font-size:0.75rem;color:var(--text-muted);border-right:1px solid var(--border);display:flex;align-items:center">+ 행 추가</div>
+    <div style="padding:10px 12px;font-size:0.9rem;color:var(--text-muted);border-right:1px solid var(--border);display:flex;align-items:center">+ 행 추가</div>
     ${OTHER_TYPES.flatMap((type,i)=>{
-      const sep=i<2?'border-right:1px solid var(--border)':'';
+      const sep=i<2?'border-right:2px solid var(--border)':'';
       return[
         `<div style="padding:6px 8px;border-right:1px solid rgba(108,99,255,0.2);display:flex;align-items:center">
-          <button class="btn btn-secondary btn-sm" style="border-color:var(--accent);color:var(--accent)" onclick="addOtherRecord('${type.id}','korean')">🇰🇷 ${type.name}</button>
+          <button class="btn btn-secondary btn-sm" style="border-color:var(--accent);color:var(--accent);font-size:0.85rem" onclick="addOtherRecord('${type.id}','korean')">🇰🇷 ${type.name}</button>
         </div>`,
-        `<div style="padding:6px 8px;border-right:1px solid rgba(247,151,30,0.25);display:flex;align-items:center">
-          <button class="btn btn-secondary btn-sm" style="border-color:var(--accent4);color:var(--accent4)" onclick="addOtherRecord('${type.id}','english')">🇺🇸 ${type.name}</button>
+        `<div style="border-right:1px solid rgba(108,99,255,0.15)"></div>`,
+        `<div style="padding:6px 8px;border-right:1px solid rgba(247,151,30,0.3);display:flex;align-items:center">
+          <button class="btn btn-secondary btn-sm" style="border-color:var(--accent4);color:var(--accent4);font-size:0.85rem" onclick="addOtherRecord('${type.id}','english')">🇺🇸 ${type.name}</button>
         </div>`,
         `<div style="${sep}"></div>`
       ];
