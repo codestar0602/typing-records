@@ -82,6 +82,7 @@
     padding:5px 10px; border-radius:8px; font-family:'Space Mono',monospace; font-size:1.6rem;
   }
 
+  /* TOP5 */
   #top5-section { background:linear-gradient(135deg,#1a1a2e,#12122a); border-bottom:2px solid var(--border); padding:16px 24px; }
   .section-title { font-size:1.5rem; font-weight:700; letter-spacing:2px; color:var(--text-muted); text-transform:uppercase; margin-bottom:11px; }
   .top5-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:11px; }
@@ -91,21 +92,15 @@
   .top5-card-header.english { background:linear-gradient(90deg,#1c3a5e,#1e3a8a); }
   .top5-card-header .badge { font-size:0.67rem; padding:2px 7px; border-radius:999px; background:rgba(255,255,255,0.15); margin-left:auto; }
   .top5-list { padding:5px 0; }
-  .top5-item { display:flex; align-items:center; justify-content:center; padding:5px 8px; gap:7px; transition:background 0.15s; cursor:pointer; }
+  .top5-item { display:flex; align-items:center; justify-content:center; padding:7px 10px; gap:9px; transition:background 0.15s; cursor:pointer; }
   .top5-item:hover { background:var(--surface2); }
-
-  .rank-badge {
-    width:24px; height:24px; border-radius:50%;
-    display:flex; align-items:center; justify-content:center;
-    font-family:'Space Mono',monospace; font-size:0.72rem; font-weight:700; flex-shrink:0;
-  }
+  .rank-badge { width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:'Space Mono',monospace; font-size:1.1rem; font-weight:700; flex-shrink:0; }
   .rank-1 { background:var(--gold); color:#000; }
   .rank-2 { background:var(--silver); color:#000; }
   .rank-3 { background:var(--bronze); color:#fff; }
   .rank-4,.rank-5 { background:var(--surface2); color:var(--text-muted); border:1px solid var(--border); }
-
-  .top5-name { flex:1; font-size:1.0rem; font-weight:500; text-align:center; }
-  .top5-score { font-family:'Space Mono',monospace; font-size:1.0rem; color:var(--accent); font-weight:700; text-align:center; }
+  .top5-name { flex:1; font-size:1.5rem; font-weight:500; text-align:center; }
+  .top5-score { font-family:'Space Mono',monospace; font-size:1.5rem; color:var(--accent); font-weight:700; text-align:center; }
 
   /* AUTH */
   #auth-screen {
@@ -154,6 +149,23 @@
   .logout-btn { padding:4px 11px; border-radius:7px; border:1px solid var(--border); background:transparent; color:var(--text-muted); cursor:pointer; font-size:0.73rem; font-family:'Noto Sans KR',sans-serif; transition:all 0.15s; }
   .logout-btn:hover { border-color:var(--accent2); color:var(--accent2); }
 
+  /* TREND */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   /* MAIN LAYOUT */
   main { display:flex; min-height:calc(100vh - 200px); }
 
@@ -174,6 +186,7 @@
   }
   .day-tab-header:hover { background:var(--surface2); color:var(--text); }
   .day-tab-header.open { color:var(--accent); background:rgba(108,99,255,0.08); }
+  .day-tab-header
   .day-tab-header .day-arrow { font-size:0.7rem; transition:transform 0.2s; }
   .day-tab-header.open .day-arrow { transform:rotate(90deg); }
   .day-students { display:none; }
@@ -188,7 +201,7 @@
   .student-del { opacity:0; font-size:0.67rem; color:var(--accent2); cursor:pointer; padding:2px 4px; }
   .student-item:hover .student-del { opacity:1; }
 
-  /* CLASS GROUP */
+  /* CLASS GROUP (요일 안 클래스 구분) */
   .class-group { border-top:1px solid rgba(46,46,72,0.7); }
   .class-group-header {
     display:flex; align-items:center; justify-content:space-between;
@@ -203,6 +216,7 @@
   .class-group-students.open { display:block; }
   .student-item.indented { padding-left:30px; }
 
+  /* 요일 관리 버튼 (사이드바 하단) */
   .add-day-btn {
     display:flex; align-items:center; justify-content:center; gap:6px;
     margin:10px 12px; padding:12px; border:1px dashed var(--border);
@@ -229,37 +243,10 @@
   .lang-tab.active { background:var(--accent); color:white; }
 
   .category-section { margin-bottom:24px; }
+  .category-title { font-size:1.1rem; letter-spacing:2px; text-transform:uppercase; color:var(--text-muted); font-weight:700; margin-bottom:11px; display:flex; align-items:center; gap:8px; }
+  .category-title::after { content:''; flex:1; height:1px; background:var(--border); }
 
-  /* ===== 자리연습 접기/펼치기 ===== */
-  .jari-toggle-header {
-    display:flex; align-items:center; gap:10px; cursor:pointer;
-    user-select:none; margin-bottom:0;
-    padding:8px 12px 8px 0;
-    border-radius:8px;
-    transition:opacity 0.15s;
-  }
-  .jari-toggle-header:hover { opacity:0.85; }
-  .jari-toggle-header .category-title { margin-bottom:0; cursor:pointer; }
-  .jari-arrow {
-    font-size:0.75rem; color:var(--text-muted);
-    transition:transform 0.25s; display:inline-block;
-  }
-  .jari-arrow.open { transform:rotate(90deg); }
-  .jari-body { display:none; margin-top:10px; }
-  .jari-body.open { display:block; }
-
-  .category-title {
-    font-size:1.1rem; letter-spacing:2px; text-transform:uppercase;
-    color:var(--text); font-weight:700; margin-bottom:11px;
-    display:inline-flex; align-items:center; gap:8px;
-    background:linear-gradient(90deg, rgba(108,99,255,0.25), rgba(108,99,255,0.08));
-    border-left:3px solid var(--accent);
-    padding:6px 16px 6px 12px;
-    border-radius:0 8px 8px 0;
-  }
-  .category-title::after { display:none; }
-
-  /* JARI GRID */
+  /* JARI GRID - 한 줄로 */
   .jari-grid {
     display:grid;
     grid-template-columns:repeat(8, 1fr);
@@ -350,6 +337,8 @@
   .empty-state { text-align:center; padding:60px 20px; color:var(--text-muted); }
   .empty-state .icon { font-size:3rem; margin-bottom:12px; }
   .empty-state p { font-size:0.88rem; }
+
+
 
   /* EDIT DAY BUTTON */
   .edit-day-btn {
@@ -605,8 +594,8 @@
 </div>
 
 <script>
-const SUPABASE_URL = 'https://awsvbgezyhwuwavhsrho.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_HVqQwIJ2hyYxQc-P63lIig_VZiPkq5P';
+const SUPABASE_URL = 'https://oeoxxmfgfiegfggyhohm.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_3I5zrDvfDsXW1BxK3xeRpA_6UIiWr_U';
 let sb;
 try {
   sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -623,12 +612,11 @@ const JARI_STAGES = [
 const OTHER_TYPES = [
   {id:'word',name:'낱말 연습'},{id:'short',name:'단문 연습'},{id:'long',name:'장문 연습'},
 ];
+// DAYS: localStorage로 동적 관리 (기본값 월~토)
+// dayClasses: { '월': ['A반','B반'], '화': [] } — 클래스 이름 목록
 let DAYS = ['월','화','수','목','금','토'];
-let dayClasses = {};
-let openClasses = new Set();
-
-// 자리연습 섹션 열림 상태 (기본: 닫힘)
-let jariOpen = false;
+let dayClasses = {}; // 요일별 클래스 목록
+let openClasses = new Set(); // 열린 클래스 그룹 키 (day+class)
 
 function loadDaysConfig(){
   try{
@@ -640,6 +628,7 @@ function loadDaysConfig(){
 function saveDaysConfig(){
   localStorage.setItem('days_config', JSON.stringify({days:DAYS, classes:dayClasses}));
 }
+// 학생별 클래스 배정 — localStorage
 function saveClassMap(stuId, map){
   const all=JSON.parse(localStorage.getItem('class_maps')||'{}');
   all[stuId]=map;
@@ -651,8 +640,9 @@ function loadClassMap(stuId){
 
 let students=[], records=[];
 let selectedStudentId=null, selectedLang='korean', jariContext=null;
-let openDays=new Set();
+let openDays=new Set(); // 열린 요일 그룹
 
+// ── UI HELPERS ──
 function showLoading(){document.getElementById('loading-overlay').classList.remove('hidden');}
 function hideLoading(){document.getElementById('loading-overlay').classList.add('hidden');}
 let toastTimer;
@@ -671,6 +661,7 @@ document.querySelectorAll('.modal-overlay').forEach(el=>{
   el.addEventListener('click',e=>{if(e.target===el)closeModal(el.id);});
 });
 
+// ── AUTH ──
 let currentUser=null;
 let authMode='login';
 
@@ -710,6 +701,7 @@ async function doAuth(){
       errEl.textContent='가입 완료! 이메일 인증 후 로그인해주세요.';
       switchAuthTab('login');
     }
+    // 세션이 생기면 onAuthStateChange가 처리
   } catch(e){
     const msg=e.message||'오류가 발생했습니다.';
     errEl.style.color='var(--accent2)';
@@ -733,14 +725,17 @@ async function doLogout(){
   toast('로그아웃되었습니다.');
 }
 
-let appInitialized = false;
+// ── INIT ──
+let appInitialized = false; // 최초 1회만 초기화
 
 window.onload=async()=>{
+  // DAYS 설정 먼저 로드 (auth 전에도 필요)
   loadDaysConfig();
   const now=new Date();
   document.getElementById('selected-month').value=
     `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
 
+  // Auth 상태 감지 — SIGNED_IN 이벤트만 처리, TOKEN_REFRESHED 등 무시
   sb.auth.onAuthStateChange(async(event,session)=>{
     if(event==='SIGNED_IN' && session?.user && !appInitialized){
       appInitialized=true;
@@ -753,8 +748,10 @@ window.onload=async()=>{
     if(event==='SIGNED_OUT'){
       appInitialized=false;
     }
+    // TOKEN_REFRESHED, USER_UPDATED 등은 완전히 무시 → 스피너 없음
   });
 
+  // 이미 로그인 세션 있으면 바로 진입
   const{data:{session}}=await sb.auth.getSession();
   if(session?.user && !appInitialized){
     appInitialized=true;
@@ -811,6 +808,9 @@ function setupRealtime(){
 
 function renderAll(){renderSidebar();renderTop5();if(selectedStudentId)renderStudentContent();}
 
+
+
+// ── SIDEBAR (요일별 그룹 + 클래스 그룹) ──
 function renderSidebar(){
   const container=document.getElementById('day-tabs');
 
@@ -833,6 +833,7 @@ function renderSidebar(){
     const stuList=[...new Map(dayGroups[day].map(s=>[s.id,s])).values()]
       .sort((a,b)=>a.name.localeCompare(b.name,'ko'));
 
+    // 기타는 학생 없으면 숨김, 추가된 요일은 학생 없어도 항상 표시
     if(day==='기타' && !stuList.length) return '';
 
     const isOpen=openDays.has(day);
@@ -872,6 +873,7 @@ function renderSidebar(){
       }
     }
 
+    // 요일 바에는 화살표만 — ＋반/삭제 버튼 없음
     return `
     <div class="day-group">
       <div class="day-tab-header ${isOpen?'open':''}" onclick="toggleDay('${day}')">
@@ -884,6 +886,7 @@ function renderSidebar(){
     </div>`;
   }).join('');
 
+  // 하단 버튼: 요일 추가 + 클래스 추가
   html += `
     <button class="add-day-btn" onclick="openAddDayModal()">＋ 요일 추가</button>
     <button class="add-day-btn" onclick="openAddClassModal()" style="border-color:rgba(247,151,30,0.4);color:var(--accent4)">＋ 클래스 추가</button>
@@ -910,6 +913,7 @@ function toggleDay(day){
   renderSidebar();
 }
 
+// ── 요일 추가/삭제 ──
 function openAddDayModal(){
   document.getElementById('new-day-name').value='';
   openModal('add-day-modal');
@@ -923,16 +927,19 @@ function addDay(){
   if(!dayClasses[name]) dayClasses[name]=[];
   saveDaysConfig();
   closeModal('add-day-modal');
+  // 학생 추가/수정 모달 체크박스 갱신
   refreshDayCheckboxes();
   openDays.add(name);
   renderSidebar();
   toast(name+'요일 추가됨 ✓');
 }
 function deleteDay(day){
-  if(!confirm(`"${day}요일"을 삭제하시겠습니까?\n해당 요일에 배정된 학생들은 "기타"로 이동합니다.`))return;
+  if(!confirm(`"${day}요일"을 삭제하시겠습니까?
+해당 요일에 배정된 학생들은 "기타"로 이동합니다.`))return;
   DAYS=DAYS.filter(d=>d!==day);
   delete dayClasses[day];
   saveDaysConfig();
+  // 학생 days 필드에서 해당 요일 제거
   students.forEach(s=>{
     const days=(s.days||'').split(',').map(d=>d.trim()).filter(d=>d&&d!==day);
     s.days=days.join(',');
@@ -943,7 +950,9 @@ function deleteDay(day){
   toast(day+'요일 삭제됨');
 }
 
+// ── 클래스 추가/삭제/수정 ──
 function openAddClassModal(){
+  // 클래스 추가 모달 — 요일 체크박스 + 클래스 이름
   const wrap=document.getElementById('add-class-day-wrap');
   if(wrap) wrap.innerHTML=DAYS.map(d=>`
     <label class="day-cb-label">
@@ -975,6 +984,7 @@ function addClassConfirm(){
   else toast('이미 있는 클래스입니다.','err');
 }
 function addClassToDay(day){
+  // 요일 헤더 버튼에서 호출 — 해당 요일 미리 체크
   openAddClassModal();
   setTimeout(()=>{
     document.querySelectorAll('input[name="add-class-days"]').forEach(cb=>{
@@ -987,6 +997,7 @@ function renameClass(day,oldName){
   if(!newName||!newName.trim()||newName.trim()===oldName)return;
   const n=newName.trim();
   dayClasses[day]=dayClasses[day].map(c=>c===oldName?n:c);
+  // 학생 class_map도 업데이트
   students.forEach(s=>{
     if((s.class_map||{})[day]===oldName){
       s.class_map[day]=n;
@@ -999,7 +1010,8 @@ function renameClass(day,oldName){
   toast('클래스 이름 변경됨');
 }
 function deleteClass(day,cls){
-  if(!confirm(`"${cls}"를 삭제하시겠습니까?\n해당 클래스 학생들은 "미배정"으로 이동합니다.`))return;
+  if(!confirm(`"${cls}"를 삭제하시겠습니까?
+해당 클래스 학생들은 "미배정"으로 이동합니다.`))return;
   dayClasses[day]=dayClasses[day].filter(c=>c!==cls);
   students.forEach(s=>{
     if((s.class_map||{})[day]===cls){
@@ -1013,6 +1025,7 @@ function deleteClass(day,cls){
   toast('클래스 삭제됨');
 }
 
+// 학생 모달 체크박스를 현재 DAYS에 맞게 갱신 (id 기반)
 function refreshDayCheckboxes(){
   const newWrap=document.getElementById('new-days-wrap');
   if(newWrap) newWrap.innerHTML=DAYS.map(d=>`
@@ -1026,8 +1039,10 @@ function refreshDayCheckboxes(){
     </label>`).join('');
 }
 
+// ── STUDENT ACTIONS ──
 function selectStudent(id){
   selectedStudentId=id;
+  // 해당 학생이 속한 요일 자동 열기
   const stu=students.find(s=>s.id===id);
   if(stu){
     const days=(stu.days||'').split(',').map(d=>d.trim()).filter(Boolean);
@@ -1098,6 +1113,7 @@ async function addStudent(){
   if(!name)return alert('이름을 입력하세요');
   const checked=[...document.querySelectorAll('input[name="new-days"]:checked')].map(cb=>cb.value);
   const days=checked.join(',');
+  // 클래스 선택 수집 (로컬 저장)
   const class_map={};
   checked.forEach(d=>{
     const sel=document.getElementById('new-class-sel-'+d);
@@ -1105,9 +1121,11 @@ async function addStudent(){
   });
   const id='stu_'+Date.now();
   showLoading();
-  const{error}=await sb.from('students').insert({id,name,days});
+  // Supabase에는 id,name,days만 저장 (memo 컬럼 없음)
+  const{error}=await sb.from('students').insert({id,name,days,user_id:currentUser.id});
   hideLoading();
   if(error)return toast('추가 실패: '+error.message,'err');
+  // class_map은 localStorage에 저장
   saveClassMap(id, class_map);
   const stu={id,name,days,class_map};
   students.push(stu);
@@ -1119,6 +1137,7 @@ async function addStudent(){
   toast(`${name} 추가됨 ✓`);
 }
 
+// ── STUDENT CONTENT ──
 function renderStudentContent(){
   const stu=students.find(s=>s.id===selectedStudentId);
   if(!stu)return;
@@ -1134,30 +1153,18 @@ function renderStudentContent(){
   renderStudentDetails();
 }
 
-// ===== 자리연습 토글 함수 =====
-function toggleJari(){
-  jariOpen = !jariOpen;
-  const body = document.getElementById('jari-body');
-  const arrow = document.getElementById('jari-arrow');
-  if(body) body.classList.toggle('open', jariOpen);
-  if(arrow) arrow.classList.toggle('open', jariOpen);
-}
 
 function renderStudentDetails(){
   const container=document.getElementById('student-details');
   if(!container)return;
 
-  // ===== 수정1: 자리연습 섹션 - 헤더 클릭으로 접기/펼치기 =====
+  // ── 자리 연습 (한글/영어 분리 표시) ──
   let html=`<div class="category-section">
-    <div class="jari-toggle-header" onclick="toggleJari()">
-      <div class="category-title" style="margin-bottom:0;cursor:pointer">🖐 자리 연습</div>
-      <span class="jari-arrow ${jariOpen?'open':''}" id="jari-arrow">▶</span>
+    <div class="category-title">🖐 자리 연습</div>
+    <div style="display:flex;gap:6px;margin-bottom:6px">
+      <span style="font-size:0.72rem;color:var(--accent);font-weight:700">🇰🇷 한글</span>
     </div>
-    <div class="jari-body ${jariOpen?'open':''}" id="jari-body">
-      <div style="display:flex;gap:6px;margin-bottom:6px;margin-top:4px">
-        <span style="font-size:0.72rem;color:var(--accent);font-weight:700">🇰🇷 한글</span>
-      </div>
-      <div class="jari-grid" style="margin-bottom:12px">`;
+    <div class="jari-grid" style="margin-bottom:12px">`;
 
   JARI_STAGES.forEach(stage=>{
     const recs=records.filter(r=>r.student_id===selectedStudentId&&r.lang==='korean'&&r.type==='jari'&&r.stage_id===stage.id);
@@ -1175,12 +1182,11 @@ function renderStudentDetails(){
       `:`<div class="jari-card-empty">클릭해서 추가</div>`}
     </div>`;
   });
-
   html+=`</div>
-      <div style="display:flex;gap:6px;margin-bottom:6px">
-        <span style="font-size:0.72rem;color:var(--accent4);font-weight:700">🇺🇸 영어</span>
-      </div>
-      <div class="jari-grid">`;
+    <div style="display:flex;gap:6px;margin-bottom:6px">
+      <span style="font-size:0.72rem;color:var(--accent4);font-weight:700">🇺🇸 영어</span>
+    </div>
+    <div class="jari-grid">`;
 
   JARI_STAGES.forEach(stage=>{
     const recs=records.filter(r=>r.student_id===selectedStudentId&&r.lang==='english'&&r.type==='jari'&&r.stage_id===stage.id);
@@ -1198,10 +1204,9 @@ function renderStudentDetails(){
       `:`<div class="jari-card-empty">클릭해서 추가</div>`}
     </div>`;
   });
-  html+=`</div>
-    </div><!-- /jari-body -->
-  </div>`;
+  html+=`</div></div>`;
 
+  // ── 낱말/단문/장문 통합 테이블 (KR+US 통합) ──
   const typeDataKR = OTHER_TYPES.map(type=>{
     const recs=records.filter(r=>r.student_id===selectedStudentId&&r.lang==='korean'&&r.type===type.id)
       .sort((a,b)=>(b.date||'').localeCompare(a.date||''));
@@ -1215,17 +1220,10 @@ function renderStudentDetails(){
     return{type,recs,globalBest:speeds.length?Math.max(...speeds):null};
   });
 
-  const BORDER_ROW   = '1px solid #3a3a5c';
-  const BORDER_KR_US = '2px solid rgba(108,99,255,0.6)';
-  const BORDER_TYPE  = '2px solid rgba(247,151,30,0.5)';
-  const BORDER_DATE  = '1px solid #3a3a5c';
-
-  // ===== 수정2: X버튼 칸을 없애고 input 셀 안에 X버튼 포함 =====
-  // 그리드: 날짜 | KR낱말 | US낱말 | KR단문 | US단문 | KR장문 | US장문
-  // 각 타입셀은 [input+X버튼] 형태로 구성, X버튼 전용 컬럼 없앰
-  const COL  = 'grid-template-columns:110px 1fr 1fr 1fr 1fr 1fr 1fr';
-  const MINW = 'min-width:700px';
-  const ROWH = 'min-height:52px';
+  // COL: 날짜 | KR낱말 | KR삭제 | US낱말 | US삭제 | KR단문 | KR삭제 | US단문 | US삭제 | KR장문 | KR삭제 | US장문 | US삭제
+  const COL  = 'grid-template-columns:110px 1fr 30px 1fr 30px 1fr 30px 1fr 30px 1fr 30px 1fr 30px';
+  const MINW = 'min-width:900px';
+  const ROWH = 'min-height:56px';
 
   const allDates=[...new Set([
     ...typeDataKR.flatMap(d=>d.recs.map(r=>r.date||'')),
@@ -1234,35 +1232,39 @@ function renderStudentDetails(){
 
   html+=`<div class="category-section">
     <div class="category-title">✏️ 낱말 · 단문 · 장문 연습</div>
-    <div style="background:var(--surface);border:1px solid #3a3a5c;border-radius:12px;overflow:hidden;overflow-x:auto">
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;overflow-x:auto">
 
       <!-- 전체 최고기록 행 -->
-      <div style="display:grid;${COL};background:var(--surface2);border-bottom:2px solid #3a3a5c;${MINW}">
-        <div style="padding:10px 12px;font-size:1.0rem;color:var(--text-muted);font-weight:700;border-right:${BORDER_DATE};display:flex;align-items:center;justify-content:center;text-align:center">전체<br>최고기록</div>
+      <div style="display:grid;${COL};background:var(--surface2);border-bottom:2px solid var(--border);${MINW}">
+        <div style="padding:10px 12px;font-size:1.0rem;color:var(--text-muted);font-weight:700;border-right:1px solid var(--border);display:flex;align-items:center">전체<br>최고기록</div>
         ${OTHER_TYPES.flatMap((type,i)=>{
           const kr=typeDataKR[i]; const us=typeDataUS[i];
-          const rightBorder = i<2 ? `border-right:${BORDER_TYPE}` : 'border-right:none';
+          const sep=i<2?'border-right:2px solid var(--border)':'';
           return[
-            `<div style="padding:10px 10px;border-right:${BORDER_KR_US};text-align:center">
+            `<div style="padding:10px 10px;border-right:1px solid rgba(108,99,255,0.2)">
               <div style="font-size:0.85rem;color:var(--accent);margin-bottom:3px">🇰🇷 ${type.name}</div>
               <div style="font-family:'Space Mono',monospace;font-size:1.3rem;font-weight:700;color:var(--accent3)">${kr.globalBest??'--'}<span style="font-size:0.75rem;color:var(--text-muted)"> 타</span></div>
             </div>`,
-            `<div style="padding:10px 10px;${rightBorder};text-align:center">
+            `<div style="border-right:1px solid rgba(108,99,255,0.15)"></div>`,
+            `<div style="padding:10px 10px;border-right:1px solid rgba(247,151,30,0.3)">
               <div style="font-size:0.85rem;color:var(--accent4);margin-bottom:3px">🇺🇸 ${type.name}</div>
               <div style="font-family:'Space Mono',monospace;font-size:1.3rem;font-weight:700;color:var(--accent3)">${us.globalBest??'--'}<span style="font-size:0.75rem;color:var(--text-muted)"> 타</span></div>
-            </div>`
+            </div>`,
+            `<div style="${sep}"></div>`
           ];
         }).join('')}
       </div>
 
       <!-- 헤더 -->
-      <div style="display:grid;${COL};background:rgba(0,0,0,0.25);border-bottom:2px solid #3a3a5c;${MINW}">
-        <div style="padding:9px 12px;font-size:1.0rem;color:var(--text-muted);font-weight:700;border-right:${BORDER_DATE};text-align:center">날짜</div>
+      <div style="display:grid;${COL};background:rgba(0,0,0,0.25);border-bottom:1px solid var(--border);${MINW}">
+        <div style="padding:9px 12px;font-size:1.0rem;color:var(--text-muted);font-weight:700;border-right:1px solid var(--border)">날짜</div>
         ${OTHER_TYPES.flatMap((type,i)=>{
-          const rightBorder = i<2 ? `border-right:${BORDER_TYPE}` : 'border-right:none';
+          const sep=i<2?'border-right:2px solid var(--border)':'';
           return[
-            `<div style="padding:9px 10px;font-size:1.0rem;font-weight:700;color:var(--accent);border-right:${BORDER_KR_US};text-align:center">🇰🇷 ${type.name}</div>`,
-            `<div style="padding:9px 10px;font-size:1.0rem;font-weight:700;color:var(--accent4);${rightBorder};text-align:center">🇺🇸 ${type.name}</div>`
+            `<div style="padding:9px 10px;font-size:1.0rem;font-weight:700;color:var(--accent);border-right:1px solid rgba(108,99,255,0.2)">🇰🇷 ${type.name}</div>`,
+            `<div style="border-right:1px solid rgba(108,99,255,0.15)"></div>`,
+            `<div style="padding:9px 10px;font-size:1.0rem;font-weight:700;color:var(--accent4);border-right:1px solid rgba(247,151,30,0.3)">🇺🇸 ${type.name}</div>`,
+            `<div style="${sep}"></div>`
           ];
         }).join('')}
       </div>`;
@@ -1272,78 +1274,84 @@ function renderStudentDetails(){
     const usByType=typeDataUS.map(d=>d.recs.filter(r=>r.date===date));
     const maxR=Math.max(...krByType.map(r=>r.length),...usByType.map(r=>r.length),1);
     for(let ri=0;ri<maxR;ri++){
-      html+=`<div style="display:grid;${COL};border-top:${BORDER_ROW};align-items:center;${MINW};${ROWH};transition:background 0.1s" onmouseenter="this.style.background='rgba(108,99,255,0.03)'" onmouseleave="this.style.background=''">`;
-      html+=`<div style="padding:6px 10px;font-family:'Space Mono',monospace;font-size:1.0rem;border-right:${BORDER_DATE};color:var(--text-muted);white-space:nowrap;height:100%;display:flex;align-items:center;justify-content:center;text-align:center">${ri===0?date:''}</div>`;
-
+      html+=`<div style="display:grid;${COL};border-top:1px solid var(--border);align-items:center;${MINW};${ROWH};transition:background 0.1s" onmouseenter="this.style.background='rgba(108,99,255,0.03)'" onmouseleave="this.style.background=''">`;
+      html+=`<div style="padding:6px 10px;font-family:'Space Mono',monospace;font-size:1.0rem;border-right:1px solid var(--border);color:var(--text-muted);white-space:nowrap;height:100%;display:flex;align-items:center">${ri===0?date:''}</div>`;
       OTHER_TYPES.forEach((type,ti)=>{
         const kr=krByType[ti][ri];
         const us=usByType[ti][ri];
         const krBest=kr&&kr.speed&&kr.speed===typeDataKR[ti].globalBest;
         const usBest=us&&us.speed&&us.speed===typeDataUS[ti].globalBest;
-        const typeRightBorder = ti<2 ? BORDER_TYPE : 'none';
+        const sepDel=ti<2?'border-right:2px solid var(--border)':'';
 
-        // KR 셀: input + X버튼 인라인 (border-right: BORDER_KR_US)
-        html+=`<div style="display:flex;align-items:center;border-right:${BORDER_KR_US};height:100%;padding:0 4px;gap:4px">`;
+        // KR 입력칸
         if(kr){
           html+=`<input value="${kr.speed??''}" placeholder="타수" type="number"
-            style="flex:1;min-width:0;height:100%;background:transparent;border:none;color:${krBest?'var(--accent3)':'var(--text)'};font-family:'Space Mono',monospace;font-size:1.1rem;padding:8px 6px;text-align:center;outline:none;${krBest?'font-weight:700;':''}"
-            onfocus="this.style.background='var(--surface2)';this.style.borderRadius='6px'"
+            style="width:100%;height:100%;background:transparent;border:none;border-right:1px solid rgba(108,99,255,0.2);color:${krBest?'var(--accent3)':'var(--text)'};font-family:'Space Mono',monospace;font-size:1.1rem;padding:8px 10px;${krBest?'font-weight:700;':''}"
+            onfocus="this.style.background='var(--surface2)'"
             onblur="this.style.background='transparent'"
             onchange="updateRecord('${kr.id}','speed',this.value)"
-            onkeydown="tabNext(event,this)">
-          <button onclick="deleteRecord('${kr.id}')"
-            style="flex-shrink:0;padding:3px 6px;background:#cc3355;border:none;color:white;border-radius:4px;cursor:pointer;font-size:0.8rem;opacity:0.6"
-            onmouseenter="this.style.opacity='1'" onmouseleave="this.style.opacity='0.6'">✕</button>`;
+            onkeydown="tabNext(event,this)">`;
+        } else {
+          html+=`<div style="border-right:1px solid rgba(108,99,255,0.2);height:100%"></div>`;
         }
-        html+=`</div>`;
+        // KR 삭제 버튼 (KR만)
+        html+=`<div style="display:flex;align-items:center;justify-content:center;border-right:1px solid rgba(108,99,255,0.15);height:100%">
+          ${kr?`<button onclick="deleteRecord('${kr.id}')"
+            style="padding:3px 5px;background:#cc3355;border:none;color:white;border-radius:4px;cursor:pointer;font-size:0.8rem;opacity:0.7"
+            onmouseenter="this.style.opacity='1'" onmouseleave="this.style.opacity='0.7'">✕</button>`:''}
+        </div>`;
 
-        // US 셀: input + X버튼 인라인 (border-right: TYPE or none)
-        html+=`<div style="display:flex;align-items:center;border-right:${typeRightBorder};height:100%;padding:0 4px;gap:4px">`;
+        // US 입력칸
         if(us){
           html+=`<input value="${us.speed??''}" placeholder="타수" type="number"
-            style="flex:1;min-width:0;height:100%;background:transparent;border:none;color:${usBest?'var(--accent3)':'var(--text)'};font-family:'Space Mono',monospace;font-size:1.1rem;padding:8px 6px;text-align:center;outline:none;${usBest?'font-weight:700;':''}"
-            onfocus="this.style.background='rgba(247,151,30,0.06)';this.style.borderRadius='6px'"
+            style="width:100%;height:100%;background:transparent;border:none;border-right:1px solid rgba(247,151,30,0.3);color:${usBest?'var(--accent3)':'var(--text)'};font-family:'Space Mono',monospace;font-size:1.1rem;padding:8px 10px;${usBest?'font-weight:700;':''}"
+            onfocus="this.style.background='rgba(247,151,30,0.06)'"
             onblur="this.style.background='transparent'"
             onchange="updateRecord('${us.id}','speed',this.value)"
-            onkeydown="tabNext(event,this)">
-          <button onclick="deleteRecord('${us.id}')"
-            style="flex-shrink:0;padding:3px 6px;background:#cc3355;border:none;color:white;border-radius:4px;cursor:pointer;font-size:0.8rem;opacity:0.6"
-            onmouseenter="this.style.opacity='1'" onmouseleave="this.style.opacity='0.6'">✕</button>`;
+            onkeydown="tabNext(event,this)">`;
+        } else {
+          html+=`<div style="border-right:1px solid rgba(247,151,30,0.3);height:100%"></div>`;
         }
-        html+=`</div>`;
+        // US 삭제 버튼 (US만)
+        html+=`<div style="display:flex;align-items:center;justify-content:center;${sepDel};height:100%">
+          ${us?`<button onclick="deleteRecord('${us.id}')"
+            style="padding:3px 5px;background:#cc3355;border:none;color:white;border-radius:4px;cursor:pointer;font-size:0.8rem;opacity:0.7"
+            onmouseenter="this.style.opacity='1'" onmouseleave="this.style.opacity='0.7'">✕</button>`:''}
+        </div>`;
       });
       html+=`</div>`;
     }
   });
 
   if(!allDates.length){
-    html+=`<div style="padding:24px;text-align:center;color:var(--text-muted);font-size:1.0rem;border-top:${BORDER_ROW}">기록 없음 — 아래 버튼으로 추가하세요</div>`;
+    html+=`<div style="padding:24px;text-align:center;color:var(--text-muted);font-size:1.0rem;border-top:1px solid var(--border)">기록 없음 — 아래 버튼으로 추가하세요</div>`;
   }
 
-  // 행 추가 푸터
-  html+=`<div style="display:grid;${COL};border-top:2px solid #3a3a5c;background:rgba(0,0,0,0.1);${MINW}">
-    <div style="padding:10px 12px;font-size:0.9rem;color:var(--text-muted);border-right:${BORDER_DATE};display:flex;align-items:center;justify-content:center">+ 행 추가</div>
+  // 추가 버튼 행
+  html+=`<div style="display:grid;${COL};border-top:1px solid var(--border);background:rgba(0,0,0,0.1);${MINW}">
+    <div style="padding:10px 12px;font-size:0.9rem;color:var(--text-muted);border-right:1px solid var(--border);display:flex;align-items:center">+ 행 추가</div>
     ${OTHER_TYPES.flatMap((type,i)=>{
-      const rightBorder = i<2 ? `border-right:${BORDER_TYPE}` : 'border-right:none';
+      const sep=i<2?'border-right:2px solid var(--border)':'';
       return[
-        `<div style="padding:6px 8px;border-right:${BORDER_KR_US};display:flex;align-items:center;justify-content:center">
+        `<div style="padding:6px 8px;border-right:1px solid rgba(108,99,255,0.2);display:flex;align-items:center">
           <button class="btn btn-secondary btn-sm" style="border-color:var(--accent);color:var(--accent);font-size:0.85rem" onclick="addOtherRecord('${type.id}','korean')">🇰🇷 ${type.name}</button>
         </div>`,
-        `<div style="padding:6px 8px;${rightBorder};display:flex;align-items:center;justify-content:center">
+        `<div style="border-right:1px solid rgba(108,99,255,0.15)"></div>`,
+        `<div style="padding:6px 8px;border-right:1px solid rgba(247,151,30,0.3);display:flex;align-items:center">
           <button class="btn btn-secondary btn-sm" style="border-color:var(--accent4);color:var(--accent4);font-size:0.85rem" onclick="addOtherRecord('${type.id}','english')">🇺🇸 ${type.name}</button>
-        </div>`
+        </div>`,
+        `<div style="${sep}"></div>`
       ];
     }).join('')}
   </div>
-  </div></div>`;
-
-  container.innerHTML=html;
+  </div></div>`;  container.innerHTML=html;
 }
 
+// ── RECORDS ──
 async function addOtherRecord(typeId, lang){
   const id='rec_'+Date.now();
   const today=new Date().toISOString().split('T')[0];
-  const rec={id,student_id:selectedStudentId,lang:lang||'korean',type:typeId,stage_id:null,speed:null,accuracy:null,memo:'',date:today,passed:false};
+  const rec={id,student_id:selectedStudentId,lang:lang||'korean',type:typeId,stage_id:null,speed:null,accuracy:null,memo:'',date:today,passed:false,user_id:currentUser.id};
   const{error}=await sb.from('records').insert(rec);
   if(error)return toast('추가 실패: '+error.message,'err');
   records.unshift(rec); renderStudentDetails();
@@ -1370,6 +1378,7 @@ async function deleteRecord(id){
   renderStudentDetails();renderTop5();toast('기록 삭제됨');
 }
 
+// ── JARI MODAL ──
 function openJariModalLang(stageId,stageName,lang){
   jariContext={studentId:selectedStudentId,lang:lang||'korean',stageId};
   document.getElementById('jari-modal-title').textContent=`✋ ${stageName} (${lang==='english'?'🇺🇸 영어':'🇰🇷 한글'})`;
@@ -1423,7 +1432,7 @@ async function deleteJariRecord(id){
 async function saveJariRecord(){
   const date=document.getElementById('jari-date').value;
   const passed=document.getElementById('jari-pass-yes').checked;
-  const rec={id:'rec_'+Date.now(),student_id:jariContext.studentId,lang:jariContext.lang,type:'jari',stage_id:jariContext.stageId,speed:null,accuracy:null,memo:'',date,passed};
+  const rec={id:'rec_'+Date.now(),student_id:jariContext.studentId,lang:jariContext.lang,type:'jari',stage_id:jariContext.stageId,speed:null,accuracy:null,memo:'',date,passed,user_id:currentUser.id};
   const{error}=await sb.from('records').insert(rec);
   if(error)return toast('저장 실패: '+error.message,'err');
   records.unshift(rec);
@@ -1432,6 +1441,7 @@ async function saveJariRecord(){
   renderStudentDetails();renderTop5();
 }
 
+// ── TOP 5 ──
 function renderTop5(){
   const el=document.getElementById('top5-grid');
   if(!el) return;
@@ -1450,6 +1460,7 @@ function renderTop5(){
     }).filter(Boolean).sort((a,b)=>b.score-a.score).slice(0,5);
   }
 
+  // 자리연습 lang별 통과 횟수 (각각 TOP5)
   function getJariRanking(lang){
     return students.map(stu=>{
       const cnt=records.filter(r=>
@@ -1460,6 +1471,7 @@ function renderTop5(){
     }).filter(s=>s.score>0).sort((a,b)=>b.score-a.score).slice(0,5);
   }
 
+  // 항상 5줄 고정 — 데이터 없는 줄은 투명 placeholder
   function makeItems(list,unit){
     const rows=[];
     for(let i=0;i<5;i++){
@@ -1469,7 +1481,7 @@ function renderTop5(){
           <div class="top5-item" onclick="selectStudent('${s.id}')">
             <div class="rank-badge ${ranks[i]}">${i+1}</div>
             <div class="top5-name">${s.name}</div>
-            <div class="top5-score">${s.score}<span style="font-size:0.6rem;color:var(--text-muted);font-family:'Noto Sans KR'"> ${unit}</span></div>
+            <div class="top5-score">${s.score}<span style="font-size:0.67rem;color:var(--text-muted);font-family:'Noto Sans KR'"> ${unit}</span></div>
           </div>`);
       } else {
         rows.push(`
@@ -1489,44 +1501,45 @@ function renderTop5(){
     {id:'long',  name:'장문 연습'},
   ];
 
+  // 카드 4개: 각 카드 내부를 KR(좌) | US(우) 반반 나란히
   let cards='';
   TYPES.forEach(type=>{
     const ko=makeItems(getBests('korean',type.id),'타');
     const en=makeItems(getBests('english',type.id),'타');
     cards+=`
     <div class="top5-card">
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 13px;background:linear-gradient(90deg,#1e1b4b,#1c3a5e);">
-        <span style="font-size:1.0rem;font-weight:700;letter-spacing:1px">${type.name}</span>
-        <span style="font-size:0.75rem;padding:2px 8px;border-radius:999px;background:rgba(255,255,255,0.15)">${month}</span>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 13px;background:linear-gradient(90deg,#1e1b4b,#1c3a5e);">
+        <span style="font-size:1.5rem;font-weight:700;letter-spacing:1px">${type.name}</span>
+        <span style="font-size:1.1rem;padding:3px 10px;border-radius:999px;background:rgba(255,255,255,0.15)">${month}</span>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--border)">
         <div style="border-right:1px solid var(--border)">
-          <div style="padding:4px 10px;font-size:0.75rem;font-weight:700;color:var(--accent);background:rgba(108,99,255,0.08);letter-spacing:1px">🇰🇷 KR</div>
+          <div style="padding:6px 13px;font-size:1.3rem;font-weight:700;color:var(--accent);background:rgba(108,99,255,0.08);letter-spacing:1px">🇰🇷 KR</div>
           <div class="top5-list">${ko}</div>
         </div>
         <div>
-          <div style="padding:4px 10px;font-size:0.75rem;font-weight:700;color:var(--accent4);background:rgba(247,151,30,0.08);letter-spacing:1px">🇺🇸 US</div>
+          <div style="padding:6px 13px;font-size:1.3rem;font-weight:700;color:var(--accent4);background:rgba(247,151,30,0.08);letter-spacing:1px">🇺🇸 US</div>
           <div class="top5-list">${en}</div>
         </div>
       </div>
     </div>`;
   });
-
+  // 자리연습 카드
   const jariKo=makeItems(getJariRanking('korean'),'회 통과');
   const jariEn=makeItems(getJariRanking('english'),'회 통과');
   cards+=`
     <div class="top5-card">
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 13px;background:linear-gradient(90deg,#1e1b4b,#1c3a5e);">
-        <span style="font-size:1.0rem;font-weight:700;letter-spacing:1px">자리연습</span>
-        <span style="font-size:0.75rem;padding:2px 8px;border-radius:999px;background:rgba(255,255,255,0.15)">${month}</span>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 13px;background:linear-gradient(90deg,#1e1b4b,#1c3a5e);">
+        <span style="font-size:1.5rem;font-weight:700;letter-spacing:1px">자리연습</span>
+        <span style="font-size:1.1rem;padding:3px 10px;border-radius:999px;background:rgba(255,255,255,0.15)">${month}</span>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--border)">
         <div style="border-right:1px solid var(--border)">
-          <div style="padding:4px 10px;font-size:0.75rem;font-weight:700;color:var(--accent);background:rgba(108,99,255,0.08);letter-spacing:1px">🇰🇷 KR</div>
+          <div style="padding:6px 13px;font-size:1.3rem;font-weight:700;color:var(--accent);background:rgba(108,99,255,0.08);letter-spacing:1px">🇰🇷 KR</div>
           <div class="top5-list">${jariKo}</div>
         </div>
         <div>
-          <div style="padding:4px 10px;font-size:0.75rem;font-weight:700;color:var(--accent4);background:rgba(247,151,30,0.08);letter-spacing:1px">🇺🇸 US</div>
+          <div style="padding:6px 13px;font-size:1.3rem;font-weight:700;color:var(--accent4);background:rgba(247,151,30,0.08);letter-spacing:1px">🇺🇸 US</div>
           <div class="top5-list">${jariEn}</div>
         </div>
       </div>
@@ -1535,9 +1548,11 @@ function renderTop5(){
   el.innerHTML=cards;
 }
 
+// ── TAB NAVIGATION ──
 function tabNext(e,el){
   if(e.key!=='Tab') return;
   e.preventDefault();
+  // 전체 테이블에서 모든 input[number] 수집
   const table=el.closest('[style*="overflow"]')||el.closest('.category-section');
   if(!table) return;
   const inputs=[...table.querySelectorAll('input[type=number]')];
@@ -1547,6 +1562,7 @@ function tabNext(e,el){
   if(next){ next.focus(); next.select(); }
 }
 
+// ── EDIT STUDENT ──
 let editingStudentId = null;
 function openEditStudentModal(id){
   editingStudentId = id;
@@ -1570,9 +1586,11 @@ async function saveEditStudent(){
     if(sel&&sel.value) class_map[d]=sel.value;
   });
   showLoading();
+  // Supabase에는 name, days만 업데이트
   const{error} = await sb.from('students').update({name, days}).eq('id', editingStudentId);
   hideLoading();
   if(error) return toast('수정 실패: '+error.message, 'err');
+  // class_map은 localStorage
   saveClassMap(editingStudentId, class_map);
   const stu = students.find(s=>s.id===editingStudentId);
   if(stu){ stu.name=name; stu.days=days; stu.class_map=class_map; }
@@ -1584,6 +1602,8 @@ async function saveEditStudent(){
   renderStudentContent();
   toast(`${name} 수정됨 ✓`);
 }
+
+// renderTrend 제거됨
 </script>
 </body>
 </html>
