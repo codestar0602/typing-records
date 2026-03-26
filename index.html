@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>⌨️ 타자연습 기록판</title>
+<title>⌨️ Curio Typing Record</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
@@ -425,7 +425,7 @@
 <!-- AUTH SCREEN -->
 <div id="auth-screen">
   <div class="auth-box">
-    <div class="auth-logo">⌨️ TYPING RECORDS</div>
+    <div class="auth-logo">⌨️ CURIO TYPING RECORD</div>
     <div class="auth-sub">코딩학원 타자연습 기록 관리</div>
     <div class="auth-tabs">
       <button class="auth-tab active" onclick="switchAuthTab('login')">로그인</button>
@@ -454,7 +454,7 @@
 <header>
   <div class="header-title">
     <span>⌨️</span>
-    <h1>TYPING RECORDS</h1>
+    <h1>CURIO TYPING RECORD</h1>
     <div class="sync-status">
       <div class="sync-dot" id="sync-dot"></div>
       <span id="sync-text">연결 중...</span>
@@ -1210,102 +1210,75 @@ function renderStudentDetails(){
     return{type,recs,globalBest};
   });
 
-  // COL: 날짜(100) | 낱말평균속도(90) 낱말최고타수(90) | 단문(90)(90) | 장문(90)(90) | 삭제(32)
-  // 전체최고기록/헤더/데이터행 모두 동일한 COL 사용 → 정렬 일치
-  const COL = 'grid-template-columns:100px repeat(6,1fr) 32px';
-  const MINW = 'min-width:600px';
+  // 영어/한글 테마 색상
+  const isEng = selectedLang==='english';
+  const themeColor  = isEng ? 'var(--accent4)' : 'var(--accent)';
+  const themeBg     = isEng ? 'rgba(247,151,30,0.07)' : 'rgba(108,99,255,0.07)';
+  const themeBorder = isEng ? 'rgba(247,151,30,0.25)' : 'rgba(108,99,255,0.25)';
+  const themeHdr    = isEng ? 'rgba(247,151,30,0.13)' : 'rgba(0,0,0,0.22)';
+  const themeRowHov = isEng ? 'rgba(247,151,30,0.05)' : 'rgba(108,99,255,0.04)';
+
+  // COL: 날짜(100) | 낱말(1fr) | 낱말삭제(28) | 단문(1fr) | 단문삭제(28) | 장문(1fr) | 장문삭제(28)
+  const COL  = 'grid-template-columns:100px 1fr 28px 1fr 28px 1fr 28px';
+  const MINW = 'min-width:520px';
 
   html+=`<div class="category-section">
     <div class="category-title">✏️ 낱말 · 단문 · 장문 연습</div>
-    <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;overflow-x:auto">
+    <div style="background:var(--surface);border:1px solid ${themeBorder};border-radius:12px;overflow:hidden;overflow-x:auto">
 
-      <!-- 전체 최고기록: grid로 정확히 COL에 맞춤 -->
-      <div style="display:grid;${COL};background:var(--surface2);border-bottom:2px solid var(--border);${MINW}">
+      <!-- 전체 최고기록 행 -->
+      <div style="display:grid;${COL};background:${themeBg};border-bottom:2px solid ${themeBorder};${MINW}">
         <div style="padding:8px 10px;font-size:0.65rem;color:var(--text-muted);font-weight:700;border-right:1px solid var(--border);display:flex;align-items:center">전체<br>최고기록</div>
         ${typeData.flatMap((d,i)=>[
-          `<div style="padding:8px 6px 8px 8px;border-right:1px solid rgba(108,99,255,0.2)">
+          `<div style="padding:8px 8px;${i<2?'border-right:1px solid '+themeBorder:''}">
             <div style="font-size:0.62rem;color:var(--text-muted);margin-bottom:2px">${d.type.name}</div>
             <div style="font-family:'Space Mono',monospace;font-size:0.95rem;font-weight:700;color:var(--accent3)">${d.globalBest??'--'}<span style="font-size:0.58rem;color:var(--text-muted)"> 타</span></div>
           </div>`,
-          `<div style="padding:8px 6px;${i<2?'border-right:1px solid var(--border)':''}">
-            <div style="font-size:0.62rem;color:var(--text-muted);margin-bottom:2px">최고타수</div>
-            <div style="font-family:'Space Mono',monospace;font-size:0.95rem;color:var(--text-muted)">--</div>
-          </div>`
+          `<div style="${i<2?'border-right:1px solid var(--border)':''}"></div>`
         ]).join('')}
-        <div></div>
       </div>
 
-      <!-- 1단 헤더: 날짜 | 낱말(90+90=span2) | 단문 | 장문 -->
-      <div style="display:grid;${COL};background:rgba(0,0,0,0.22);border-bottom:1px solid rgba(108,99,255,0.3);${MINW}">
-        <div style="padding:6px 8px;font-size:0.63rem;color:var(--text-muted);font-weight:700;border-right:1px solid var(--border)">날짜</div>
+      <!-- 헤더 -->
+      <div style="display:grid;${COL};background:${themeHdr};border-bottom:1px solid ${themeBorder};${MINW}">
+        <div style="padding:7px 10px;font-size:0.63rem;color:var(--text-muted);font-weight:700;border-right:1px solid var(--border)">날짜</div>
         ${typeData.flatMap((d,i)=>[
-          `<div style="padding:6px 6px;font-size:0.72rem;font-weight:700;color:var(--accent);text-align:center;border-right:1px solid rgba(108,99,255,0.15);grid-column:span 1">${d.type.name}</div>`,
-          `<div style="padding:6px 6px;font-size:0.72rem;font-weight:700;color:var(--accent);text-align:center;${i<2?'border-right:1px solid var(--border)':''}">${d.type.name}</div>`
+          `<div style="padding:7px 8px;font-size:0.72rem;font-weight:700;color:${themeColor};${i<2?'border-right:1px solid '+themeBorder:''}">${d.type.name}</div>`,
+          `<div style="${i<2?'border-right:1px solid var(--border)':''}"></div>`
         ]).join('')}
-        <div></div>
-      </div>
-
-      <!-- 2단 헤더: 평균속도 | 최고타수 반복 -->
-      <div style="display:grid;${COL};background:rgba(0,0,0,0.12);border-bottom:1px solid var(--border);${MINW}">
-        <div style="border-right:1px solid var(--border)"></div>
-        ${typeData.flatMap((d,i)=>[
-          '<div style="padding:4px 6px;font-size:0.6rem;color:var(--text-muted);border-right:1px solid rgba(108,99,255,0.2)">평균속도</div>',
-          `<div style="padding:4px 6px;font-size:0.6rem;color:var(--text-muted);${i<2?'border-right:1px solid var(--border)':''}">최고타수</div>`
-        ]).join('')}
-        <div></div>
       </div>`;
 
-  // 모든 날짜 수집 (최신순)
+  // 날짜별 행
   const allDates=[...new Set(
     typeData.flatMap(d=>d.recs.map(r=>r.date||'')).filter(Boolean)
   )].sort((a,b)=>b.localeCompare(a));
-
-  const inpStyle=(id,field,isBest)=>
-    `type="number" style="width:100%;background:transparent;border:1px solid transparent;color:${isBest?'var(--accent3)':'var(--text)'};font-family:'Space Mono',monospace;font-size:0.8rem;padding:3px 5px;border-radius:5px;transition:all 0.15s;${isBest?'font-weight:700;':''}"
-     onfocus="this.style.background='var(--surface2)';this.style.borderColor='var(--accent)'"
-     onblur="this.style.background='transparent';this.style.borderColor='transparent'"
-     onchange="updateRecord('${id}','${field}',this.value)"
-     onkeydown="tabNext(event,this)"`;
 
   allDates.forEach(date=>{
     const rowsByType=typeData.map(d=>d.recs.filter(r=>r.date===date));
     const maxR=Math.max(...rowsByType.map(r=>r.length),1);
     for(let ri=0;ri<maxR;ri++){
-      const rowIds=rowsByType.map(recs=>recs[ri]?.id).filter(Boolean);
-      html+=`<div style="display:grid;${COL};border-top:1px solid var(--border);align-items:center;${MINW};transition:background 0.1s" onmouseenter="this.style.background='rgba(108,99,255,0.04)'" onmouseleave="this.style.background=''">`;
-      // 날짜 셀
-      html+=`<div style="padding:4px 8px;font-family:'Space Mono',monospace;font-size:0.72rem;border-right:1px solid var(--border);color:var(--text-muted);white-space:nowrap">
-        ${ri===0?date:''}
-      </div>`;
-      // 타입별 2열씩
+      html+=`<div style="display:grid;${COL};border-top:1px solid var(--border);align-items:center;${MINW};transition:background 0.1s" onmouseenter="this.style.background='${themeRowHov}'" onmouseleave="this.style.background=''">`;
+      html+=`<div style="padding:4px 8px;font-family:'Space Mono',monospace;font-size:0.72rem;border-right:1px solid var(--border);color:var(--text-muted);white-space:nowrap">${ri===0?date:''}</div>`;
       typeData.forEach((d,ti)=>{
         const r=rowsByType[ti][ri];
-        const lastType=ti===2;
+        const isBest=r&&r.speed&&r.speed===d.globalBest;
+        const colBorder=ti<2?'border-right:1px solid '+themeBorder:'';
+        const delBorder=ti<2?'border-right:1px solid var(--border)':'';
         if(r){
-          html+=`<input value="${r.speed??''}" placeholder="평균속도"
-            ${inpStyle(r.id,'speed',r.speed&&r.speed===d.globalBest)}
-            style="width:100%;background:transparent;border:1px solid transparent;color:${r.speed&&r.speed===d.globalBest?'var(--accent3)':'var(--text)'};font-family:'Space Mono',monospace;font-size:0.8rem;padding:3px 5px;border-radius:5px;transition:all 0.15s;${r.speed&&r.speed===d.globalBest?'font-weight:700;':''}border-right:1px solid rgba(108,99,255,0.2)"
-            onfocus="this.style.background='var(--surface2)';this.style.borderColor='var(--accent)'"
+          html+=`<input value="${r.speed??''}" placeholder="평균속도" type="number"
+            style="width:100%;background:transparent;border:1px solid transparent;color:${isBest?'var(--accent3)':'var(--text)'};font-family:'Space Mono',monospace;font-size:0.8rem;padding:4px 7px;border-radius:5px;transition:all 0.15s;${isBest?'font-weight:700;':''}${colBorder}"
+            onfocus="this.style.background='var(--surface2)';this.style.borderColor='${themeColor}'"
             onblur="this.style.background='transparent';this.style.borderColor='transparent'"
             onchange="updateRecord('${r.id}','speed',this.value)"
             onkeydown="tabNext(event,this)">
-          <input value="${r.accuracy??''}" placeholder="최고타수"
-            type="number"
-            style="width:100%;background:transparent;border:1px solid transparent;color:var(--text);font-family:'Space Mono',monospace;font-size:0.8rem;padding:3px 5px;border-radius:5px;transition:all 0.15s;border-right:${lastType?'none':'1px solid var(--border)'};"
-            onfocus="this.style.background='var(--surface2)';this.style.borderColor='var(--accent)'"
-            onblur="this.style.background='transparent';this.style.borderColor='transparent'"
-            onchange="updateRecord('${r.id}','accuracy',this.value)"
-            onkeydown="tabNext(event,this)">`;
+          <div style="display:flex;align-items:center;justify-content:center;${delBorder}">
+            <button onclick="deleteRecord('${r.id}')"
+              style="padding:2px 4px;background:#cc3355;border:none;color:white;border-radius:4px;cursor:pointer;font-size:0.62rem;line-height:1.4;opacity:0.7"
+              onmouseenter="this.style.opacity='1'" onmouseleave="this.style.opacity='0.7'">✕</button>
+          </div>`;
         } else {
-          html+=`<div style="border-right:1px solid rgba(108,99,255,0.2)"></div>
-                 <div style="border-right:${ti<2?'1px solid var(--border)':'none'}"></div>`;
+          html+=`<div style="${colBorder}"></div><div style="${delBorder}"></div>`;
         }
       });
-      // 삭제
-      html+=`<div style="display:flex;align-items:center;justify-content:center">
-        ${rowIds.length?`<button onclick="${rowIds.map(id=>`deleteRecord('${id}')`).join(';')}"
-          style="padding:2px 5px;background:#cc3355;border:none;color:white;border-radius:4px;cursor:pointer;font-size:0.65rem;line-height:1.4">✕</button>`:''}
-      </div>`;
       html+=`</div>`;
     }
   });
@@ -1314,17 +1287,17 @@ function renderStudentDetails(){
     html+=`<div style="padding:20px;text-align:center;color:var(--text-muted);font-size:0.83rem;border-top:1px solid var(--border)">기록 없음 — 아래 버튼으로 추가하세요</div>`;
   }
 
-  // 추가 버튼 행 — COL과 동일한 8열 grid
+  // 추가 버튼 행
   html+=`<div style="display:grid;${COL};border-top:1px solid var(--border);background:rgba(0,0,0,0.1);${MINW}">
     <div style="padding:8px 10px;font-size:0.68rem;color:var(--text-muted);border-right:1px solid var(--border);display:flex;align-items:center">+ 행 추가</div>
     ${typeData.flatMap((d,i)=>[
-      `<div style="padding:6px 6px 6px 6px;border-right:1px solid rgba(108,99,255,0.2);display:flex;align-items:center"><button class="btn btn-secondary btn-sm" onclick="addOtherRecord('${d.type.id}')">+ ${d.type.name}</button></div>`,
+      `<div style="padding:5px 6px;${i<2?'border-right:1px solid '+themeBorder+';':''}display:flex;align-items:center">
+        <button class="btn btn-secondary btn-sm" style="border-color:${themeColor};color:${themeColor}" onclick="addOtherRecord('${d.type.id}')">+ ${d.type.name}</button>
+      </div>`,
       `<div style="${i<2?'border-right:1px solid var(--border)':''}"></div>`
     ]).join('')}
-    <div></div>
   </div>
   </div></div>`;
-
   container.innerHTML=html;
 }
 
