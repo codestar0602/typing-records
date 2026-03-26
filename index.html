@@ -229,6 +229,25 @@
   .lang-tab.active { background:var(--accent); color:white; }
 
   .category-section { margin-bottom:24px; }
+
+  /* ===== 자리연습 접기/펼치기 ===== */
+  .jari-toggle-header {
+    display:flex; align-items:center; gap:10px; cursor:pointer;
+    user-select:none; margin-bottom:0;
+    padding:8px 12px 8px 0;
+    border-radius:8px;
+    transition:opacity 0.15s;
+  }
+  .jari-toggle-header:hover { opacity:0.85; }
+  .jari-toggle-header .category-title { margin-bottom:0; cursor:pointer; }
+  .jari-arrow {
+    font-size:0.75rem; color:var(--text-muted);
+    transition:transform 0.25s; display:inline-block;
+  }
+  .jari-arrow.open { transform:rotate(90deg); }
+  .jari-body { display:none; margin-top:10px; }
+  .jari-body.open { display:block; }
+
   .category-title {
     font-size:1.1rem; letter-spacing:2px; text-transform:uppercase;
     color:var(--text); font-weight:700; margin-bottom:11px;
@@ -607,6 +626,9 @@ const OTHER_TYPES = [
 let DAYS = ['월','화','수','목','금','토'];
 let dayClasses = {};
 let openClasses = new Set();
+
+// 자리연습 섹션 열림 상태 (기본: 닫힘)
+let jariOpen = false;
 
 function loadDaysConfig(){
   try{
@@ -1112,16 +1134,30 @@ function renderStudentContent(){
   renderStudentDetails();
 }
 
+// ===== 자리연습 토글 함수 =====
+function toggleJari(){
+  jariOpen = !jariOpen;
+  const body = document.getElementById('jari-body');
+  const arrow = document.getElementById('jari-arrow');
+  if(body) body.classList.toggle('open', jariOpen);
+  if(arrow) arrow.classList.toggle('open', jariOpen);
+}
+
 function renderStudentDetails(){
   const container=document.getElementById('student-details');
   if(!container)return;
 
+  // ===== 수정1: 자리연습 섹션 - 헤더 클릭으로 접기/펼치기 =====
   let html=`<div class="category-section">
-    <div class="category-title">🖐 자리 연습</div>
-    <div style="display:flex;gap:6px;margin-bottom:6px">
-      <span style="font-size:0.72rem;color:var(--accent);font-weight:700">🇰🇷 한글</span>
+    <div class="jari-toggle-header" onclick="toggleJari()">
+      <div class="category-title" style="margin-bottom:0;cursor:pointer">🖐 자리 연습</div>
+      <span class="jari-arrow ${jariOpen?'open':''}" id="jari-arrow">▶</span>
     </div>
-    <div class="jari-grid" style="margin-bottom:12px">`;
+    <div class="jari-body ${jariOpen?'open':''}" id="jari-body">
+      <div style="display:flex;gap:6px;margin-bottom:6px;margin-top:4px">
+        <span style="font-size:0.72rem;color:var(--accent);font-weight:700">🇰🇷 한글</span>
+      </div>
+      <div class="jari-grid" style="margin-bottom:12px">`;
 
   JARI_STAGES.forEach(stage=>{
     const recs=records.filter(r=>r.student_id===selectedStudentId&&r.lang==='korean'&&r.type==='jari'&&r.stage_id===stage.id);
@@ -1139,11 +1175,12 @@ function renderStudentDetails(){
       `:`<div class="jari-card-empty">클릭해서 추가</div>`}
     </div>`;
   });
+
   html+=`</div>
-    <div style="display:flex;gap:6px;margin-bottom:6px">
-      <span style="font-size:0.72rem;color:var(--accent4);font-weight:700">🇺🇸 영어</span>
-    </div>
-    <div class="jari-grid">`;
+      <div style="display:flex;gap:6px;margin-bottom:6px">
+        <span style="font-size:0.72rem;color:var(--accent4);font-weight:700">🇺🇸 영어</span>
+      </div>
+      <div class="jari-grid">`;
 
   JARI_STAGES.forEach(stage=>{
     const recs=records.filter(r=>r.student_id===selectedStudentId&&r.lang==='english'&&r.type==='jari'&&r.stage_id===stage.id);
@@ -1161,7 +1198,9 @@ function renderStudentDetails(){
       `:`<div class="jari-card-empty">클릭해서 추가</div>`}
     </div>`;
   });
-  html+=`</div></div>`;
+  html+=`</div>
+    </div><!-- /jari-body -->
+  </div>`;
 
   const typeDataKR = OTHER_TYPES.map(type=>{
     const recs=records.filter(r=>r.student_id===selectedStudentId&&r.lang==='korean'&&r.type===type.id)
@@ -1181,12 +1220,12 @@ function renderStudentDetails(){
   const BORDER_TYPE  = '2px solid rgba(247,151,30,0.5)';
   const BORDER_DATE  = '1px solid #3a3a5c';
 
-  // ★ 수정: X버튼(30px) 컬럼 앞 세로선 제거를 위해 그리드 구조 변경
-  // 기존: 110px 1fr 30px 1fr 30px ... (input | X | input | X ...)
-  // 수정: X버튼 컬럼은 border-right 없음, input 컬럼도 border-right 없음
-  const COL  = 'grid-template-columns:110px 1fr 30px 1fr 30px 1fr 30px 1fr 30px 1fr 30px 1fr 30px';
-  const MINW = 'min-width:900px';
-  const ROWH = 'min-height:56px';
+  // ===== 수정2: X버튼 칸을 없애고 input 셀 안에 X버튼 포함 =====
+  // 그리드: 날짜 | KR낱말 | US낱말 | KR단문 | US단문 | KR장문 | US장문
+  // 각 타입셀은 [input+X버튼] 형태로 구성, X버튼 전용 컬럼 없앰
+  const COL  = 'grid-template-columns:110px 1fr 1fr 1fr 1fr 1fr 1fr';
+  const MINW = 'min-width:700px';
+  const ROWH = 'min-height:52px';
 
   const allDates=[...new Set([
     ...typeDataKR.flatMap(d=>d.recs.map(r=>r.date||'')),
@@ -1202,18 +1241,16 @@ function renderStudentDetails(){
         <div style="padding:10px 12px;font-size:1.0rem;color:var(--text-muted);font-weight:700;border-right:${BORDER_DATE};display:flex;align-items:center;justify-content:center;text-align:center">전체<br>최고기록</div>
         ${OTHER_TYPES.flatMap((type,i)=>{
           const kr=typeDataKR[i]; const us=typeDataUS[i];
-          const sepRight = i<2 ? `border-right:${BORDER_TYPE}` : '';
+          const rightBorder = i<2 ? `border-right:${BORDER_TYPE}` : 'border-right:none';
           return[
             `<div style="padding:10px 10px;border-right:${BORDER_KR_US};text-align:center">
               <div style="font-size:0.85rem;color:var(--accent);margin-bottom:3px">🇰🇷 ${type.name}</div>
               <div style="font-family:'Space Mono',monospace;font-size:1.3rem;font-weight:700;color:var(--accent3)">${kr.globalBest??'--'}<span style="font-size:0.75rem;color:var(--text-muted)"> 타</span></div>
             </div>`,
-            `<div style="border-right:${BORDER_KR_US}"></div>`,
-            `<div style="padding:10px 10px;${i<2?`border-right:${BORDER_TYPE}`:''};;text-align:center">
+            `<div style="padding:10px 10px;${rightBorder};text-align:center">
               <div style="font-size:0.85rem;color:var(--accent4);margin-bottom:3px">🇺🇸 ${type.name}</div>
               <div style="font-family:'Space Mono',monospace;font-size:1.3rem;font-weight:700;color:var(--accent3)">${us.globalBest??'--'}<span style="font-size:0.75rem;color:var(--text-muted)"> 타</span></div>
-            </div>`,
-            `<div style="${i<2?`border-right:${BORDER_TYPE}`:''}"></div>`
+            </div>`
           ];
         }).join('')}
       </div>
@@ -1222,11 +1259,10 @@ function renderStudentDetails(){
       <div style="display:grid;${COL};background:rgba(0,0,0,0.25);border-bottom:2px solid #3a3a5c;${MINW}">
         <div style="padding:9px 12px;font-size:1.0rem;color:var(--text-muted);font-weight:700;border-right:${BORDER_DATE};text-align:center">날짜</div>
         ${OTHER_TYPES.flatMap((type,i)=>{
+          const rightBorder = i<2 ? `border-right:${BORDER_TYPE}` : 'border-right:none';
           return[
             `<div style="padding:9px 10px;font-size:1.0rem;font-weight:700;color:var(--accent);border-right:${BORDER_KR_US};text-align:center">🇰🇷 ${type.name}</div>`,
-            `<div style="border-right:${BORDER_KR_US}"></div>`,
-            `<div style="padding:9px 10px;font-size:1.0rem;font-weight:700;color:var(--accent4);${i<2?`border-right:${BORDER_TYPE}`:''};;text-align:center">🇺🇸 ${type.name}</div>`,
-            `<div style="${i<2?`border-right:${BORDER_TYPE}`:''}"></div>`
+            `<div style="padding:9px 10px;font-size:1.0rem;font-weight:700;color:var(--accent4);${rightBorder};text-align:center">🇺🇸 ${type.name}</div>`
           ];
         }).join('')}
       </div>`;
@@ -1237,50 +1273,44 @@ function renderStudentDetails(){
     const maxR=Math.max(...krByType.map(r=>r.length),...usByType.map(r=>r.length),1);
     for(let ri=0;ri<maxR;ri++){
       html+=`<div style="display:grid;${COL};border-top:${BORDER_ROW};align-items:center;${MINW};${ROWH};transition:background 0.1s" onmouseenter="this.style.background='rgba(108,99,255,0.03)'" onmouseleave="this.style.background=''">`;
-      // ★ 날짜 셀 가운데 정렬
       html+=`<div style="padding:6px 10px;font-family:'Space Mono',monospace;font-size:1.0rem;border-right:${BORDER_DATE};color:var(--text-muted);white-space:nowrap;height:100%;display:flex;align-items:center;justify-content:center;text-align:center">${ri===0?date:''}</div>`;
+
       OTHER_TYPES.forEach((type,ti)=>{
         const kr=krByType[ti][ri];
         const us=usByType[ti][ri];
         const krBest=kr&&kr.speed&&kr.speed===typeDataKR[ti].globalBest;
         const usBest=us&&us.speed&&us.speed===typeDataUS[ti].globalBest;
-        const typeRightBorder = ti<2 ? BORDER_TYPE : '';
+        const typeRightBorder = ti<2 ? BORDER_TYPE : 'none';
 
+        // KR 셀: input + X버튼 인라인 (border-right: BORDER_KR_US)
+        html+=`<div style="display:flex;align-items:center;border-right:${BORDER_KR_US};height:100%;padding:0 4px;gap:4px">`;
         if(kr){
-          // ★ KR input: border-right:none (X버튼 앞 세로선 제거) + text-align:center
           html+=`<input value="${kr.speed??''}" placeholder="타수" type="number"
-            style="width:100%;height:100%;background:transparent;border:none;border-right:none;color:${krBest?'var(--accent3)':'var(--text)'};font-family:'Space Mono',monospace;font-size:1.1rem;padding:8px 10px;text-align:center;${krBest?'font-weight:700;':''}"
-            onfocus="this.style.background='var(--surface2)'"
+            style="flex:1;min-width:0;height:100%;background:transparent;border:none;color:${krBest?'var(--accent3)':'var(--text)'};font-family:'Space Mono',monospace;font-size:1.1rem;padding:8px 6px;text-align:center;outline:none;${krBest?'font-weight:700;':''}"
+            onfocus="this.style.background='var(--surface2)';this.style.borderRadius='6px'"
             onblur="this.style.background='transparent'"
             onchange="updateRecord('${kr.id}','speed',this.value)"
-            onkeydown="tabNext(event,this)">`;
-        } else {
-          html+=`<div style="border-right:none;height:100%"></div>`;
+            onkeydown="tabNext(event,this)">
+          <button onclick="deleteRecord('${kr.id}')"
+            style="flex-shrink:0;padding:3px 6px;background:#cc3355;border:none;color:white;border-radius:4px;cursor:pointer;font-size:0.8rem;opacity:0.6"
+            onmouseenter="this.style.opacity='1'" onmouseleave="this.style.opacity='0.6'">✕</button>`;
         }
-        // ★ X버튼 칸: BORDER_KR_US는 유지 (KR|US 구분선 역할)
-        html+=`<div style="display:flex;align-items:center;justify-content:center;border-right:${BORDER_KR_US};height:100%">
-          ${kr?`<button onclick="deleteRecord('${kr.id}')"
-            style="padding:3px 5px;background:#cc3355;border:none;color:white;border-radius:4px;cursor:pointer;font-size:0.8rem;opacity:0.7"
-            onmouseenter="this.style.opacity='1'" onmouseleave="this.style.opacity='0.7'">✕</button>`:''}
-        </div>`;
+        html+=`</div>`;
 
+        // US 셀: input + X버튼 인라인 (border-right: TYPE or none)
+        html+=`<div style="display:flex;align-items:center;border-right:${typeRightBorder};height:100%;padding:0 4px;gap:4px">`;
         if(us){
-          // ★ US input: text-align:center
           html+=`<input value="${us.speed??''}" placeholder="타수" type="number"
-            style="width:100%;height:100%;background:transparent;border:none;${ti<2?`border-right:none`:'border-right:none'};color:${usBest?'var(--accent3)':'var(--text)'};font-family:'Space Mono',monospace;font-size:1.1rem;padding:8px 10px;text-align:center;${usBest?'font-weight:700;':''}"
-            onfocus="this.style.background='rgba(247,151,30,0.06)'"
+            style="flex:1;min-width:0;height:100%;background:transparent;border:none;color:${usBest?'var(--accent3)':'var(--text)'};font-family:'Space Mono',monospace;font-size:1.1rem;padding:8px 6px;text-align:center;outline:none;${usBest?'font-weight:700;':''}"
+            onfocus="this.style.background='rgba(247,151,30,0.06)';this.style.borderRadius='6px'"
             onblur="this.style.background='transparent'"
             onchange="updateRecord('${us.id}','speed',this.value)"
-            onkeydown="tabNext(event,this)">`;
-        } else {
-          html+=`<div style="border-right:none;height:100%"></div>`;
+            onkeydown="tabNext(event,this)">
+          <button onclick="deleteRecord('${us.id}')"
+            style="flex-shrink:0;padding:3px 6px;background:#cc3355;border:none;color:white;border-radius:4px;cursor:pointer;font-size:0.8rem;opacity:0.6"
+            onmouseenter="this.style.opacity='1'" onmouseleave="this.style.opacity='0.6'">✕</button>`;
         }
-        // ★ US X버튼 칸: 타입 구분선(낱말|단문|장문) 역할 유지
-        html+=`<div style="display:flex;align-items:center;justify-content:center;${ti<2?`border-right:${BORDER_TYPE}`:'border-right:none'};height:100%">
-          ${us?`<button onclick="deleteRecord('${us.id}')"
-            style="padding:3px 5px;background:#cc3355;border:none;color:white;border-radius:4px;cursor:pointer;font-size:0.8rem;opacity:0.7"
-            onmouseenter="this.style.opacity='1'" onmouseleave="this.style.opacity='0.7'">✕</button>`:''}
-        </div>`;
+        html+=`</div>`;
       });
       html+=`</div>`;
     }
@@ -1290,18 +1320,18 @@ function renderStudentDetails(){
     html+=`<div style="padding:24px;text-align:center;color:var(--text-muted);font-size:1.0rem;border-top:${BORDER_ROW}">기록 없음 — 아래 버튼으로 추가하세요</div>`;
   }
 
+  // 행 추가 푸터
   html+=`<div style="display:grid;${COL};border-top:2px solid #3a3a5c;background:rgba(0,0,0,0.1);${MINW}">
     <div style="padding:10px 12px;font-size:0.9rem;color:var(--text-muted);border-right:${BORDER_DATE};display:flex;align-items:center;justify-content:center">+ 행 추가</div>
     ${OTHER_TYPES.flatMap((type,i)=>{
+      const rightBorder = i<2 ? `border-right:${BORDER_TYPE}` : 'border-right:none';
       return[
         `<div style="padding:6px 8px;border-right:${BORDER_KR_US};display:flex;align-items:center;justify-content:center">
           <button class="btn btn-secondary btn-sm" style="border-color:var(--accent);color:var(--accent);font-size:0.85rem" onclick="addOtherRecord('${type.id}','korean')">🇰🇷 ${type.name}</button>
         </div>`,
-        `<div style="border-right:${BORDER_KR_US}"></div>`,
-        `<div style="padding:6px 8px;${i<2?`border-right:${BORDER_TYPE}`:'border-right:none'};display:flex;align-items:center;justify-content:center">
+        `<div style="padding:6px 8px;${rightBorder};display:flex;align-items:center;justify-content:center">
           <button class="btn btn-secondary btn-sm" style="border-color:var(--accent4);color:var(--accent4);font-size:0.85rem" onclick="addOtherRecord('${type.id}','english')">🇺🇸 ${type.name}</button>
-        </div>`,
-        `<div style="${i<2?`border-right:${BORDER_TYPE}`:'border-right:none'}"></div>`
+        </div>`
       ];
     }).join('')}
   </div>
