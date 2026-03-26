@@ -82,9 +82,6 @@
     padding:5px 10px; border-radius:8px; font-family:'Space Mono',monospace; font-size:1.6rem;
   }
 
-  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-     TOP5 — ① 글자 크기 2/3 축소
-  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
   #top5-section { background:linear-gradient(135deg,#1a1a2e,#12122a); border-bottom:2px solid var(--border); padding:16px 24px; }
   .section-title { font-size:1.5rem; font-weight:700; letter-spacing:2px; color:var(--text-muted); text-transform:uppercase; margin-bottom:11px; }
   .top5-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:11px; }
@@ -97,7 +94,6 @@
   .top5-item { display:flex; align-items:center; justify-content:center; padding:5px 8px; gap:7px; transition:background 0.15s; cursor:pointer; }
   .top5-item:hover { background:var(--surface2); }
 
-  /* ① 랭크 배지 크기 축소 (원래 36px → 24px) */
   .rank-badge {
     width:24px; height:24px; border-radius:50%;
     display:flex; align-items:center; justify-content:center;
@@ -108,7 +104,6 @@
   .rank-3 { background:var(--bronze); color:#fff; }
   .rank-4,.rank-5 { background:var(--surface2); color:var(--text-muted); border:1px solid var(--border); }
 
-  /* ① 이름/점수 폰트 크기 축소 (원래 1.5rem → 1.0rem) */
   .top5-name { flex:1; font-size:1.0rem; font-weight:500; text-align:center; }
   .top5-score { font-family:'Space Mono',monospace; font-size:1.0rem; color:var(--accent); font-weight:700; text-align:center; }
 
@@ -233,9 +228,6 @@
   .lang-tab { flex:1; padding:9px; text-align:center; cursor:pointer; font-size:0.85rem; font-weight:600; transition:all 0.2s; color:var(--text-muted); }
   .lang-tab.active { background:var(--accent); color:white; }
 
-  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-     ② 섹션 제목 배경색 추가 (category-title)
-  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
   .category-section { margin-bottom:24px; }
   .category-title {
     font-size:1.1rem; letter-spacing:2px; text-transform:uppercase;
@@ -246,7 +238,7 @@
     padding:6px 16px 6px 12px;
     border-radius:0 8px 8px 0;
   }
-  .category-title::after { display:none; } /* 기존 선 제거 */
+  .category-title::after { display:none; }
 
   /* JARI GRID */
   .jari-grid {
@@ -915,8 +907,7 @@ function addDay(){
   toast(name+'요일 추가됨 ✓');
 }
 function deleteDay(day){
-  if(!confirm(`"${day}요일"을 삭제하시겠습니까?
-해당 요일에 배정된 학생들은 "기타"로 이동합니다.`))return;
+  if(!confirm(`"${day}요일"을 삭제하시겠습니까?\n해당 요일에 배정된 학생들은 "기타"로 이동합니다.`))return;
   DAYS=DAYS.filter(d=>d!==day);
   delete dayClasses[day];
   saveDaysConfig();
@@ -986,8 +977,7 @@ function renameClass(day,oldName){
   toast('클래스 이름 변경됨');
 }
 function deleteClass(day,cls){
-  if(!confirm(`"${cls}"를 삭제하시겠습니까?
-해당 클래스 학생들은 "미배정"으로 이동합니다.`))return;
+  if(!confirm(`"${cls}"를 삭제하시겠습니까?\n해당 클래스 학생들은 "미배정"으로 이동합니다.`))return;
   dayClasses[day]=dayClasses[day].filter(c=>c!==cls);
   students.forEach(s=>{
     if((s.class_map||{})[day]===cls){
@@ -1186,13 +1176,14 @@ function renderStudentDetails(){
     return{type,recs,globalBest:speeds.length?Math.max(...speeds):null};
   });
 
-  // ③ 노란선 → 구분선 색상/스타일 개선
-  // KR-US 사이: 2px solid #6c63ff (보라), 타입 간: 2px solid #f7971e (오렌지), 행 내부: 1px solid #3a3a5c
   const BORDER_ROW   = '1px solid #3a3a5c';
-  const BORDER_KR_US = '2px solid rgba(108,99,255,0.6)';  // KR 삭제버튼|US 입력 사이
-  const BORDER_TYPE  = '2px solid rgba(247,151,30,0.5)';  // 타입 그룹 사이 (낱말|단문|장문)
+  const BORDER_KR_US = '2px solid rgba(108,99,255,0.6)';
+  const BORDER_TYPE  = '2px solid rgba(247,151,30,0.5)';
   const BORDER_DATE  = '1px solid #3a3a5c';
 
+  // ★ 수정: X버튼(30px) 컬럼 앞 세로선 제거를 위해 그리드 구조 변경
+  // 기존: 110px 1fr 30px 1fr 30px ... (input | X | input | X ...)
+  // 수정: X버튼 컬럼은 border-right 없음, input 컬럼도 border-right 없음
   const COL  = 'grid-template-columns:110px 1fr 30px 1fr 30px 1fr 30px 1fr 30px 1fr 30px 1fr 30px';
   const MINW = 'min-width:900px';
   const ROWH = 'min-height:56px';
@@ -1208,17 +1199,17 @@ function renderStudentDetails(){
 
       <!-- 전체 최고기록 행 -->
       <div style="display:grid;${COL};background:var(--surface2);border-bottom:2px solid #3a3a5c;${MINW}">
-        <div style="padding:10px 12px;font-size:1.0rem;color:var(--text-muted);font-weight:700;border-right:${BORDER_DATE};display:flex;align-items:center">전체<br>최고기록</div>
+        <div style="padding:10px 12px;font-size:1.0rem;color:var(--text-muted);font-weight:700;border-right:${BORDER_DATE};display:flex;align-items:center;justify-content:center;text-align:center">전체<br>최고기록</div>
         ${OTHER_TYPES.flatMap((type,i)=>{
           const kr=typeDataKR[i]; const us=typeDataUS[i];
           const sepRight = i<2 ? `border-right:${BORDER_TYPE}` : '';
           return[
-            `<div style="padding:10px 10px;border-right:${BORDER_KR_US}">
+            `<div style="padding:10px 10px;border-right:${BORDER_KR_US};text-align:center">
               <div style="font-size:0.85rem;color:var(--accent);margin-bottom:3px">🇰🇷 ${type.name}</div>
               <div style="font-family:'Space Mono',monospace;font-size:1.3rem;font-weight:700;color:var(--accent3)">${kr.globalBest??'--'}<span style="font-size:0.75rem;color:var(--text-muted)"> 타</span></div>
             </div>`,
             `<div style="border-right:${BORDER_KR_US}"></div>`,
-            `<div style="padding:10px 10px;${i<2?`border-right:${BORDER_TYPE}`:''}">
+            `<div style="padding:10px 10px;${i<2?`border-right:${BORDER_TYPE}`:''};;text-align:center">
               <div style="font-size:0.85rem;color:var(--accent4);margin-bottom:3px">🇺🇸 ${type.name}</div>
               <div style="font-family:'Space Mono',monospace;font-size:1.3rem;font-weight:700;color:var(--accent3)">${us.globalBest??'--'}<span style="font-size:0.75rem;color:var(--text-muted)"> 타</span></div>
             </div>`,
@@ -1229,12 +1220,12 @@ function renderStudentDetails(){
 
       <!-- 헤더 -->
       <div style="display:grid;${COL};background:rgba(0,0,0,0.25);border-bottom:2px solid #3a3a5c;${MINW}">
-        <div style="padding:9px 12px;font-size:1.0rem;color:var(--text-muted);font-weight:700;border-right:${BORDER_DATE}">날짜</div>
+        <div style="padding:9px 12px;font-size:1.0rem;color:var(--text-muted);font-weight:700;border-right:${BORDER_DATE};text-align:center">날짜</div>
         ${OTHER_TYPES.flatMap((type,i)=>{
           return[
-            `<div style="padding:9px 10px;font-size:1.0rem;font-weight:700;color:var(--accent);border-right:${BORDER_KR_US}">🇰🇷 ${type.name}</div>`,
+            `<div style="padding:9px 10px;font-size:1.0rem;font-weight:700;color:var(--accent);border-right:${BORDER_KR_US};text-align:center">🇰🇷 ${type.name}</div>`,
             `<div style="border-right:${BORDER_KR_US}"></div>`,
-            `<div style="padding:9px 10px;font-size:1.0rem;font-weight:700;color:var(--accent4);${i<2?`border-right:${BORDER_TYPE}`:''}">🇺🇸 ${type.name}</div>`,
+            `<div style="padding:9px 10px;font-size:1.0rem;font-weight:700;color:var(--accent4);${i<2?`border-right:${BORDER_TYPE}`:''};;text-align:center">🇺🇸 ${type.name}</div>`,
             `<div style="${i<2?`border-right:${BORDER_TYPE}`:''}"></div>`
           ];
         }).join('')}
@@ -1246,7 +1237,8 @@ function renderStudentDetails(){
     const maxR=Math.max(...krByType.map(r=>r.length),...usByType.map(r=>r.length),1);
     for(let ri=0;ri<maxR;ri++){
       html+=`<div style="display:grid;${COL};border-top:${BORDER_ROW};align-items:center;${MINW};${ROWH};transition:background 0.1s" onmouseenter="this.style.background='rgba(108,99,255,0.03)'" onmouseleave="this.style.background=''">`;
-      html+=`<div style="padding:6px 10px;font-family:'Space Mono',monospace;font-size:1.0rem;border-right:${BORDER_DATE};color:var(--text-muted);white-space:nowrap;height:100%;display:flex;align-items:center">${ri===0?date:''}</div>`;
+      // ★ 날짜 셀 가운데 정렬
+      html+=`<div style="padding:6px 10px;font-family:'Space Mono',monospace;font-size:1.0rem;border-right:${BORDER_DATE};color:var(--text-muted);white-space:nowrap;height:100%;display:flex;align-items:center;justify-content:center;text-align:center">${ri===0?date:''}</div>`;
       OTHER_TYPES.forEach((type,ti)=>{
         const kr=krByType[ti][ri];
         const us=usByType[ti][ri];
@@ -1255,15 +1247,17 @@ function renderStudentDetails(){
         const typeRightBorder = ti<2 ? BORDER_TYPE : '';
 
         if(kr){
+          // ★ KR input: border-right:none (X버튼 앞 세로선 제거) + text-align:center
           html+=`<input value="${kr.speed??''}" placeholder="타수" type="number"
-            style="width:100%;height:100%;background:transparent;border:none;border-right:${BORDER_KR_US};color:${krBest?'var(--accent3)':'var(--text)'};font-family:'Space Mono',monospace;font-size:1.1rem;padding:8px 10px;${krBest?'font-weight:700;':''}"
+            style="width:100%;height:100%;background:transparent;border:none;border-right:none;color:${krBest?'var(--accent3)':'var(--text)'};font-family:'Space Mono',monospace;font-size:1.1rem;padding:8px 10px;text-align:center;${krBest?'font-weight:700;':''}"
             onfocus="this.style.background='var(--surface2)'"
             onblur="this.style.background='transparent'"
             onchange="updateRecord('${kr.id}','speed',this.value)"
             onkeydown="tabNext(event,this)">`;
         } else {
-          html+=`<div style="border-right:${BORDER_KR_US};height:100%"></div>`;
+          html+=`<div style="border-right:none;height:100%"></div>`;
         }
+        // ★ X버튼 칸: BORDER_KR_US는 유지 (KR|US 구분선 역할)
         html+=`<div style="display:flex;align-items:center;justify-content:center;border-right:${BORDER_KR_US};height:100%">
           ${kr?`<button onclick="deleteRecord('${kr.id}')"
             style="padding:3px 5px;background:#cc3355;border:none;color:white;border-radius:4px;cursor:pointer;font-size:0.8rem;opacity:0.7"
@@ -1271,15 +1265,17 @@ function renderStudentDetails(){
         </div>`;
 
         if(us){
+          // ★ US input: text-align:center
           html+=`<input value="${us.speed??''}" placeholder="타수" type="number"
-            style="width:100%;height:100%;background:transparent;border:none;${ti<2?`border-right:${BORDER_TYPE}`:'border-right:none'};color:${usBest?'var(--accent3)':'var(--text)'};font-family:'Space Mono',monospace;font-size:1.1rem;padding:8px 10px;${usBest?'font-weight:700;':''}"
+            style="width:100%;height:100%;background:transparent;border:none;${ti<2?`border-right:none`:'border-right:none'};color:${usBest?'var(--accent3)':'var(--text)'};font-family:'Space Mono',monospace;font-size:1.1rem;padding:8px 10px;text-align:center;${usBest?'font-weight:700;':''}"
             onfocus="this.style.background='rgba(247,151,30,0.06)'"
             onblur="this.style.background='transparent'"
             onchange="updateRecord('${us.id}','speed',this.value)"
             onkeydown="tabNext(event,this)">`;
         } else {
-          html+=`<div style="${ti<2?`border-right:${BORDER_TYPE}`:'border-right:none'};height:100%"></div>`;
+          html+=`<div style="border-right:none;height:100%"></div>`;
         }
+        // ★ US X버튼 칸: 타입 구분선(낱말|단문|장문) 역할 유지
         html+=`<div style="display:flex;align-items:center;justify-content:center;${ti<2?`border-right:${BORDER_TYPE}`:'border-right:none'};height:100%">
           ${us?`<button onclick="deleteRecord('${us.id}')"
             style="padding:3px 5px;background:#cc3355;border:none;color:white;border-radius:4px;cursor:pointer;font-size:0.8rem;opacity:0.7"
@@ -1295,14 +1291,14 @@ function renderStudentDetails(){
   }
 
   html+=`<div style="display:grid;${COL};border-top:2px solid #3a3a5c;background:rgba(0,0,0,0.1);${MINW}">
-    <div style="padding:10px 12px;font-size:0.9rem;color:var(--text-muted);border-right:${BORDER_DATE};display:flex;align-items:center">+ 행 추가</div>
+    <div style="padding:10px 12px;font-size:0.9rem;color:var(--text-muted);border-right:${BORDER_DATE};display:flex;align-items:center;justify-content:center">+ 행 추가</div>
     ${OTHER_TYPES.flatMap((type,i)=>{
       return[
-        `<div style="padding:6px 8px;border-right:${BORDER_KR_US};display:flex;align-items:center">
+        `<div style="padding:6px 8px;border-right:${BORDER_KR_US};display:flex;align-items:center;justify-content:center">
           <button class="btn btn-secondary btn-sm" style="border-color:var(--accent);color:var(--accent);font-size:0.85rem" onclick="addOtherRecord('${type.id}','korean')">🇰🇷 ${type.name}</button>
         </div>`,
         `<div style="border-right:${BORDER_KR_US}"></div>`,
-        `<div style="padding:6px 8px;${i<2?`border-right:${BORDER_TYPE}`:'border-right:none'};display:flex;align-items:center">
+        `<div style="padding:6px 8px;${i<2?`border-right:${BORDER_TYPE}`:'border-right:none'};display:flex;align-items:center;justify-content:center">
           <button class="btn btn-secondary btn-sm" style="border-color:var(--accent4);color:var(--accent4);font-size:0.85rem" onclick="addOtherRecord('${type.id}','english')">🇺🇸 ${type.name}</button>
         </div>`,
         `<div style="${i<2?`border-right:${BORDER_TYPE}`:'border-right:none'}"></div>`
