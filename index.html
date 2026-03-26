@@ -570,16 +570,6 @@
 <div class="modal-overlay" id="jari-modal">
   <div class="modal">
     <h3 id="jari-modal-title">자리연습 기록</h3>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-      <div class="form-group">
-        <label>타자 속도 (타/분)</label>
-        <input type="number" id="jari-speed" placeholder="예: 250" min="0" max="9999">
-      </div>
-      <div class="form-group">
-        <label>정확도 (%)</label>
-        <input type="number" id="jari-accuracy" placeholder="예: 95" min="0" max="100">
-      </div>
-    </div>
     <div class="form-group">
       <label>날짜</label>
       <input type="date" id="jari-date">
@@ -596,7 +586,7 @@
       </div>
     </div>
     <div class="modal-actions">
-      <button class="btn btn-primary" onclick="saveJariRecord()">저장하고 계속</button>
+      <button class="btn btn-primary" onclick="saveJariRecord()">저장</button>
       <button class="btn btn-secondary" onclick="closeModal('jari-modal')">닫기</button>
     </div>
     <div id="jari-history"></div>
@@ -1159,153 +1149,206 @@ function renderStudentContent(){
         <button class="edit-day-btn" onclick="openEditStudentModal('${stu.id}')">✏️ ${stuDaysLabel} 수정</button>
       </h2>
     </div>
-    <div class="lang-tabs">
-      <div class="lang-tab ${selectedLang==='korean'?'active':''}" onclick="switchLang('korean')">🇰🇷 한글</div>
-      <div class="lang-tab ${selectedLang==='english'?'active':''}" onclick="switchLang('english')">🇺🇸 영어</div>
-    </div>
     <div id="student-details"></div>`;
   renderStudentDetails();
 }
 
-function switchLang(lang){selectedLang=lang;renderStudentContent();}
 
 function renderStudentDetails(){
   const container=document.getElementById('student-details');
   if(!container)return;
 
-  // ── 자리 연습 ──
+  // ── 자리 연습 (한글/영어 분리 표시) ──
   let html=`<div class="category-section">
     <div class="category-title">🖐 자리 연습</div>
-    <div class="jari-grid">`;
+    <div style="display:flex;gap:6px;margin-bottom:6px">
+      <span style="font-size:0.72rem;color:var(--accent);font-weight:700">🇰🇷 한글</span>
+    </div>
+    <div class="jari-grid" style="margin-bottom:12px">`;
 
   JARI_STAGES.forEach(stage=>{
-    const recs=records.filter(r=>r.student_id===selectedStudentId&&r.lang===selectedLang&&r.type==='jari'&&r.stage_id===stage.id);
+    const recs=records.filter(r=>r.student_id===selectedStudentId&&r.lang==='korean'&&r.type==='jari'&&r.stage_id===stage.id);
     const passCount=recs.filter(r=>!!r.passed).length;
     const totalCount=recs.length;
     const hasPass=passCount>0;
-    const speedRecs=recs.filter(r=>r.speed);
-    const best=speedRecs.length?speedRecs.reduce((a,b)=>b.speed>a.speed?b:a):null;
     const barPct=totalCount?Math.round(passCount/totalCount*100):0;
     html+=`
-    <div class="jari-card ${totalCount?'has-record':''} ${hasPass?'has-pass':''}" onclick="openJariModal('${stage.id}','${stage.name}')">
+    <div class="jari-card ${totalCount?'has-record':''} ${hasPass?'has-pass':''}" onclick="openJariModalLang('${stage.id}','${stage.name}','korean')">
       <div class="jari-card-label">자리</div>
       <div class="jari-card-name">${stage.name}</div>
       ${totalCount>0?`
         <div class="jari-pass-row"><span class="pass-count">${passCount}</span><span class="pass-denom">/${totalCount}</span></div>
         <div class="pass-bar-wrap"><div class="pass-bar-fill" style="width:${barPct}%"></div></div>
-        ${best?`<div class="jari-card-best">${best.speed}<span class="stat-unit">타</span></div>
-        <div class="jari-card-sub">${best.accuracy||'-'}% · ${best.date||''}</div>`:''}
+      `:`<div class="jari-card-empty">클릭해서 추가</div>`}
+    </div>`;
+  });
+  html+=`</div>
+    <div style="display:flex;gap:6px;margin-bottom:6px">
+      <span style="font-size:0.72rem;color:var(--accent4);font-weight:700">🇺🇸 영어</span>
+    </div>
+    <div class="jari-grid">`;
+
+  JARI_STAGES.forEach(stage=>{
+    const recs=records.filter(r=>r.student_id===selectedStudentId&&r.lang==='english'&&r.type==='jari'&&r.stage_id===stage.id);
+    const passCount=recs.filter(r=>!!r.passed).length;
+    const totalCount=recs.length;
+    const hasPass=passCount>0;
+    const barPct=totalCount?Math.round(passCount/totalCount*100):0;
+    html+=`
+    <div class="jari-card ${totalCount?'has-record':''} ${hasPass?'has-pass':''}" onclick="openJariModalLang('${stage.id}','${stage.name}','english')" style="border-color:${hasPass?'rgba(247,151,30,0.5)':totalCount?'rgba(247,151,30,0.25)':'var(--border)'}">
+      <div class="jari-card-label" style="color:var(--accent4)">자리</div>
+      <div class="jari-card-name">${stage.name}</div>
+      ${totalCount>0?`
+        <div class="jari-pass-row"><span class="pass-count" style="color:var(--accent4)">${passCount}</span><span class="pass-denom">/${totalCount}</span></div>
+        <div class="pass-bar-wrap"><div class="pass-bar-fill" style="width:${barPct}%;background:linear-gradient(90deg,var(--accent4),var(--accent3))"></div></div>
       `:`<div class="jari-card-empty">클릭해서 추가</div>`}
     </div>`;
   });
   html+=`</div></div>`;
 
-  // ── 낱말/단문/장문 통합 테이블 ──
-  const typeData=OTHER_TYPES.map(type=>{
-    const recs=records.filter(r=>
-      r.student_id===selectedStudentId && r.lang===selectedLang && r.type===type.id
-    ).sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+  // ── 낱말/단문/장문 통합 테이블 (KR+US 통합) ──
+  // 각 타입별로 한글/영어 기록 모두 로드
+  const typeDataKR = OTHER_TYPES.map(type=>{
+    const recs=records.filter(r=>r.student_id===selectedStudentId&&r.lang==='korean'&&r.type===type.id)
+      .sort((a,b)=>(b.date||'').localeCompare(a.date||''));
     const speeds=recs.filter(r=>r.speed>0).map(r=>r.speed);
-    const globalBest=speeds.length?Math.max(...speeds):null;
-    return{type,recs,globalBest};
+    return{type,recs,globalBest:speeds.length?Math.max(...speeds):null};
+  });
+  const typeDataUS = OTHER_TYPES.map(type=>{
+    const recs=records.filter(r=>r.student_id===selectedStudentId&&r.lang==='english'&&r.type===type.id)
+      .sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+    const speeds=recs.filter(r=>r.speed>0).map(r=>r.speed);
+    return{type,recs,globalBest:speeds.length?Math.max(...speeds):null};
   });
 
-  // 영어/한글 테마 색상
-  const isEng = selectedLang==='english';
-  const themeColor  = isEng ? 'var(--accent4)' : 'var(--accent)';
-  const themeBg     = isEng ? 'rgba(247,151,30,0.07)' : 'rgba(108,99,255,0.07)';
-  const themeBorder = isEng ? 'rgba(247,151,30,0.25)' : 'rgba(108,99,255,0.25)';
-  const themeHdr    = isEng ? 'rgba(247,151,30,0.13)' : 'rgba(0,0,0,0.22)';
-  const themeRowHov = isEng ? 'rgba(247,151,30,0.05)' : 'rgba(108,99,255,0.04)';
+  // COL: 날짜 | [낱말KR 낱말US del] | [단문KR 단문US del] | [장문KR 장문US del]
+  const COL  = 'grid-template-columns:110px 1fr 1fr 32px 1fr 1fr 32px 1fr 1fr 32px';
+  const MINW = 'min-width:700px';
+  const ROWH = 'min-height:52px'; // 행 높이 2배
 
-  // COL: 날짜(100) | 낱말(1fr) | 낱말삭제(28) | 단문(1fr) | 단문삭제(28) | 장문(1fr) | 장문삭제(28)
-  const COL  = 'grid-template-columns:100px 1fr 28px 1fr 28px 1fr 28px';
-  const MINW = 'min-width:520px';
+  // 모든 날짜 통합 수집
+  const allDates=[...new Set([
+    ...typeDataKR.flatMap(d=>d.recs.map(r=>r.date||'')),
+    ...typeDataUS.flatMap(d=>d.recs.map(r=>r.date||''))
+  ].filter(Boolean))].sort((a,b)=>b.localeCompare(a));
 
   html+=`<div class="category-section">
     <div class="category-title">✏️ 낱말 · 단문 · 장문 연습</div>
-    <div style="background:var(--surface);border:1px solid ${themeBorder};border-radius:12px;overflow:hidden;overflow-x:auto">
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;overflow-x:auto">
 
       <!-- 전체 최고기록 행 -->
-      <div style="display:grid;${COL};background:${themeBg};border-bottom:2px solid ${themeBorder};${MINW}">
-        <div style="padding:8px 10px;font-size:0.65rem;color:var(--text-muted);font-weight:700;border-right:1px solid var(--border);display:flex;align-items:center">전체<br>최고기록</div>
-        ${typeData.flatMap((d,i)=>[
-          `<div style="padding:8px 8px;${i<2?'border-right:1px solid '+themeBorder:''}">
-            <div style="font-size:0.62rem;color:var(--text-muted);margin-bottom:2px">${d.type.name}</div>
-            <div style="font-family:'Space Mono',monospace;font-size:0.95rem;font-weight:700;color:var(--accent3)">${d.globalBest??'--'}<span style="font-size:0.58rem;color:var(--text-muted)"> 타</span></div>
-          </div>`,
-          `<div style="${i<2?'border-right:1px solid var(--border)':''}"></div>`
-        ]).join('')}
+      <div style="display:grid;${COL};background:var(--surface2);border-bottom:2px solid var(--border);${MINW}">
+        <div style="padding:10px 12px;font-size:0.75rem;color:var(--text-muted);font-weight:700;border-right:1px solid var(--border);display:flex;align-items:center">전체<br>최고기록</div>
+        ${OTHER_TYPES.flatMap((type,i)=>{
+          const kr=typeDataKR[i]; const us=typeDataUS[i];
+          const sep=i<2?'border-right:1px solid var(--border)':'';
+          return[
+            `<div style="padding:10px 10px;border-right:1px solid rgba(108,99,255,0.2)">
+              <div style="font-size:0.65rem;color:var(--accent);margin-bottom:3px">🇰🇷 ${type.name}</div>
+              <div style="font-family:'Space Mono',monospace;font-size:1rem;font-weight:700;color:var(--accent3)">${kr.globalBest??'--'}<span style="font-size:0.62rem;color:var(--text-muted)"> 타</span></div>
+            </div>`,
+            `<div style="padding:10px 10px;border-right:1px solid rgba(247,151,30,0.25)">
+              <div style="font-size:0.65rem;color:var(--accent4);margin-bottom:3px">🇺🇸 ${type.name}</div>
+              <div style="font-family:'Space Mono',monospace;font-size:1rem;font-weight:700;color:var(--accent3)">${us.globalBest??'--'}<span style="font-size:0.62rem;color:var(--text-muted)"> 타</span></div>
+            </div>`,
+            `<div style="${sep}"></div>`
+          ];
+        }).join('')}
       </div>
 
-      <!-- 헤더 -->
-      <div style="display:grid;${COL};background:${themeHdr};border-bottom:1px solid ${themeBorder};${MINW}">
-        <div style="padding:7px 10px;font-size:0.63rem;color:var(--text-muted);font-weight:700;border-right:1px solid var(--border)">날짜</div>
-        ${typeData.flatMap((d,i)=>[
-          `<div style="padding:7px 8px;font-size:0.72rem;font-weight:700;color:${themeColor};${i<2?'border-right:1px solid '+themeBorder:''}">${d.type.name}</div>`,
-          `<div style="${i<2?'border-right:1px solid var(--border)':''}"></div>`
-        ]).join('')}
+      <!-- 헤더 1단: 타입명 span -->
+      <div style="display:grid;${COL};background:rgba(0,0,0,0.25);border-bottom:1px solid var(--border);${MINW}">
+        <div style="padding:8px 12px;font-size:0.72rem;color:var(--text-muted);font-weight:700;border-right:1px solid var(--border)">날짜</div>
+        ${OTHER_TYPES.flatMap((type,i)=>{
+          const sep=i<2?'border-right:1px solid var(--border)':'';
+          return[
+            `<div style="padding:8px 10px;font-size:0.82rem;font-weight:700;color:var(--accent);border-right:1px solid rgba(108,99,255,0.2)">🇰🇷 ${type.name}</div>`,
+            `<div style="padding:8px 10px;font-size:0.82rem;font-weight:700;color:var(--accent4);border-right:1px solid rgba(247,151,30,0.25)">🇺🇸 ${type.name}</div>`,
+            `<div style="${sep}"></div>`
+          ];
+        }).join('')}
       </div>`;
 
-  // 날짜별 행
-  const allDates=[...new Set(
-    typeData.flatMap(d=>d.recs.map(r=>r.date||'')).filter(Boolean)
-  )].sort((a,b)=>b.localeCompare(a));
-
   allDates.forEach(date=>{
-    const rowsByType=typeData.map(d=>d.recs.filter(r=>r.date===date));
-    const maxR=Math.max(...rowsByType.map(r=>r.length),1);
+    const krByType=typeDataKR.map(d=>d.recs.filter(r=>r.date===date));
+    const usByType=typeDataUS.map(d=>d.recs.filter(r=>r.date===date));
+    const maxR=Math.max(
+      ...krByType.map(r=>r.length),
+      ...usByType.map(r=>r.length),1
+    );
     for(let ri=0;ri<maxR;ri++){
-      html+=`<div style="display:grid;${COL};border-top:1px solid var(--border);align-items:center;${MINW};transition:background 0.1s" onmouseenter="this.style.background='${themeRowHov}'" onmouseleave="this.style.background=''">`;
-      html+=`<div style="padding:4px 8px;font-family:'Space Mono',monospace;font-size:0.72rem;border-right:1px solid var(--border);color:var(--text-muted);white-space:nowrap">${ri===0?date:''}</div>`;
-      typeData.forEach((d,ti)=>{
-        const r=rowsByType[ti][ri];
-        const isBest=r&&r.speed&&r.speed===d.globalBest;
-        const colBorder=ti<2?'border-right:1px solid '+themeBorder:'';
-        const delBorder=ti<2?'border-right:1px solid var(--border)':'';
-        if(r){
-          html+=`<input value="${r.speed??''}" placeholder="평균속도" type="number"
-            style="width:100%;background:transparent;border:1px solid transparent;color:${isBest?'var(--accent3)':'var(--text)'};font-family:'Space Mono',monospace;font-size:0.8rem;padding:4px 7px;border-radius:5px;transition:all 0.15s;${isBest?'font-weight:700;':''}${colBorder}"
-            onfocus="this.style.background='var(--surface2)';this.style.borderColor='${themeColor}'"
+      html+=`<div style="display:grid;${COL};border-top:1px solid var(--border);align-items:center;${MINW};${ROWH};transition:background 0.1s" onmouseenter="this.style.background='rgba(108,99,255,0.03)'" onmouseleave="this.style.background=''">`;
+      // 날짜
+      html+=`<div style="padding:6px 10px;font-family:'Space Mono',monospace;font-size:0.82rem;border-right:1px solid var(--border);color:var(--text-muted);white-space:nowrap;height:100%;display:flex;align-items:center">${ri===0?date:''}</div>`;
+      // 타입별
+      OTHER_TYPES.forEach((type,ti)=>{
+        const kr=krByType[ti][ri];
+        const us=usByType[ti][ri];
+        const krBest=kr&&kr.speed&&kr.speed===typeDataKR[ti].globalBest;
+        const usBest=us&&us.speed&&us.speed===typeDataUS[ti].globalBest;
+        const sepDel=ti<2?'border-right:1px solid var(--border)':'';
+        // KR 입력
+        if(kr){
+          html+=`<input value="${kr.speed??''}" placeholder="타수 입력" type="number"
+            style="width:100%;height:100%;background:transparent;border:1px solid transparent;color:${krBest?'var(--accent3)':'var(--text)'};font-family:'Space Mono',monospace;font-size:0.95rem;padding:8px 10px;transition:all 0.15s;${krBest?'font-weight:700;':''}border-right:1px solid rgba(108,99,255,0.2)"
+            onfocus="this.style.background='var(--surface2)';this.style.borderColor='var(--accent)'"
             onblur="this.style.background='transparent';this.style.borderColor='transparent'"
-            onchange="updateRecord('${r.id}','speed',this.value)"
-            onkeydown="tabNext(event,this)">
-          <div style="display:flex;align-items:center;justify-content:center;${delBorder}">
-            <button onclick="deleteRecord('${r.id}')"
-              style="padding:2px 4px;background:#cc3355;border:none;color:white;border-radius:4px;cursor:pointer;font-size:0.62rem;line-height:1.4;opacity:0.7"
-              onmouseenter="this.style.opacity='1'" onmouseleave="this.style.opacity='0.7'">✕</button>
-          </div>`;
+            onchange="updateRecord('${kr.id}','speed',this.value)"
+            onkeydown="tabNext(event,this)">`;
         } else {
-          html+=`<div style="${colBorder}"></div><div style="${delBorder}"></div>`;
+          html+=`<div style="border-right:1px solid rgba(108,99,255,0.2);height:100%"></div>`;
         }
+        // US 입력
+        if(us){
+          html+=`<input value="${us.speed??''}" placeholder="타수 입력" type="number"
+            style="width:100%;height:100%;background:transparent;border:1px solid transparent;color:${usBest?'var(--accent3)':'var(--text)'};font-family:'Space Mono',monospace;font-size:0.95rem;padding:8px 10px;transition:all 0.15s;${usBest?'font-weight:700;':''}border-right:1px solid rgba(247,151,30,0.25)"
+            onfocus="this.style.background='rgba(247,151,30,0.06)';this.style.borderColor='var(--accent4)'"
+            onblur="this.style.background='transparent';this.style.borderColor='transparent'"
+            onchange="updateRecord('${us.id}','speed',this.value)"
+            onkeydown="tabNext(event,this)">`;
+        } else {
+          html+=`<div style="border-right:1px solid rgba(247,151,30,0.25);height:100%"></div>`;
+        }
+        // 삭제 버튼 (해당 날짜 해당 타입 전체 삭제)
+        const delIds=[kr,us].filter(Boolean).map(r=>r.id);
+        html+=`<div style="display:flex;align-items:center;justify-content:center;${sepDel};height:100%">
+          ${delIds.length?`<button onclick="${delIds.map(id=>`deleteRecord('${id}')`).join(';')}"
+            style="padding:3px 5px;background:#cc3355;border:none;color:white;border-radius:4px;cursor:pointer;font-size:0.7rem;opacity:0.7"
+            onmouseenter="this.style.opacity='1'" onmouseleave="this.style.opacity='0.7'">✕</button>`:''}
+        </div>`;
       });
       html+=`</div>`;
     }
   });
 
   if(!allDates.length){
-    html+=`<div style="padding:20px;text-align:center;color:var(--text-muted);font-size:0.83rem;border-top:1px solid var(--border)">기록 없음 — 아래 버튼으로 추가하세요</div>`;
+    html+=`<div style="padding:24px;text-align:center;color:var(--text-muted);font-size:0.9rem;border-top:1px solid var(--border)">기록 없음 — 아래 버튼으로 추가하세요</div>`;
   }
 
   // 추가 버튼 행
   html+=`<div style="display:grid;${COL};border-top:1px solid var(--border);background:rgba(0,0,0,0.1);${MINW}">
-    <div style="padding:8px 10px;font-size:0.68rem;color:var(--text-muted);border-right:1px solid var(--border);display:flex;align-items:center">+ 행 추가</div>
-    ${typeData.flatMap((d,i)=>[
-      `<div style="padding:5px 6px;${i<2?'border-right:1px solid '+themeBorder+';':''}display:flex;align-items:center">
-        <button class="btn btn-secondary btn-sm" style="border-color:${themeColor};color:${themeColor}" onclick="addOtherRecord('${d.type.id}')">+ ${d.type.name}</button>
-      </div>`,
-      `<div style="${i<2?'border-right:1px solid var(--border)':''}"></div>`
-    ]).join('')}
+    <div style="padding:10px 12px;font-size:0.75rem;color:var(--text-muted);border-right:1px solid var(--border);display:flex;align-items:center">+ 행 추가</div>
+    ${OTHER_TYPES.flatMap((type,i)=>{
+      const sep=i<2?'border-right:1px solid var(--border)':'';
+      return[
+        `<div style="padding:6px 8px;border-right:1px solid rgba(108,99,255,0.2);display:flex;align-items:center">
+          <button class="btn btn-secondary btn-sm" style="border-color:var(--accent);color:var(--accent)" onclick="addOtherRecord('${type.id}','korean')">🇰🇷 ${type.name}</button>
+        </div>`,
+        `<div style="padding:6px 8px;border-right:1px solid rgba(247,151,30,0.25);display:flex;align-items:center">
+          <button class="btn btn-secondary btn-sm" style="border-color:var(--accent4);color:var(--accent4)" onclick="addOtherRecord('${type.id}','english')">🇺🇸 ${type.name}</button>
+        </div>`,
+        `<div style="${sep}"></div>`
+      ];
+    }).join('')}
   </div>
-  </div></div>`;
-  container.innerHTML=html;
+  </div></div>`;  container.innerHTML=html;
 }
 
 // ── RECORDS ──
-async function addOtherRecord(typeId){
+async function addOtherRecord(typeId, lang){
   const id='rec_'+Date.now();
   const today=new Date().toISOString().split('T')[0];
-  const rec={id,student_id:selectedStudentId,lang:selectedLang,type:typeId,stage_id:null,speed:null,accuracy:null,memo:'',date:today,passed:false};
+  const rec={id,student_id:selectedStudentId,lang:lang||'korean',type:typeId,stage_id:null,speed:null,accuracy:null,memo:'',date:today,passed:false};
   const{error}=await sb.from('records').insert(rec);
   if(error)return toast('추가 실패: '+error.message,'err');
   records.unshift(rec); renderStudentDetails();
@@ -1333,16 +1376,21 @@ async function deleteRecord(id){
 }
 
 // ── JARI MODAL ──
-function openJariModal(stageId,stageName){
-  jariContext={studentId:selectedStudentId,lang:selectedLang,stageId};
-  document.getElementById('jari-modal-title').textContent=`✋ ${stageName}`;
-  document.getElementById('jari-speed').value='';
-  document.getElementById('jari-accuracy').value='';
+function openJariModalLang(stageId,stageName,lang){
+  jariContext={studentId:selectedStudentId,lang:lang||'korean',stageId};
+  document.getElementById('jari-modal-title').textContent=`✋ ${stageName} (${lang==='english'?'🇺🇸 영어':'🇰🇷 한글'})`;
   document.getElementById('jari-date').value=new Date().toISOString().split('T')[0];
   document.getElementById('jari-pass-no').checked=true;
   renderJariHistory();
   openModal('jari-modal');
-  setTimeout(()=>document.getElementById('jari-speed').focus(),120);
+}
+function openJariModal(stageId,stageName){
+  jariContext={studentId:selectedStudentId,lang:selectedLang,stageId};
+  document.getElementById('jari-modal-title').textContent=`✋ ${stageName}`;
+  document.getElementById('jari-date').value=new Date().toISOString().split('T')[0];
+  document.getElementById('jari-pass-no').checked=true;
+  renderJariHistory();
+  openModal('jari-modal');
 }
 
 function renderJariHistory(){
@@ -1379,19 +1427,15 @@ async function deleteJariRecord(id){
 }
 
 async function saveJariRecord(){
-  const speed=document.getElementById('jari-speed').value;
-  const accuracy=document.getElementById('jari-accuracy').value;
   const date=document.getElementById('jari-date').value;
   const passed=document.getElementById('jari-pass-yes').checked;
-  const rec={id:'rec_'+Date.now(),student_id:jariContext.studentId,lang:jariContext.lang,type:'jari',stage_id:jariContext.stageId,speed:speed?Number(speed):null,accuracy:accuracy?Number(accuracy):null,memo:'',date,passed};
+  const rec={id:'rec_'+Date.now(),student_id:jariContext.studentId,lang:jariContext.lang,type:'jari',stage_id:jariContext.stageId,speed:null,accuracy:null,memo:'',date,passed};
   const{error}=await sb.from('records').insert(rec);
   if(error)return toast('저장 실패: '+error.message,'err');
   records.unshift(rec);
   toast(passed?'✓ 통과 기록 저장!':'기록 저장됨');
-  document.getElementById('jari-speed').value='';
-  document.getElementById('jari-accuracy').value='';
-  document.getElementById('jari-pass-no').checked=true;
-  renderJariHistory();renderStudentDetails();renderTop5();
+  closeModal('jari-modal');
+  renderStudentDetails();renderTop5();
 }
 
 // ── TOP 5 ──
