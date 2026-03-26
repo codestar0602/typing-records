@@ -46,7 +46,7 @@
   }
   .header-title { display:flex; align-items:center; gap:12px; }
   .header-title h1 {
-    font-family:'Space Mono',monospace; font-size:1.25rem; font-weight:700;
+    font-family:'Space Mono',monospace; font-size:2.0rem; font-weight:700;
     background:linear-gradient(90deg,var(--accent),var(--accent2));
     -webkit-background-clip:text; -webkit-text-fill-color:transparent;
   }
@@ -84,7 +84,7 @@
 
   /* TOP5 */
   #top5-section { background:linear-gradient(135deg,#1a1a2e,#12122a); border-bottom:2px solid var(--border); padding:16px 24px; }
-  .section-title { font-size:0.73rem; font-weight:700; letter-spacing:2px; color:var(--text-muted); text-transform:uppercase; margin-bottom:11px; }
+  .section-title { font-size:1.5rem; font-weight:700; letter-spacing:2px; color:var(--text-muted); text-transform:uppercase; margin-bottom:11px; }
   .top5-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:11px; }
   .top5-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; overflow:hidden; }
   .top5-card-header { padding:8px 13px; font-size:0.77rem; font-weight:700; letter-spacing:1px; display:flex; align-items:center; gap:8px; }
@@ -1501,38 +1501,48 @@ function renderTop5(){
     {id:'long',  name:'장문 연습'},
   ];
 
-  // 카드 4개: 가로 배치, 각 카드 안에 KR → US 세로 분리
+  // 카드 4개: 각 카드 내부를 KR(좌) | US(우) 반반 나란히
   let cards='';
   TYPES.forEach(type=>{
     const ko=makeItems(getBests('korean',type.id),'타');
     const en=makeItems(getBests('english',type.id),'타');
     cards+=`
     <div class="top5-card">
-      <div class="top5-card-header korean">
-        <span>KR ${type.name}</span>
-        <span class="badge">${month}</span>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 13px;background:linear-gradient(90deg,#1e1b4b,#1c3a5e);">
+        <span style="font-size:0.77rem;font-weight:700;letter-spacing:1px">${type.name}</span>
+        <span style="font-size:0.67rem;padding:2px 7px;border-radius:999px;background:rgba(255,255,255,0.15)">${month}</span>
       </div>
-      <div class="top5-list">${ko}</div>
-      <div class="top5-card-header english" style="border-top:1px solid var(--border);border-bottom:none">
-        <span>US ${type.name}</span>
+      <div style="display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--border)">
+        <div style="border-right:1px solid var(--border)">
+          <div style="padding:5px 13px;font-size:0.7rem;font-weight:700;color:var(--accent);background:rgba(108,99,255,0.08);letter-spacing:1px">🇰🇷 KR</div>
+          <div class="top5-list">${ko}</div>
+        </div>
+        <div>
+          <div style="padding:5px 13px;font-size:0.7rem;font-weight:700;color:var(--accent4);background:rgba(247,151,30,0.08);letter-spacing:1px">🇺🇸 US</div>
+          <div class="top5-list">${en}</div>
+        </div>
       </div>
-      <div class="top5-list">${en}</div>
     </div>`;
   });
-  // 자리연습: KR / US 각각 TOP5
+  // 자리연습 카드
   const jariKo=makeItems(getJariRanking('korean'),'회 통과');
   const jariEn=makeItems(getJariRanking('english'),'회 통과');
   cards+=`
     <div class="top5-card">
-      <div class="top5-card-header korean">
-        <span>KR 자리연습</span>
-        <span class="badge">${month}</span>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 13px;background:linear-gradient(90deg,#1e1b4b,#1c3a5e);">
+        <span style="font-size:0.77rem;font-weight:700;letter-spacing:1px">자리연습</span>
+        <span style="font-size:0.67rem;padding:2px 7px;border-radius:999px;background:rgba(255,255,255,0.15)">${month}</span>
       </div>
-      <div class="top5-list">${jariKo}</div>
-      <div class="top5-card-header english" style="border-top:1px solid var(--border);border-bottom:none">
-        <span>US 자리연습</span>
+      <div style="display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--border)">
+        <div style="border-right:1px solid var(--border)">
+          <div style="padding:5px 13px;font-size:0.7rem;font-weight:700;color:var(--accent);background:rgba(108,99,255,0.08);letter-spacing:1px">🇰🇷 KR</div>
+          <div class="top5-list">${jariKo}</div>
+        </div>
+        <div>
+          <div style="padding:5px 13px;font-size:0.7rem;font-weight:700;color:var(--accent4);background:rgba(247,151,30,0.08);letter-spacing:1px">🇺🇸 US</div>
+          <div class="top5-list">${jariEn}</div>
+        </div>
       </div>
-      <div class="top5-list">${jariEn}</div>
     </div>`;
 
   el.innerHTML=cards;
