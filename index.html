@@ -404,6 +404,30 @@
   .cp-add-row > div { padding:7px 10px; border-right:1px solid var(--border); }
   .cp-add-row > div:last-child { border-right:none; }
 
+  /* 검색창 */
+  .student-search-wrap {
+    padding:10px 12px 6px; border-bottom:1px solid var(--border);
+  }
+  .student-search {
+    width:100%; background:var(--surface2); border:1px solid var(--border);
+    color:var(--text); padding:8px 12px; border-radius:9px;
+    font-family:'Noto Sans KR',sans-serif; font-size:1.1rem;
+    outline:none; transition:border-color 0.2s;
+  }
+  .student-search:focus { border-color:var(--accent); }
+  .search-result-item {
+    display:flex; align-items:center; justify-content:space-between;
+    padding:10px 14px; cursor:pointer; font-size:1.2rem;
+    border-bottom:1px solid var(--border); transition:background 0.15s;
+  }
+  .search-result-item:hover { background:var(--surface2); }
+  .search-result-item.active { background:rgba(108,99,255,0.15); color:var(--accent); font-weight:700; }
+  .search-result-day { font-size:0.85rem; color:var(--text-muted); }
+
+  /* 비밀번호 찾기 */
+  .auth-forgot { text-align:center; margin-top:12px; font-size:0.85rem; color:var(--text-muted); }
+  .auth-forgot span { color:var(--accent); cursor:pointer; text-decoration:underline; }
+
   ::-webkit-scrollbar { width:5px; }
   ::-webkit-scrollbar-track { background:var(--bg); }
   ::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
@@ -446,6 +470,9 @@
     </div>
     <button class="auth-submit" id="auth-btn" onclick="doAuth()">로그인</button>
     <div class="auth-error" id="auth-error"></div>
+    <div class="auth-forgot" id="auth-forgot-wrap">
+      <span onclick="doForgotPassword()">비밀번호를 잊으셨나요?</span>
+    </div>
   </div>
 </div>
 
@@ -482,6 +509,10 @@
 
 <main>
   <aside>
+    <div class="student-search-wrap">
+      <input class="student-search" id="student-search" placeholder="🔍 학생 검색..." oninput="searchStudents(this.value)">
+    </div>
+    <div id="search-results" style="display:none"></div>
     <div class="day-tabs" id="day-tabs"></div>
   </aside>
   <div class="content" id="main-content">
@@ -676,6 +707,9 @@ function switchAuthTab(mode){
     ?'학원 원장/강사만 계정을 만들 수 있습니다. 로그인 후 학생 기록을 관리하세요.'
     :'회원가입 후 이메일 인증이 필요할 수 있습니다.';
   document.getElementById('auth-error').textContent='';
+  // 비밀번호 찾기 링크 — 로그인 탭일 때만 표시
+  const forgot=document.getElementById('auth-forgot-wrap');
+  if(forgot) forgot.style.display=mode==='login'?'block':'none';
 }
 
 async function doAuth(){
@@ -905,6 +939,59 @@ function toggleClass(key){
   if(openClasses.has(key))openClasses.delete(key);
   else openClasses.add(key);
   renderSidebar();
+}
+
+// ── 학생 검색 ──
+function searchStudents(query){
+  const resultsEl = document.getElementById('search-results');
+  const dayTabsEl = document.getElementById('day-tabs');
+  const q = query.trim();
+  if(!q){
+    resultsEl.style.display='none';
+    dayTabsEl.style.display='flex';
+    return;
+  }
+  const matched = students.filter(s=>s.name.includes(q));
+  dayTabsEl.style.display='none';
+  resultsEl.style.display='block';
+  if(!matched.length){
+    resultsEl.innerHTML='<div style="padding:14px;text-align:center;color:var(--text-muted);font-size:1.0rem">검색 결과 없음</div>';
+    return;
+  }
+  resultsEl.innerHTML = matched.map(s=>{
+    const days=(s.days||'').split(',').filter(Boolean).join('·')||'요일없음';
+    return `<div class="search-result-item ${s.id===selectedStudentId?'active':''}" onclick="selectStudent('${s.id}');clearSearch()">
+      <span>${s.name}</span>
+      <span class="search-result-day">${days}</span>
+    </div>`;
+  }).join('');
+}
+function clearSearch(){
+  const el=document.getElementById('student-search');
+  if(el) el.value='';
+  document.getElementById('search-results').style.display='none';
+  document.getElementById('day-tabs').style.display='flex';
+}
+
+// ── 비밀번호 찾기 ──
+async function doForgotPassword(){
+  const email=document.getElementById('auth-email').value.trim();
+  const errEl=document.getElementById('auth-error');
+  if(!email){
+    errEl.style.color='var(--accent2)';
+    errEl.textContent='이메일을 먼저 입력해주세요.';
+    return;
+  }
+  const{error}=await sb.auth.resetPasswordForEmail(email,{
+    redirectTo: window.location.href
+  });
+  if(error){
+    errEl.style.color='var(--accent2)';
+    errEl.textContent='오류: '+error.message;
+  } else {
+    errEl.style.color='var(--pass)';
+    errEl.textContent='✓ 비밀번호 재설정 이메일을 보냈습니다! 메일함을 확인하세요.';
+  }
 }
 
 function toggleDay(day){
