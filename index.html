@@ -115,30 +115,30 @@
     box-shadow:0 20px 60px rgba(0,0,0,0.5);
   }
   .auth-logo {
-    font-family:'Space Mono',monospace; font-size:1.4rem; font-weight:700;
+    font-family:'Space Mono',monospace; font-size:1.8rem; font-weight:700;
     background:linear-gradient(90deg,var(--accent),var(--accent2));
     -webkit-background-clip:text; -webkit-text-fill-color:transparent;
     text-align:center; margin-bottom:6px;
   }
-  .auth-sub { text-align:center; font-size:0.82rem; color:var(--text-muted); margin-bottom:28px; }
+  .auth-sub { text-align:center; font-size:1.1rem; color:var(--text-muted); margin-bottom:28px; }
   .auth-tabs { display:flex; background:var(--surface2); border-radius:10px; padding:4px; gap:4px; margin-bottom:24px; }
   .auth-tab {
-    flex:1; padding:8px; border:none; border-radius:7px; cursor:pointer;
-    font-family:'Noto Sans KR',sans-serif; font-size:0.83rem; font-weight:700;
+    flex:1; padding:12px; border:none; border-radius:7px; cursor:pointer;
+    font-family:'Noto Sans KR',sans-serif; font-size:1.2rem; font-weight:700;
     background:transparent; color:var(--text-muted); transition:all 0.2s;
   }
   .auth-tab.active { background:var(--accent); color:white; }
   .auth-field { margin-bottom:16px; }
-  .auth-field label { display:block; font-size:0.78rem; color:var(--text-muted); margin-bottom:6px; }
+  .auth-field label { display:block; font-size:1.1rem; color:var(--text-muted); margin-bottom:6px; }
   .auth-field input {
     width:100%; background:var(--surface2); border:1px solid var(--border); color:var(--text);
-    padding:10px 14px; border-radius:10px; font-family:'Noto Sans KR',sans-serif; font-size:0.9rem;
+    padding:12px 14px; border-radius:10px; font-family:'Noto Sans KR',sans-serif; font-size:1.1rem;
     outline:none; transition:border-color 0.2s;
   }
   .auth-field input:focus { border-color:var(--accent); }
   .auth-submit {
-    width:100%; padding:12px; background:var(--accent); color:white; border:none;
-    border-radius:10px; font-family:'Noto Sans KR',sans-serif; font-size:0.9rem; font-weight:700;
+    width:100%; padding:14px; background:var(--accent); color:white; border:none;
+    border-radius:10px; font-family:'Noto Sans KR',sans-serif; font-size:1.2rem; font-weight:700;
     cursor:pointer; transition:all 0.2s; margin-top:4px;
   }
   .auth-submit:hover { background:#5a52e0; transform:translateY(-1px); }
@@ -497,7 +497,7 @@
 
 <div id="loading-overlay"><div class="spinner"></div></div>
 <!-- AUTH SCREEN -->
-<div id="auth-screen">
+<div id="auth-screen" class="hidden">
   <div class="auth-box">
     <div class="auth-logo">⌨️ CURIO TYPING RECORD</div>
     <div class="auth-sub">타자연습 기록 관리</div>
@@ -912,6 +912,8 @@ window.onload=async()=>{
   } else if(!session){
     document.getElementById('auth-screen').classList.remove('hidden');
     hideLoading();
+  } else {
+    hideLoading();
   }
 };
 
@@ -930,7 +932,7 @@ async function loadAll(){
     records=rd||[];
     setConnected(true); renderAll();
     // 관리자 계정이면 승인 관리 버튼 표시
-    if(currentUser && ADMIN_EMAILS.includes(currentUser.email)){
+    if(currentUser && ADMIN_EMAIL.includes(currentUser.email)){
       const adminBtn = document.getElementById('admin-btn');
       if(adminBtn) adminBtn.style.display='inline-flex';
     }
@@ -1065,7 +1067,6 @@ function toggleClass(key){
 }
 
 // ── 승인 관리 ──
-const ADMIN_EMAILS = ['ssunny081@gmail.com'];
 
 async function openApprovalModal(){
   openModal('approval-modal');
@@ -1807,10 +1808,9 @@ function renderTop5(){
 }
 
 // ── 관리자 승인 ──
-const ADMIN_EMAILS = ['ssunny081@gmail.com']; // 관리자 이메일
 
 function isAdmin(){
-  return currentUser && ADMIN_EMAILS.includes(currentUser.email);
+  return currentUser && ADMIN_EMAIL.includes(currentUser.email);
 }
 
 async function openAdminModal(){
