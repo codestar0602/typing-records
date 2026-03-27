@@ -115,7 +115,7 @@
     box-shadow:0 20px 60px rgba(0,0,0,0.5);
   }
   .auth-logo {
-    font-family:'Space Mono',monospace; font-size:1.8rem; font-weight:700;
+    font-family:'Space Mono',monospace; font-size:1.15rem; font-weight:700; white-space:nowrap; letter-spacing:0.5px;
     background:linear-gradient(90deg,var(--accent),var(--accent2));
     -webkit-background-clip:text; -webkit-text-fill-color:transparent;
     text-align:center; margin-bottom:6px;
@@ -578,6 +578,10 @@
 <div class="month-bar">
   <label>📅 기준 월</label>
   <input type="month" id="selected-month" onchange="renderAll()">
+  <div style="margin-left:auto;display:flex;gap:8px">
+    <button id="tab-student" class="btn btn-primary" onclick="switchMainTab('student')" style="font-size:1.0rem">👤 학생별</button>
+    <button id="tab-monthly" class="btn btn-secondary" onclick="switchMainTab('monthly')" style="font-size:1.0rem">📊 월별 전체현황</button>
+  </div>
 </div>
 
 <div id="top5-section" style="background:linear-gradient(135deg,#1a1a2e,#12122a);border-bottom:2px solid var(--border);padding:16px 24px;">
@@ -585,7 +589,7 @@
   <div class="top5-grid" id="top5-grid"></div>
 </div>
 
-<main>
+<main id="student-view">
   <aside>
     <div class="student-search-wrap">
       <input class="student-search" id="student-search" placeholder="🔍 학생 검색..." oninput="searchStudents(this.value)">
@@ -600,6 +604,15 @@
     </div>
   </div>
 </main>
+
+<!-- 월별 전체 현황 -->
+<div id="monthly-view" style="display:none;padding:20px 24px">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">
+    <div style="font-size:1.4rem;font-weight:700">📊 월별 전체 현황</div>
+    <button onclick="copyMonthlyTable()" class="btn btn-secondary" style="font-size:1.0rem">📋 노션 복사</button>
+  </div>
+  <div id="monthly-table-wrap" style="overflow-x:auto"></div>
+</div>
 
 <!-- MODAL: 학생 추가 -->
 <div class="modal-overlay" id="add-student-modal">
@@ -965,7 +978,140 @@ function setupRealtime(){
     .subscribe(s=>setConnected(s==='SUBSCRIBED'));
 }
 
-function renderAll(){renderSidebar();renderTop5();if(selectedStudentId)renderStudentContent();}
+function renderAll(){
+  renderSidebar();renderTop5();
+  if(selectedStudentId)renderStudentContent();
+  if(document.getElementById('monthly-view').style.display!=='none') renderMonthlyView();
+}
+
+// ── 탭 전환 ──
+function switchMainTab(tab){
+  const sv=document.getElementById('student-view');
+  const mv=document.getElementById('monthly-view');
+  const tb1=document.getElementById('tab-student');
+  const tb2=document.getElementById('tab-monthly');
+  if(tab==='student'){
+    sv.style.display='flex'; mv.style.display='none';
+    tb1.className='btn btn-primary'; tb2.className='btn btn-secondary';
+    tb1.style.fontSize='1.0rem'; tb2.style.fontSize='1.0rem';
+  } else {
+    sv.style.display='none'; mv.style.display='block';
+    tb1.className='btn btn-secondary'; tb2.className='btn btn-primary';
+    tb1.style.fontSize='1.0rem'; tb2.style.fontSize='1.0rem';
+    renderMonthlyView();
+  }
+}
+
+// ── 월별 전체 현황 렌더링 ──
+function renderMonthlyView(){
+  const wrap=document.getElementById('monthly-table-wrap');
+  if(!wrap)return;
+  const month=document.getElementById('selected-month').value;
+  if(!month)return;
+
+  // 요일별로 학생 그룹
+  const allDayKeys=[...DAYS,'기타'];
+  const dayGroups={};
+  allDayKeys.forEach(d=>dayGroups[d]=[]);
+  students.forEach(s=>{
+    const days=(s.days||'').split(',').map(d=>d.trim()).filter(Boolean);
+    if(!days.length){dayGroups['기타'].push(s);return;}
+    days.forEach(d=>{
+      if(dayGroups[d])dayGroups[d].push(s);
+      else dayGroups['기타'].push(s);
+    });
+  });
+
+  // 학생별 이달 최고기록 계산
+  function getBest(stuId,lang,type){
+    const recs=records.filter(r=>r.student_id===stuId&&r.lang===lang&&r.type===type&&r.speed&&r.date&&r.date.startsWith(month));
+    if(!recs.length)return null;
+    return Math.max(...recs.map(r=>r.speed));
+  }
+
+  const COL='display:grid;grid-template-columns:140px 90px 90px 90px 90px 90px 90px';
+  const HDRBG='background:var(--surface2);';
+  const BORDER='border:1px solid var(--border);';
+
+  let html='';
+  allDayKeys.forEach(day=>{
+    const stuList=[...new Map(dayGroups[day].map(s=>[s.id,s])).values()]
+      .sort((a,b)=>a.name.localeCompare(b.name,'ko'));
+    if(!stuList.length)return;
+
+    html+=`<div style="margin-bottom:24px">
+      <div style="font-size:1.2rem;font-weight:700;color:var(--accent);margin-bottom:8px;padding:6px 10px;background:rgba(108,99,255,0.1);border-radius:8px">${day==='기타'?'기타':day+'요일'} (${stuList.length}명)</div>
+      <div style="border-radius:10px;overflow:hidden;border:1px solid var(--border)">
+        <!-- 헤더 1단 -->
+        <div style="${COL};${HDRBG}">
+          <div style="padding:8px 12px;font-size:1.0rem;font-weight:700;border-right:1px solid var(--border)">이름</div>
+          <div style="padding:8px 8px;font-size:0.85rem;font-weight:700;color:var(--accent);text-align:center;border-right:1px solid rgba(108,99,255,0.3);grid-column:span 2">낱말연습</div>
+          <div style="padding:8px 8px;font-size:0.85rem;font-weight:700;color:var(--accent);text-align:center;border-right:1px solid rgba(108,99,255,0.3);grid-column:span 2">단문연습</div>
+          <div style="padding:8px 8px;font-size:0.85rem;font-weight:700;color:var(--accent);text-align:center;grid-column:span 2">장문연습</div>
+        </div>
+        <!-- 헤더 2단 -->
+        <div style="${COL};background:rgba(0,0,0,0.15)">
+          <div style="padding:5px 12px;font-size:0.8rem;color:var(--text-muted);border-right:1px solid var(--border)"></div>
+          <div style="padding:5px 8px;font-size:0.8rem;color:var(--accent);text-align:center;border-right:1px solid rgba(108,99,255,0.2)">🇰🇷 KR</div>
+          <div style="padding:5px 8px;font-size:0.8rem;color:var(--accent4);text-align:center;border-right:1px solid rgba(108,99,255,0.3)">🇺🇸 US</div>
+          <div style="padding:5px 8px;font-size:0.8rem;color:var(--accent);text-align:center;border-right:1px solid rgba(108,99,255,0.2)">🇰🇷 KR</div>
+          <div style="padding:5px 8px;font-size:0.8rem;color:var(--accent4);text-align:center;border-right:1px solid rgba(108,99,255,0.3)">🇺🇸 US</div>
+          <div style="padding:5px 8px;font-size:0.8rem;color:var(--accent);text-align:center;border-right:1px solid rgba(108,99,255,0.2)">🇰🇷 KR</div>
+          <div style="padding:5px 8px;font-size:0.8rem;color:var(--accent4);text-align:center">🇺🇸 US</div>
+        </div>`;
+
+    stuList.forEach((s,idx)=>{
+      const krW=getBest(s.id,'korean','word');
+      const usW=getBest(s.id,'english','word');
+      const krS=getBest(s.id,'korean','short');
+      const usS=getBest(s.id,'english','short');
+      const krL=getBest(s.id,'korean','long');
+      const usL=getBest(s.id,'english','long');
+      const rowBg=idx%2===0?'':'background:rgba(255,255,255,0.02)';
+      const val=(v)=>v?`<span style="font-family:'Space Mono',monospace;font-size:1.0rem;font-weight:700;color:var(--accent3)">${v}</span><span style="font-size:0.75rem;color:var(--text-muted)"> 타</span>`:`<span style="color:var(--border)">--</span>`;
+      html+=`<div style="${COL};border-top:1px solid var(--border);${rowBg};align-items:center" onclick="selectStudent('${s.id}');switchMainTab('student')" style="cursor:pointer" onmouseenter="this.style.background='rgba(108,99,255,0.05)'" onmouseleave="this.style.background='${idx%2===0?'transparent':'rgba(255,255,255,0.02)'}'" >
+        <div style="padding:10px 12px;font-size:1.05rem;font-weight:600;border-right:1px solid var(--border);cursor:pointer">${s.name}</div>
+        <div style="padding:10px 8px;text-align:center;border-right:1px solid rgba(108,99,255,0.2)">${val(krW)}</div>
+        <div style="padding:10px 8px;text-align:center;border-right:1px solid rgba(108,99,255,0.3)">${val(usW)}</div>
+        <div style="padding:10px 8px;text-align:center;border-right:1px solid rgba(108,99,255,0.2)">${val(krS)}</div>
+        <div style="padding:10px 8px;text-align:center;border-right:1px solid rgba(108,99,255,0.3)">${val(usS)}</div>
+        <div style="padding:10px 8px;text-align:center;border-right:1px solid rgba(108,99,255,0.2)">${val(krL)}</div>
+        <div style="padding:10px 8px;text-align:center">${val(usL)}</div>
+      </div>`;
+    });
+    html+=`</div></div>`;
+  });
+
+  wrap.innerHTML=html||'<div style="padding:40px;text-align:center;color:var(--text-muted);font-size:1.1rem">이달 기록이 없습니다</div>';
+}
+
+// ── 노션 복사 ──
+function copyMonthlyTable(){
+  const month=document.getElementById('selected-month').value;
+  let text=`📊 ${month} 타자 기록 전체 현황
+
+`;
+  text+=`이름	요일	KR낱말	US낱말	KR단문	US단문	KR장문	US장문
+`;
+
+  function getBest(stuId,lang,type){
+    const recs=records.filter(r=>r.student_id===stuId&&r.lang===lang&&r.type===type&&r.speed&&r.date&&r.date.startsWith(month));
+    if(!recs.length)return '--';
+    return Math.max(...recs.map(r=>r.speed))+'타';
+  }
+
+  students.sort((a,b)=>a.name.localeCompare(b.name,'ko')).forEach(s=>{
+    const days=(s.days||'').split(',').filter(Boolean).join('·')||'기타';
+    text+=`${s.name}	${days}	${getBest(s.id,'korean','word')}	${getBest(s.id,'english','word')}	${getBest(s.id,'korean','short')}	${getBest(s.id,'english','short')}	${getBest(s.id,'korean','long')}	${getBest(s.id,'english','long')}
+`;
+  });
+
+  navigator.clipboard.writeText(text).then(()=>{
+    toast('📋 노션 복사 완료! 노션에 붙여넣기 하세요 ✓');
+  }).catch(()=>{
+    toast('복사 실패 — 브라우저 권한을 확인하세요','err');
+  });
+}
 
 
 
@@ -1164,6 +1310,12 @@ async function doForgotPassword(){
     errEl.style.color='var(--pass)';
     errEl.textContent='✓ 비밀번호 재설정 이메일을 보냈습니다! 메일함을 확인하세요.';
   }
+}
+
+// ── 자리연습 접기/펼치기 ──
+function toggleJari(){
+  window._jariOpen = !window._jariOpen;
+  renderStudentDetails();
 }
 
 function toggleDay(day){
@@ -1417,9 +1569,14 @@ function renderStudentDetails(){
   const container=document.getElementById('student-details');
   if(!container)return;
 
-  // ── 자리 연습 (한글/영어 분리 표시) ──
+  // ── 자리 연습 (접기/펼치기 + 한글/영어 분리) ──
+  const jariOpen = window._jariOpen !== false; // 기본 접힘
   let html=`<div class="category-section">
-    <div class="category-title">🖐 자리 연습</div>
+    <div class="category-title" style="cursor:pointer;user-select:none" onclick="toggleJari()">
+      🖐 자리 연습
+      <span id="jari-toggle-icon" style="font-size:0.85rem;margin-left:6px;color:var(--text-muted)">${jariOpen?'▲ 접기':'▼ 펼치기'}</span>
+    </div>
+    <div id="jari-body" style="display:${jariOpen?'block':'none'}">
     <div style="display:flex;gap:6px;margin-bottom:6px">
       <span style="font-size:0.72rem;color:var(--accent);font-weight:700">🇰🇷 한글</span>
     </div>
@@ -1463,7 +1620,7 @@ function renderStudentDetails(){
       `:`<div class="jari-card-empty">클릭해서 추가</div>`}
     </div>`;
   });
-  html+=`</div></div>`;
+  html+=`</div></div></div>`;
 
   // ── 낱말/단문/장문 통합 테이블 (KR+US 통합) ──
   const typeDataKR = OTHER_TYPES.map(type=>{
