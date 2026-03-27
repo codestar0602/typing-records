@@ -6,6 +6,7 @@
 <title>⌨️ Curio Typing Record</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <style>
   :root {
     --bg:#0f0f14; --surface:#1a1a24; --surface2:#22223a; --border:#2e2e48;
@@ -144,6 +145,7 @@
   .auth-submit:disabled { opacity:0.5; cursor:not-allowed; transform:none; }
   .auth-error { color:var(--accent2); font-size:0.8rem; margin-top:10px; text-align:center; min-height:18px; }
   .auth-info { background:rgba(108,99,255,0.1); border:1px solid rgba(108,99,255,0.3); border-radius:8px; padding:10px 14px; font-size:0.78rem; color:var(--text-muted); margin-bottom:16px; line-height:1.5; }
+  .auth-pending { background:rgba(247,151,30,0.1); border:1px solid rgba(247,151,30,0.4); border-radius:10px; padding:16px; text-align:center; color:var(--accent4); font-size:0.9rem; margin-top:12px; line-height:1.7; }
   .user-badge { display:flex; align-items:center; gap:8px; font-size:0.8rem; color:var(--text-muted); }
   .user-badge .email { color:var(--text); font-weight:500; font-size:1.4rem; max-width:260px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
   .logout-btn { padding:8px 16px; border-radius:7px; border:1px solid var(--border); background:transparent; color:var(--text-muted); cursor:pointer; font-size:1.4rem; font-family:'Noto Sans KR',sans-serif; transition:all 0.15s; }
@@ -627,6 +629,12 @@
 <script>
 const SUPABASE_URL = 'https://oeoxxmfgfiegfggyhohm.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_3I5zrDvfDsXW1BxK3xeRpA_6UIiWr_U';
+
+// EmailJS 설정
+const EMAILJS_PUBLIC_KEY  = 'V9PZpPErKMFhNzuD1';
+const EMAILJS_SERVICE_ID  = 'ssunny081@gmail.com';
+const EMAILJS_TEMPLATE_ID = '9gcwzsd';
+const ADMIN_EMAIL         = 'ssunny081@gmail.com';
 let sb;
 try {
   sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -723,19 +731,45 @@ async function doAuth(){
   if(authMode==='signup'&&pw.length<6){errEl.textContent='비밀번호는 6자 이상이어야 합니다.';return;}
   btn.disabled=true; errEl.textContent='';
   try{
-    let result;
     if(authMode==='login'){
-      result=await sb.auth.signInWithPassword({email,password:pw});
+      // 로그인: 승인 여부 먼저 확인
+      const{data:approvalData}=await sb.from('approved_users').select('approved').eq('email',email).single();
+      if(!approvalData){
+        errEl.style.color='var(--accent2)';
+        errEl.textContent='등록되지 않은 계정입니다. 먼저 회원가입을 해주세요.';
+        btn.disabled=false; return;
+      }
+      if(!approvalData.approved){
+        errEl.style.color='var(--accent4)';
+        errEl.textContent='⏳ 승인 대기 중입니다. 관리자 승인 후 로그인이 가능합니다.';
+        btn.disabled=false; return;
+      }
+      const result=await sb.auth.signInWithPassword({email,password:pw});
+      if(result.error) throw result.error;
+
     } else {
-      result=await sb.auth.signUp({email,password:pw});
-    }
-    if(result.error) throw result.error;
-    if(authMode==='signup'&&!result.data?.session){
+      // 회원가입: Supabase 계정 생성 + 승인 대기 등록 + 관리자 이메일 발송
+      const result=await sb.auth.signUp({email,password:pw});
+      if(result.error) throw result.error;
+
+      // approved_users 테이블에 대기 등록
+      await sb.from('approved_users').insert({email, approved:false});
+
+      // 관리자에게 이메일 발송
+      const now=new Date().toLocaleString('ko-KR',{timeZone:'Asia/Seoul'});
+      try{
+        await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+          applicant_email: email,
+          apply_time: now,
+        });
+      } catch(emailErr){
+        console.warn('이메일 발송 실패:', emailErr);
+      }
+
       errEl.style.color='var(--pass)';
-      errEl.textContent='가입 완료! 이메일 인증 후 로그인해주세요.';
+      errEl.textContent='✓ 가입 신청 완료! 관리자 승인 후 로그인이 가능합니다.';
       switchAuthTab('login');
     }
-    // 세션이 생기면 onAuthStateChange가 처리
   } catch(e){
     const msg=e.message||'오류가 발생했습니다.';
     errEl.style.color='var(--accent2)';
@@ -763,6 +797,8 @@ async function doLogout(){
 let appInitialized = false; // 최초 1회만 초기화
 
 window.onload=async()=>{
+  // EmailJS 초기화
+  emailjs.init(EMAILJS_PUBLIC_KEY);
   // DAYS 설정 먼저 로드 (auth 전에도 필요)
   loadDaysConfig();
   const now=new Date();
