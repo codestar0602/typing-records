@@ -766,6 +766,8 @@ async function doAuth(){
         console.warn('이메일 발송 실패:', emailErr);
       }
 
+      // 회원가입 후 즉시 로그아웃 — 승인 전까지 접근 차단
+      await sb.auth.signOut();
       errEl.style.color='var(--pass)';
       errEl.textContent='✓ 가입 신청 완료! 관리자 승인 후 로그인이 가능합니다.';
       switchAuthTab('login');
@@ -808,6 +810,18 @@ window.onload=async()=>{
   // Auth 상태 감지 — SIGNED_IN 이벤트만 처리, TOKEN_REFRESHED 등 무시
   sb.auth.onAuthStateChange(async(event,session)=>{
     if(event==='SIGNED_IN' && session?.user && !appInitialized){
+      // 승인 여부 확인
+      const{data:apData}=await sb.from('approved_users').select('approved').eq('email',session.user.email).single();
+      if(!apData || !apData.approved){
+        // 미승인 계정 — 즉시 로그아웃
+        await sb.auth.signOut();
+        const errEl=document.getElementById('auth-error');
+        if(errEl){
+          errEl.style.color='var(--accent4)';
+          errEl.textContent='⏳ 승인 대기 중입니다. 관리자 승인 후 로그인이 가능합니다.';
+        }
+        return;
+      }
       appInitialized=true;
       currentUser=session.user;
       document.getElementById('user-email-display').textContent=session.user.email;
