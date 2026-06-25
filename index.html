@@ -93,15 +93,15 @@
   .top5-card-header.english { background:linear-gradient(90deg,#1c3a5e,#1e3a8a); }
   .top5-card-header .badge { font-size:0.67rem; padding:2px 7px; border-radius:999px; background:rgba(255,255,255,0.15); margin-left:auto; }
   .top5-list { padding:5px 0; }
-  .top5-item { display:flex; align-items:center; justify-content:center; padding:7px 10px; gap:9px; transition:background 0.15s; cursor:pointer; }
+  .top5-item { display:flex; align-items:center; justify-content:center; padding:6px 6px; gap:6px; transition:background 0.15s; cursor:pointer; }
   .top5-item:hover { background:var(--surface2); }
-  .rank-badge { width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:'Space Mono',monospace; font-size:1.1rem; font-weight:700; flex-shrink:0; }
+  .rank-badge { width:26px; height:26px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:'Space Mono',monospace; font-size:0.85rem; font-weight:700; flex-shrink:0; }
   .rank-1 { background:var(--gold); color:#000; }
   .rank-2 { background:var(--silver); color:#000; }
   .rank-3 { background:var(--bronze); color:#fff; }
   .rank-4,.rank-5 { background:var(--surface2); color:var(--text-muted); border:1px solid var(--border); }
-  .top5-name { flex:1; font-size:1.5rem; font-weight:500; text-align:center; }
-  .top5-score { font-family:'Space Mono',monospace; font-size:1.5rem; color:var(--accent); font-weight:700; text-align:center; }
+  .top5-name { flex:1; font-size:1.0rem; font-weight:500; text-align:center; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .top5-score { font-family:'Space Mono',monospace; font-size:1.0rem; color:var(--accent); font-weight:700; text-align:center; white-space:nowrap; }
 
   /* AUTH */
   #auth-screen {
@@ -262,7 +262,7 @@
   .jari-card.has-record { border-color:rgba(108,99,255,0.35); }
   .jari-card.has-pass { border-color:rgba(67,233,123,0.5); background:rgba(67,233,123,0.04); }
   .jari-card-label { font-size:1.0rem; color:var(--text-muted); margin-bottom:2px; text-transform:uppercase; letter-spacing:1px; }
-  .jari-card-name { font-size:1.3rem; font-weight:700; margin-bottom:8px; line-height:1.3; }
+  .jari-card-name { font-size:1.05rem; font-weight:700; margin-bottom:8px; line-height:1.3; }
   .jari-pass-row { display:flex; align-items:baseline; justify-content:center; gap:2px; margin-bottom:4px; }
   .pass-count { font-family:'Space Mono',monospace; font-size:2.0rem; font-weight:700; color:var(--pass); line-height:1; }
   .pass-denom { font-family:'Space Mono',monospace; font-size:1.2rem; color:var(--text-muted); }
@@ -272,6 +272,8 @@
   .jari-card-best { font-family:'Space Mono',monospace; font-size:0.76rem; color:var(--accent); font-weight:700; }
   .jari-card-sub { font-size:0.6rem; color:var(--text-muted); margin-top:2px; }
   .jari-card-empty { font-size:1.1rem; color:var(--border); margin-top:4px; }
+  .jari-manage { margin-top:7px; font-size:0.85rem; color:var(--accent); opacity:0.55; cursor:pointer; padding:2px; border-radius:5px; transition:all 0.15s; }
+  .jari-manage:hover { opacity:1; background:rgba(108,99,255,0.12); }
 
   /* STATS */
   .stats-summary { display:grid; grid-template-columns:repeat(3,1fr); background:var(--surface2); border:1px solid var(--border); border-radius:10px; margin-bottom:9px; overflow:hidden; }
@@ -482,12 +484,16 @@
   ::-webkit-scrollbar-track { background:var(--bg); }
   ::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
 
+  @media(max-width:1100px) {
+    .top5-grid { grid-template-columns:repeat(2,1fr); }
+  }
   @media(max-width:900px) {
     .jari-grid { grid-template-columns:repeat(4,1fr); }
     aside { width:100%; max-height:220px; position:relative; top:0; }
     main { flex-direction:column; }
   }
   @media(max-width:600px) {
+    .top5-grid { grid-template-columns:1fr; }
     .jari-grid { grid-template-columns:repeat(2,1fr); }
     .pt-header,.pt-row { grid-template-columns:95px 75px 75px 1fr 52px; }
   }
@@ -1317,6 +1323,11 @@ function toggleJari(){
   window._jariOpen = !window._jariOpen;
   renderStudentDetails();
 }
+// ── 연습기록 테이블 접기/펼치기 ──
+function togglePt(){
+  window._ptOpen = !window._ptOpen;
+  renderStudentDetails();
+}
 
 function toggleDay(day){
   if(openDays.has(day))openDays.delete(day);
@@ -1589,13 +1600,14 @@ function renderStudentDetails(){
     const hasPass=passCount>0;
     const barPct=totalCount?Math.round(passCount/totalCount*100):0;
     html+=`
-    <div class="jari-card ${totalCount?'has-record':''} ${hasPass?'has-pass':''}" onclick="openJariModalLang('${stage.id}','${stage.name}','korean')">
+    <div class="jari-card ${totalCount?'has-record':''} ${hasPass?'has-pass':''}" onclick="quickAddJari('${stage.id}','korean',event)" title="클릭하면 통과 1회 추가">
       <div class="jari-card-label">자리</div>
       <div class="jari-card-name">${stage.name}</div>
       ${totalCount>0?`
         <div class="jari-pass-row"><span class="pass-count">${passCount}</span><span class="pass-denom">/${totalCount}</span></div>
         <div class="pass-bar-wrap"><div class="pass-bar-fill" style="width:${barPct}%"></div></div>
-      `:`<div class="jari-card-empty">클릭해서 추가</div>`}
+      `:`<div class="jari-card-empty">클릭해서 +1</div>`}
+      <div class="jari-manage" onclick="event.stopPropagation();openJariModalLang('${stage.id}','${stage.name}','korean')">📋 기록관리</div>
     </div>`;
   });
   html+=`</div>
@@ -1611,13 +1623,14 @@ function renderStudentDetails(){
     const hasPass=passCount>0;
     const barPct=totalCount?Math.round(passCount/totalCount*100):0;
     html+=`
-    <div class="jari-card ${totalCount?'has-record':''} ${hasPass?'has-pass':''}" onclick="openJariModalLang('${stage.id}','${stage.name}','english')" style="border-color:${hasPass?'rgba(247,151,30,0.5)':totalCount?'rgba(247,151,30,0.25)':'var(--border)'}">
+    <div class="jari-card ${totalCount?'has-record':''} ${hasPass?'has-pass':''}" onclick="quickAddJari('${stage.id}','english',event)" title="클릭하면 통과 1회 추가" style="border-color:${hasPass?'rgba(247,151,30,0.5)':totalCount?'rgba(247,151,30,0.25)':'var(--border)'}">
       <div class="jari-card-label" style="color:var(--accent4)">자리</div>
       <div class="jari-card-name">${stage.name}</div>
       ${totalCount>0?`
         <div class="jari-pass-row"><span class="pass-count" style="color:var(--accent4)">${passCount}</span><span class="pass-denom">/${totalCount}</span></div>
         <div class="pass-bar-wrap"><div class="pass-bar-fill" style="width:${barPct}%;background:linear-gradient(90deg,var(--accent4),var(--accent3))"></div></div>
-      `:`<div class="jari-card-empty">클릭해서 추가</div>`}
+      `:`<div class="jari-card-empty">클릭해서 +1</div>`}
+      <div class="jari-manage" style="color:var(--accent4)" onclick="event.stopPropagation();openJariModalLang('${stage.id}','${stage.name}','english')">📋 기록관리</div>
     </div>`;
   });
   html+=`</div></div></div>`;
@@ -1646,9 +1659,38 @@ function renderStudentDetails(){
     ...typeDataUS.flatMap(d=>d.recs.map(r=>r.date||''))
   ].filter(Boolean))].sort((a,b)=>b.localeCompare(a));
 
+  const ptOpen = window._ptOpen === true; // 기본 접힘
   html+=`<div class="category-section">
     <div class="category-title">✏️ 낱말 · 단문 · 장문 연습</div>
-    <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;overflow-x:auto">
+
+    <!-- 행 추가 버튼 (상단 고정) -->
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;overflow-x:auto;margin-bottom:10px">
+      <div style="display:grid;${COL};background:rgba(0,0,0,0.1);${MINW}">
+        <div style="padding:10px 12px;font-size:0.9rem;color:var(--text-muted);border-right:1px solid var(--border);display:flex;align-items:center">+ 행 추가</div>
+        ${OTHER_TYPES.flatMap((type,i)=>{
+          const sep=i<2?'border-right:2px solid var(--border)':'';
+          return[
+            `<div style="padding:6px 8px;border-right:1px solid rgba(108,99,255,0.2);display:flex;align-items:center">
+              <button class="btn btn-secondary btn-sm" style="border-color:var(--accent);color:var(--accent);font-size:0.85rem" onclick="addOtherRecord('${type.id}','korean')">🇰🇷 ${type.name}</button>
+            </div>`,
+            `<div style="border-right:1px solid rgba(108,99,255,0.15)"></div>`,
+            `<div style="padding:6px 8px;border-right:1px solid rgba(247,151,30,0.3);display:flex;align-items:center">
+              <button class="btn btn-secondary btn-sm" style="border-color:var(--accent4);color:var(--accent4);font-size:0.85rem" onclick="addOtherRecord('${type.id}','english')">🇺🇸 ${type.name}</button>
+            </div>`,
+            `<div style="${sep}"></div>`
+          ];
+        }).join('')}
+      </div>
+    </div>
+
+    <!-- 기록 보기 토글 -->
+    <div class="category-title" style="cursor:pointer;user-select:none;font-size:0.95rem;margin-bottom:8px" onclick="togglePt()">
+      📊 연습 기록 보기
+      <span style="font-size:0.85rem;margin-left:6px;color:var(--text-muted)">${ptOpen?'▲ 접기':'▼ 펼치기'}</span>
+      <span style="font-size:0.8rem;color:var(--text-muted);font-weight:400">(${allDates.length}일)</span>
+    </div>
+
+    <div style="display:${ptOpen?'block':'none'};background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;overflow-x:auto">
 
       <!-- 전체 최고기록 행 -->
       <div style="display:grid;${COL};background:var(--surface2);border-bottom:2px solid var(--border);${MINW}">
@@ -1740,27 +1782,11 @@ function renderStudentDetails(){
   });
 
   if(!allDates.length){
-    html+=`<div style="padding:24px;text-align:center;color:var(--text-muted);font-size:1.0rem;border-top:1px solid var(--border)">기록 없음 — 아래 버튼으로 추가하세요</div>`;
+    html+=`<div style="padding:24px;text-align:center;color:var(--text-muted);font-size:1.0rem;border-top:1px solid var(--border)">기록 없음 — 위 버튼으로 추가하세요</div>`;
   }
 
-  // 추가 버튼 행
-  html+=`<div style="display:grid;${COL};border-top:1px solid var(--border);background:rgba(0,0,0,0.1);${MINW}">
-    <div style="padding:10px 12px;font-size:0.9rem;color:var(--text-muted);border-right:1px solid var(--border);display:flex;align-items:center">+ 행 추가</div>
-    ${OTHER_TYPES.flatMap((type,i)=>{
-      const sep=i<2?'border-right:2px solid var(--border)':'';
-      return[
-        `<div style="padding:6px 8px;border-right:1px solid rgba(108,99,255,0.2);display:flex;align-items:center">
-          <button class="btn btn-secondary btn-sm" style="border-color:var(--accent);color:var(--accent);font-size:0.85rem" onclick="addOtherRecord('${type.id}','korean')">🇰🇷 ${type.name}</button>
-        </div>`,
-        `<div style="border-right:1px solid rgba(108,99,255,0.15)"></div>`,
-        `<div style="padding:6px 8px;border-right:1px solid rgba(247,151,30,0.3);display:flex;align-items:center">
-          <button class="btn btn-secondary btn-sm" style="border-color:var(--accent4);color:var(--accent4);font-size:0.85rem" onclick="addOtherRecord('${type.id}','english')">🇺🇸 ${type.name}</button>
-        </div>`,
-        `<div style="${sep}"></div>`
-      ];
-    }).join('')}
-  </div>
-  </div></div>`;  container.innerHTML=html;
+  html+=`</div>
+  </div>`;  container.innerHTML=html;
 }
 
 // ── RECORDS ──
@@ -1770,7 +1796,7 @@ async function addOtherRecord(typeId, lang){
   const rec={id,student_id:selectedStudentId,lang:lang||'korean',type:typeId,stage_id:null,speed:null,accuracy:null,memo:'',date:today,passed:false,user_id:currentUser.id};
   const{error}=await sb.from('records').insert(rec);
   if(error)return toast('추가 실패: '+error.message,'err');
-  records.unshift(rec); renderStudentDetails();
+  records.unshift(rec); window._ptOpen=true; renderStudentDetails();
 }
 
 const debounceMap={};
@@ -1792,6 +1818,18 @@ async function deleteRecord(id){
   if(error)return toast('삭제 실패','err');
   records=records.filter(r=>r.id!==id);
   renderStudentDetails();renderTop5();toast('기록 삭제됨');
+}
+
+// ── 자리연습 빠른 추가 (카드 클릭 시 즉시 통과 1회 기록) ──
+async function quickAddJari(stageId,lang,ev){
+  if(ev){ev.stopPropagation();}
+  const today=new Date().toISOString().split('T')[0];
+  const rec={id:'rec_'+Date.now(),student_id:selectedStudentId,lang:lang||'korean',type:'jari',stage_id:stageId,speed:null,accuracy:null,memo:'',date:today,passed:true,user_id:currentUser.id};
+  const{error}=await sb.from('records').insert(rec);
+  if(error)return toast('저장 실패: '+error.message,'err');
+  records.unshift(rec);
+  toast('✓ 통과 +1');
+  renderStudentDetails();renderTop5();
 }
 
 // ── JARI MODAL ──
@@ -1925,16 +1963,16 @@ function renderTop5(){
     cards+=`
     <div class="top5-card">
       <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 13px;background:linear-gradient(90deg,#1e1b4b,#1c3a5e);">
-        <span style="font-size:1.5rem;font-weight:700;letter-spacing:1px">${type.name}</span>
+        <span style="font-size:1.05rem;font-weight:700;letter-spacing:0.5px">${type.name}</span>
         <span style="font-size:1.1rem;padding:3px 10px;border-radius:999px;background:rgba(255,255,255,0.15)">${month}</span>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--border)">
         <div style="border-right:1px solid var(--border)">
-          <div style="padding:6px 13px;font-size:1.3rem;font-weight:700;color:var(--accent);background:rgba(108,99,255,0.08);letter-spacing:1px">🇰🇷 KR</div>
+          <div style="padding:5px 12px;font-size:0.95rem;font-weight:700;color:var(--accent);background:rgba(108,99,255,0.08);letter-spacing:0.5px">🇰🇷 KR</div>
           <div class="top5-list">${ko}</div>
         </div>
         <div>
-          <div style="padding:6px 13px;font-size:1.3rem;font-weight:700;color:var(--accent4);background:rgba(247,151,30,0.08);letter-spacing:1px">🇺🇸 US</div>
+          <div style="padding:5px 12px;font-size:0.95rem;font-weight:700;color:var(--accent4);background:rgba(247,151,30,0.08);letter-spacing:0.5px">🇺🇸 US</div>
           <div class="top5-list">${en}</div>
         </div>
       </div>
@@ -1946,16 +1984,16 @@ function renderTop5(){
   cards+=`
     <div class="top5-card">
       <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 13px;background:linear-gradient(90deg,#1e1b4b,#1c3a5e);">
-        <span style="font-size:1.5rem;font-weight:700;letter-spacing:1px">자리연습</span>
+        <span style="font-size:1.05rem;font-weight:700;letter-spacing:0.5px">자리연습</span>
         <span style="font-size:1.1rem;padding:3px 10px;border-radius:999px;background:rgba(255,255,255,0.15)">${month}</span>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--border)">
         <div style="border-right:1px solid var(--border)">
-          <div style="padding:6px 13px;font-size:1.3rem;font-weight:700;color:var(--accent);background:rgba(108,99,255,0.08);letter-spacing:1px">🇰🇷 KR</div>
+          <div style="padding:5px 12px;font-size:0.95rem;font-weight:700;color:var(--accent);background:rgba(108,99,255,0.08);letter-spacing:0.5px">🇰🇷 KR</div>
           <div class="top5-list">${jariKo}</div>
         </div>
         <div>
-          <div style="padding:6px 13px;font-size:1.3rem;font-weight:700;color:var(--accent4);background:rgba(247,151,30,0.08);letter-spacing:1px">🇺🇸 US</div>
+          <div style="padding:5px 12px;font-size:0.95rem;font-weight:700;color:var(--accent4);background:rgba(247,151,30,0.08);letter-spacing:0.5px">🇺🇸 US</div>
           <div class="top5-list">${jariEn}</div>
         </div>
       </div>
